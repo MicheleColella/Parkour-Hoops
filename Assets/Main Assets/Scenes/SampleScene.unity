@@ -5774,14 +5774,18 @@ MonoBehaviour:
   rightController: {fileID: 898216931}
   characterController: {fileID: 1119699649}
   baseWalkSpeed: 2
-  maxWalkSpeed: 5
+  maxWalkSpeed: 15
   movementSensitivity: 0.02
-  movementLerpSpeed: 5
+  movementLerpSpeed: 10
   inertiaDuration: 0.5
   decelerationRate: 2
   groundCheckDistance: 0.2
-  jumpForce: 5
-  gravityDuringJump: -4
+  movementMultiplier: 2
+  minJumpForce: 3
+  maxJumpForce: 15
+  maxJumpChargeTime: 5
+  vibrationStartIntensity: 0.2
+  vibrationMaxIntensity: 1
   snapTurnAngle: 45
   snapTurnCooldown: 0.5
 --- !u!143 &1119699649
@@ -5804,7 +5808,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.16666667
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
