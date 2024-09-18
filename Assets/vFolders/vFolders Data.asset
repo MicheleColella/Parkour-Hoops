@@ -32,6 +32,8 @@ MonoBehaviour:
     - 7320d4b69e4e04f59bf25bdec1c7bccd
     - 022ee1484650a432cb7891fc01c2956b
     - fb768e0b626e9477884c5727757922eb
+    - 328adc9661e3a40c291123e69fcb7c30
+    - 0f9a6f530bfd74335926367a383c7d67
     values:
     - guid: 00000000000000001000000000000000
       iColor: 0
@@ -52,7 +54,7 @@ MonoBehaviour:
       iColor: 1
       autoIcon: SceneAsset Icon
       customIcon: 
-      autoIconDirty: 0
+      autoIconDirty: 1
     - guid: 709f11a7f3c4041caa4ef136ea32d874
       iColor: 10
       autoIcon: 
@@ -120,6 +122,16 @@ MonoBehaviour:
       autoIconDirty: 0
     - guid: fb768e0b626e9477884c5727757922eb
       iColor: 10
+      autoIcon: 
+      customIcon: 
+      autoIconDirty: 0
+    - guid: 328adc9661e3a40c291123e69fcb7c30
+      iColor: 10
+      autoIcon: 
+      customIcon: 
+      autoIconDirty: 0
+    - guid: 0f9a6f530bfd74335926367a383c7d67
+      iColor: 0
       autoIcon: 
       customIcon: 
       autoIconDirty: 0
