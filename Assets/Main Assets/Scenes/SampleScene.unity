@@ -12671,9 +12671,10 @@ GameObject:
   - component: {fileID: 1119699643}
   - component: {fileID: 1119699642}
   - component: {fileID: 1119699641}
-  - component: {fileID: 1119699649}
   - component: {fileID: 1119699648}
-  m_Layer: 0
+  - component: {fileID: 1119699650}
+  - component: {fileID: 1119699649}
+  m_Layer: 15
   m_Name: '[BuildingBlock] Camera Rig'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12837,15 +12838,16 @@ MonoBehaviour:
   playerCamera: {fileID: 1577980941}
   leftController: {fileID: 2099704951}
   rightController: {fileID: 898216931}
-  characterController: {fileID: 1119699649}
+  playerRigidbody: {fileID: 1119699650}
+  playerCollider: {fileID: 1119699649}
   baseWalkSpeed: 2
   maxWalkSpeed: 15
   movementSensitivity: 0.02
   movementLerpSpeed: 10
   inertiaDuration: 0.5
   decelerationRate: 2
-  groundCheckDistance: 0.2
   movementMultiplier: 2
+  accelerationRate: 5
   minJumpForce: 2
   maxJumpForce: 10
   maxJumpChargeTime: 3
@@ -12854,8 +12856,8 @@ MonoBehaviour:
   vibrationMaxIntensity: 1
   snapTurnAngle: 45
   snapTurnCooldown: 0.5
---- !u!143 &1119699649
-CharacterController:
+--- !u!136 &1119699649
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -12872,14 +12874,38 @@ CharacterController:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.16666667
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.14
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!54 &1119699650
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119699640}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &1130286994
 GameObject:
   m_ObjectHideFlags: 0
@@ -20105,7 +20131,8 @@ GameObject:
   - component: {fileID: 1577980943}
   - component: {fileID: 1577980942}
   - component: {fileID: 1577980944}
-  m_Layer: 0
+  - component: {fileID: 1577980945}
+  m_Layer: 18
   m_Name: CenterEyeAnchor
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -20230,6 +20257,27 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!135 &1577980945
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1577980940}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.25
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1579694467
 GameObject:
   m_ObjectHideFlags: 0

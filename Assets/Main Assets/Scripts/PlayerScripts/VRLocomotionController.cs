@@ -8,7 +8,8 @@ public class VRLocomotionController : MonoBehaviour
     public Transform playerCamera;
     public Transform leftController;
     public Transform rightController;
-    public CharacterController characterController;
+    public Rigidbody playerRigidbody;
+    public CapsuleCollider playerCollider;
 
     [Header("Movement Settings")]
     public float baseWalkSpeed = 2f;
@@ -17,7 +18,6 @@ public class VRLocomotionController : MonoBehaviour
     public float movementLerpSpeed = 10f;
     public float inertiaDuration = 0.5f;
     public float decelerationRate = 2f;
-    public float groundCheckDistance = 0.2f;
     public float movementMultiplier = 2f;
 
     [Header("Jump Settings")]
@@ -38,7 +38,6 @@ public class VRLocomotionController : MonoBehaviour
     public float snapTurnCooldown = 0.5f;
 
     private bool isGrounded;
-    private Vector3 playerVelocity;
     private Vector3 leftPreviousPosition;
     private Vector3 rightPreviousPosition;
     private Vector3 currentMovementDirection;
@@ -53,13 +52,13 @@ public class VRLocomotionController : MonoBehaviour
         currentSpeed = baseWalkSpeed;
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        ApplyGravity();
         HandleArmSwingMovement();
+        ApplyInertia();
         HandleJumpCharging();
         HandleSnapTurn();
-        ApplyGravity();
-        ApplyInertia();
     }
 
     void HandleArmSwingMovement()
@@ -70,8 +69,8 @@ public class VRLocomotionController : MonoBehaviour
         leftPreviousPosition = leftController.localPosition;
         rightPreviousPosition = rightController.localPosition;
 
-        float leftSpeed = leftMovement.magnitude / Time.deltaTime;
-        float rightSpeed = rightMovement.magnitude / Time.deltaTime;
+        float leftSpeed = leftMovement.magnitude / Time.fixedDeltaTime;
+        float rightSpeed = rightMovement.magnitude / Time.fixedDeltaTime;
         float averageHandSpeed = (leftSpeed + rightSpeed) / 2f;
 
         if (Mathf.Abs(leftMovement.y) > movementSensitivity && Mathf.Abs(rightMovement.y) > movementSensitivity && isGrounded)
@@ -81,38 +80,36 @@ public class VRLocomotionController : MonoBehaviour
             forwardDirection.Normalize();
 
             float speedFactor = Mathf.Clamp(averageHandSpeed * movementMultiplier, baseWalkSpeed, maxWalkSpeed);
-            currentSpeed = Mathf.Lerp(currentSpeed, speedFactor, movementLerpSpeed * Time.deltaTime);
+            currentSpeed = Mathf.Lerp(currentSpeed, speedFactor, movementLerpSpeed * Time.fixedDeltaTime);
 
-            currentMovementDirection = Vector3.Lerp(currentMovementDirection, forwardDirection, movementLerpSpeed * Time.deltaTime);
+            currentMovementDirection = Vector3.Lerp(currentMovementDirection, forwardDirection, movementLerpSpeed * Time.fixedDeltaTime);
 
             inertiaTime = inertiaDuration;
         }
 
-        if (!isGrounded)
+        if (inertiaTime > 0)
         {
-            characterController.Move(currentMovementDirection * currentSpeed * Time.deltaTime);
-        }
+            Vector3 movement = currentMovementDirection * currentSpeed * Time.fixedDeltaTime;
 
-        if (!isGrounded)
-        {
-            playerVelocity.y += Physics.gravity.y * reducedGravity * Time.deltaTime; // Gravità ridotta durante il salto
+            // Se è a mezz'aria, continua il movimento attuale senza fermarsi
+            if (!isGrounded)
+            {
+                playerRigidbody.velocity = new Vector3(movement.x, playerRigidbody.velocity.y, movement.z);
+            }
+            else
+            {
+                // Movimento fluido a terra
+                playerRigidbody.MovePosition(playerRigidbody.position + movement);
+            }
         }
-
-        characterController.Move(playerVelocity * Time.deltaTime);
     }
 
     void ApplyInertia()
     {
-        if (!isGrounded && isJumping)
-        {
-            characterController.Move(currentMovementDirection * currentSpeed * Time.deltaTime);
-        }
-
         if (inertiaTime > 0 && isGrounded)
         {
-            currentSpeed = Mathf.Lerp(currentSpeed, 0, decelerationRate * Time.deltaTime);
-            characterController.Move(currentMovementDirection * currentSpeed * Time.deltaTime);
-            inertiaTime -= Time.deltaTime;
+            currentSpeed = Mathf.Lerp(currentSpeed, 0, decelerationRate * Time.fixedDeltaTime);
+            inertiaTime -= Time.fixedDeltaTime;
         }
         else if (isGrounded)
         {
@@ -121,20 +118,13 @@ public class VRLocomotionController : MonoBehaviour
         }
     }
 
+
     void ApplyGravity()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance + 0.1f, LayerMask.GetMask("Default"));
-
-        if (isGrounded && playerVelocity.y < 0)
-        {
-            playerVelocity.y = 0f;
-            isJumping = false;
-        }
-
         if (!isGrounded)
         {
-            playerVelocity.y += Physics.gravity.y * Time.deltaTime;
-            characterController.Move(playerVelocity * Time.deltaTime);
+            Vector3 gravity = Physics.gravity * (isJumping ? reducedGravity : 1f);
+            playerRigidbody.AddForce(gravity, ForceMode.Acceleration);
         }
     }
 
@@ -143,7 +133,7 @@ public class VRLocomotionController : MonoBehaviour
         if (OVRInput.Get(OVRInput.Button.One) && isGrounded && !isJumping)
         {
             isChargingJump = true;
-            jumpChargeTime += Time.deltaTime;
+            jumpChargeTime += Time.fixedDeltaTime;
             jumpChargeTime = Mathf.Clamp(jumpChargeTime, 0, maxJumpChargeTime);
 
             // Gestione della vibrazione durante il caricamento
@@ -154,12 +144,12 @@ public class VRLocomotionController : MonoBehaviour
         if (OVRInput.GetUp(OVRInput.Button.One) && isGrounded && isChargingJump)
         {
             isChargingJump = false;
-            
+
             // Calcola la forza del salto correttamente limitata
             float appliedJumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, jumpChargeTime / maxJumpChargeTime);
             appliedJumpForce = Mathf.Clamp(appliedJumpForce, minJumpForce, maxJumpForce); // Limita il salto massimo
 
-            playerVelocity.y = appliedJumpForce;
+            playerRigidbody.AddForce(Vector3.up * appliedJumpForce, ForceMode.VelocityChange);
             isJumping = true;
 
             OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch); // Ferma la vibrazione
@@ -187,13 +177,22 @@ public class VRLocomotionController : MonoBehaviour
         }
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (hit.normal.y > 0.5f)
+        // Controlla se il giocatore tocca il terreno
+        if (collision.contacts[0].normal.y > 0.5f)
         {
             isGrounded = true;
-            playerVelocity.y = 0;
             isJumping = false;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        // Quando il giocatore lascia il terreno
+        if (collision.contacts.Length > 0 && collision.contacts[0].normal.y > 0.5f)
+        {
+            isGrounded = false;
         }
     }
 
