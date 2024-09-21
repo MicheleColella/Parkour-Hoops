@@ -28,12 +28,12 @@ public class VRLocomotionController : MonoBehaviour
     public float movementLerpSpeed = 10f;
     public float inertiaDuration = 0.5f;
     public float decelerationRate = 2f;
-    public float movementMultiplier = 2f;
+    public float movementMultiplier = 5f;  // Aumentato per ridurre la necessità di movimenti veloci
 
     [Header("Jump Settings")]
-    public float minJumpForce = 3f;
+    public float minJumpForce = 5f;  // Aumentato per salti più alti con piccoli carichi
     public float maxJumpForce = 15f;
-    public float maxJumpChargeTime = 3f;  // Impostato a 3 come specificato
+    public float maxJumpChargeTime = 1.5f;  // Ridotto per salti più reattivi
     public float reducedGravity = 0.5f; // Gravità ridotta per il salto
     private float jumpChargeTime = 0f;
 
@@ -56,6 +56,10 @@ public class VRLocomotionController : MonoBehaviour
     private float inertiaTime;
     private float currentSpeed;
     private float lastSnapTime;
+
+    // Nuove variabili per la gestione delle collisioni con i muri
+    private bool isTouchingWall = false;
+    private Vector3 currentWallNormal = Vector3.zero;
 
     void Start()
     {
@@ -128,15 +132,22 @@ public class VRLocomotionController : MonoBehaviour
             inertiaTime = inertiaDuration;
         }
 
+        // Rimuovi la proiezione della direzione del movimento sul piano del muro
+        // Questo permette al player di muoversi liberamente lontano dal muro
+        /*
+        if (isTouchingWall && currentWallNormal != Vector3.zero)
+        {
+            currentMovementDirection = Vector3.ProjectOnPlane(currentMovementDirection, currentWallNormal).normalized;
+        }
+        */
+
         if (inertiaTime > 0)
         {
-            Vector3 movement = currentMovementDirection * currentSpeed * Time.fixedDeltaTime;
-
-            // Usa MovePosition per un movimento più fluido
-            playerRigidbody.MovePosition(playerRigidbody.position + movement);
+            Vector3 desiredVelocity = currentMovementDirection * currentSpeed;
+            Vector3 newVelocity = new Vector3(desiredVelocity.x, playerRigidbody.velocity.y, desiredVelocity.z);
+            playerRigidbody.velocity = Vector3.Lerp(playerRigidbody.velocity, newVelocity, movementLerpSpeed * Time.fixedDeltaTime);
         }
     }
-
 
     void ApplyInertia()
     {
@@ -260,6 +271,63 @@ public class VRLocomotionController : MonoBehaviour
                 lastSnapTime = Time.time;
             }
         }
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        // Controlla se il player sta camminando contro un muro mentre è in aria
+        if (!isGrounded && IsWall(collision))
+        {
+            currentWallNormal = GetWallNormal(collision);
+
+            // Calcola la componente di velocità verso il muro
+            float dot = Vector3.Dot(playerRigidbody.velocity, currentWallNormal);
+            if (dot > 0)
+            {
+                // Rimuove la componente di velocità che spinge il player nel muro
+                playerRigidbody.velocity -= dot * currentWallNormal;
+            }
+
+            // Applica una piccola forza verso il basso per simulare lo scivolamento
+            Vector3 slideForce = new Vector3(0, -0.5f, 0);  // Ridotto per diminuire lo scivolamento
+            playerRigidbody.AddForce(slideForce, ForceMode.Acceleration);
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (IsWall(collision))
+        {
+            currentWallNormal = Vector3.zero;
+        }
+    }
+
+    // Metodo per controllare se l'oggetto in collisione è un muro
+    bool IsWall(Collision collision)
+    {
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            // Se la normale della superficie ha un angolo quasi verticale (tra 75 e 90 gradi rispetto all'orizzontale)
+            if (Mathf.Abs(Vector3.Dot(contact.normal, Vector3.up)) < 0.5f)
+            {
+                return true;  // È un muro
+            }
+        }
+        return false;
+    }
+
+    // Ottieni la normale del muro con cui il player è in contatto
+    Vector3 GetWallNormal(Collision collision)
+    {
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            // Trova la normale del muro
+            if (Mathf.Abs(Vector3.Dot(contact.normal, Vector3.up)) < 0.5f)
+            {
+                return contact.normal;  // Restituisci la normale del muro
+            }
+        }
+        return Vector3.zero;  // Restituisci un vettore nullo se non è un muro (non dovrebbe accadere qui)
     }
 
     // Disegna Gizmo per visualizzare il controllo dell'OverlapSphere
