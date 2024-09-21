@@ -4,6 +4,16 @@ using Meta.XR;
 
 public class VRLocomotionController : MonoBehaviour
 {
+    private enum JumpState
+    {
+        NotCharging,
+        Charging,
+        InAir
+    }
+
+    private JumpState jumpState = JumpState.NotCharging;  // Stato iniziale
+    private bool isJumping = false;
+
     [Header("References")]
     public Transform playerCamera;
     public Transform leftController;
@@ -23,11 +33,9 @@ public class VRLocomotionController : MonoBehaviour
     [Header("Jump Settings")]
     public float minJumpForce = 3f;
     public float maxJumpForce = 15f;
-    public float maxJumpChargeTime = 5f;
+    public float maxJumpChargeTime = 3f;  // Impostato a 3 come specificato
     public float reducedGravity = 0.5f; // Gravità ridotta per il salto
     private float jumpChargeTime = 0f;
-    private bool isChargingJump = false;
-    private bool isJumping = false;
 
     [Header("Vibration Settings")]
     public float vibrationStartIntensity = 0.2f;
@@ -62,7 +70,7 @@ public class VRLocomotionController : MonoBehaviour
         ApplyGravity();
         HandleArmSwingMovement();
         ApplyInertia();
-        HandleJumpCharging();
+        HandleJumpState();  // Gestisce il salto con la macchina a stati finiti
         HandleSnapTurn();
     }
 
@@ -73,10 +81,15 @@ public class VRLocomotionController : MonoBehaviour
         bool wasGrounded = isGrounded; // Memorizza lo stato precedente
         isGrounded = Physics.OverlapSphere(groundCheckPosition, groundCheckRadius, groundLayers).Length > 0;
 
-        // Se il giocatore era in aria e ora è a terra, resetta isJumping
+        // Se il giocatore atterra, resetta lo stato di salto
         if (!wasGrounded && isGrounded)
         {
+            jumpState = JumpState.NotCharging;
             isJumping = false;
+            jumpChargeTime = 0f;
+
+            // Ferma la vibrazione nel caso in cui sia ancora attiva
+            OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
         }
     }
 
@@ -84,7 +97,7 @@ public class VRLocomotionController : MonoBehaviour
     {
         if (!isGrounded)
         {
-            Vector3 gravity = Physics.gravity * (isJumping ? reducedGravity : 1f);
+            Vector3 gravity = Physics.gravity * (jumpState == JumpState.InAir ? reducedGravity : 1f);
             playerRigidbody.AddForce(gravity, ForceMode.Acceleration);
         }
     }
@@ -138,38 +151,94 @@ public class VRLocomotionController : MonoBehaviour
         }
     }
 
-    void HandleJumpCharging()
+    // Gestione dello stato del salto usando la macchina a stati finiti
+    void HandleJumpState()
     {
-        if (OVRInput.Get(OVRInput.Button.One) && isGrounded && !isJumping)
+        switch (jumpState)
         {
-            isChargingJump = true;
-            jumpChargeTime += Time.fixedDeltaTime;
-            jumpChargeTime = Mathf.Clamp(jumpChargeTime, 0, maxJumpChargeTime);
+            case JumpState.NotCharging:
+                if (OVRInput.Get(OVRInput.Button.One) && isGrounded)
+                {
+                    // Inizia a caricare il salto
+                    jumpState = JumpState.Charging;
+                    jumpChargeTime = 0f;  // Reset del tempo di carica
 
-            // Gestione della vibrazione durante il caricamento
-            float vibrationStrength = Mathf.Lerp(vibrationStartIntensity, vibrationMaxIntensity, jumpChargeTime / maxJumpChargeTime);
-            OVRInput.SetControllerVibration(0.5f, vibrationStrength, OVRInput.Controller.RTouch);
-        }
+                    // Inizia la vibrazione
+                    float vibrationStrength = Mathf.Lerp(vibrationStartIntensity, vibrationMaxIntensity, jumpChargeTime / maxJumpChargeTime);
+                    OVRInput.SetControllerVibration(0.5f, vibrationStrength, OVRInput.Controller.RTouch);
+                }
+                else
+                {
+                    // Assicura che la vibrazione sia fermata
+                    OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+                }
+                break;
 
-        if (OVRInput.GetUp(OVRInput.Button.One) && isGrounded && isChargingJump)
-        {
-            isChargingJump = false;
+            case JumpState.Charging:
+                if (!OVRInput.Get(OVRInput.Button.One))
+                {
+                    // Il tasto è stato rilasciato
+                    if (isGrounded)
+                    {
+                        // Esegui il salto
+                        float appliedJumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, jumpChargeTime / maxJumpChargeTime);
+                        appliedJumpForce = Mathf.Clamp(appliedJumpForce, minJumpForce, maxJumpForce);
 
-            // Calcola la forza del salto correttamente limitata
-            float appliedJumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, jumpChargeTime / maxJumpChargeTime);
-            appliedJumpForce = Mathf.Clamp(appliedJumpForce, minJumpForce, maxJumpForce); // Limita il salto massimo
+                        // Calcola la velocità orizzontale corrente
+                        Vector3 horizontalVelocity = currentMovementDirection * currentSpeed;
 
-            // Calcola la velocità orizzontale corrente
-            Vector3 horizontalVelocity = currentMovementDirection * currentSpeed;
+                        // Imposta la velocità del rigidbody includendo sia la componente orizzontale che verticale
+                        playerRigidbody.velocity = new Vector3(horizontalVelocity.x, appliedJumpForce, horizontalVelocity.z);
 
-            // Imposta la velocità del rigidbody includendo sia la componente orizzontale che verticale
-            playerRigidbody.velocity = new Vector3(horizontalVelocity.x, appliedJumpForce, horizontalVelocity.z);
+                        // Passa allo stato InAir
+                        jumpState = JumpState.InAir;
+                        isJumping = true;
+                    }
+                    else
+                    {
+                        // Non può saltare perché non è a terra
+                        jumpState = JumpState.NotCharging;
+                    }
 
-            isJumping = true;
+                    // Resetta il tempo di carica
+                    jumpChargeTime = 0f;
 
-            OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch); // Ferma la vibrazione
+                    // Ferma la vibrazione
+                    OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+                }
+                else if (!isGrounded)
+                {
+                    // Il giocatore ha lasciato il terreno durante il caricamento, annulla il salto
+                    jumpState = JumpState.NotCharging;
+                    jumpChargeTime = 0f;
 
-            jumpChargeTime = 0f;
+                    // Ferma la vibrazione
+                    OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+                }
+                else
+                {
+                    // Continua a caricare il salto
+                    jumpChargeTime += Time.fixedDeltaTime;
+                    jumpChargeTime = Mathf.Clamp(jumpChargeTime, 0, maxJumpChargeTime);
+
+                    // Aggiorna la vibrazione
+                    float vibrationStrength = Mathf.Lerp(vibrationStartIntensity, vibrationMaxIntensity, jumpChargeTime / maxJumpChargeTime);
+                    OVRInput.SetControllerVibration(0.5f, vibrationStrength, OVRInput.Controller.RTouch);
+                }
+                break;
+
+            case JumpState.InAir:
+                if (isGrounded)
+                {
+                    // Il giocatore è atterrato
+                    jumpState = JumpState.NotCharging;
+                    isJumping = false;
+                    jumpChargeTime = 0f;
+
+                    // Assicura che la vibrazione sia fermata
+                    OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+                }
+                break;
         }
     }
 
