@@ -37,6 +37,10 @@ public class VRLocomotionController : MonoBehaviour
     public float snapTurnAngle = 45f;
     public float snapTurnCooldown = 0.5f;
 
+    [Header("Ground Check Settings")]
+    public LayerMask groundLayers;  // I layer che rappresentano il pavimento
+    public float groundCheckRadius = 0.3f;  // Il raggio dell'OverlapSphere per controllare il terreno
+
     private bool isGrounded;
     private Vector3 leftPreviousPosition;
     private Vector3 rightPreviousPosition;
@@ -54,11 +58,35 @@ public class VRLocomotionController : MonoBehaviour
 
     void FixedUpdate()
     {
+        CheckIfGrounded(); // Aggiorna lo stato di isGrounded usando OverlapSphere
         ApplyGravity();
         HandleArmSwingMovement();
         ApplyInertia();
         HandleJumpCharging();
         HandleSnapTurn();
+    }
+
+    // Metodo per controllare se il giocatore è a terra usando OverlapSphere
+    void CheckIfGrounded()
+    {
+        Vector3 groundCheckPosition = playerCollider.bounds.center - new Vector3(0, playerCollider.bounds.extents.y, 0);
+        bool wasGrounded = isGrounded; // Memorizza lo stato precedente
+        isGrounded = Physics.OverlapSphere(groundCheckPosition, groundCheckRadius, groundLayers).Length > 0;
+
+        // Se il giocatore era in aria e ora è a terra, resetta isJumping
+        if (!wasGrounded && isGrounded)
+        {
+            isJumping = false;
+        }
+    }
+
+    void ApplyGravity()
+    {
+        if (!isGrounded)
+        {
+            Vector3 gravity = Physics.gravity * (isJumping ? reducedGravity : 1f);
+            playerRigidbody.AddForce(gravity, ForceMode.Acceleration);
+        }
     }
 
     void HandleArmSwingMovement()
@@ -73,7 +101,7 @@ public class VRLocomotionController : MonoBehaviour
         float rightSpeed = rightMovement.magnitude / Time.fixedDeltaTime;
         float averageHandSpeed = (leftSpeed + rightSpeed) / 2f;
 
-        if (Mathf.Abs(leftMovement.y) > movementSensitivity && Mathf.Abs(rightMovement.y) > movementSensitivity && isGrounded)
+        if (Mathf.Abs(leftMovement.y) > movementSensitivity && Mathf.Abs(rightMovement.y) > movementSensitivity)
         {
             Vector3 forwardDirection = playerCamera.forward;
             forwardDirection.y = 0;
@@ -89,42 +117,24 @@ public class VRLocomotionController : MonoBehaviour
 
         if (inertiaTime > 0)
         {
-            Vector3 movement = currentMovementDirection * currentSpeed * Time.fixedDeltaTime;
+            Vector3 movement = currentMovementDirection * currentSpeed;
 
-            // Se è a mezz'aria, continua il movimento attuale senza fermarsi
-            if (!isGrounded)
-            {
-                playerRigidbody.velocity = new Vector3(movement.x, playerRigidbody.velocity.y, movement.z);
-            }
-            else
-            {
-                // Movimento fluido a terra
-                playerRigidbody.MovePosition(playerRigidbody.position + movement);
-            }
+            // Imposta la velocità del rigidbody mantenendo la componente verticale
+            playerRigidbody.velocity = new Vector3(movement.x, playerRigidbody.velocity.y, movement.z);
         }
     }
 
     void ApplyInertia()
     {
-        if (inertiaTime > 0 && isGrounded)
+        if (inertiaTime > 0)
         {
             currentSpeed = Mathf.Lerp(currentSpeed, 0, decelerationRate * Time.fixedDeltaTime);
             inertiaTime -= Time.fixedDeltaTime;
         }
-        else if (isGrounded)
+        else
         {
             currentMovementDirection = Vector3.zero;
             currentSpeed = baseWalkSpeed;
-        }
-    }
-
-
-    void ApplyGravity()
-    {
-        if (!isGrounded)
-        {
-            Vector3 gravity = Physics.gravity * (isJumping ? reducedGravity : 1f);
-            playerRigidbody.AddForce(gravity, ForceMode.Acceleration);
         }
     }
 
@@ -149,7 +159,12 @@ public class VRLocomotionController : MonoBehaviour
             float appliedJumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, jumpChargeTime / maxJumpChargeTime);
             appliedJumpForce = Mathf.Clamp(appliedJumpForce, minJumpForce, maxJumpForce); // Limita il salto massimo
 
-            playerRigidbody.AddForce(Vector3.up * appliedJumpForce, ForceMode.VelocityChange);
+            // Calcola la velocità orizzontale corrente
+            Vector3 horizontalVelocity = currentMovementDirection * currentSpeed;
+
+            // Imposta la velocità del rigidbody includendo sia la componente orizzontale che verticale
+            playerRigidbody.velocity = new Vector3(horizontalVelocity.x, appliedJumpForce, horizontalVelocity.z);
+
             isJumping = true;
 
             OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch); // Ferma la vibrazione
@@ -177,27 +192,36 @@ public class VRLocomotionController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    // Disegna Gizmo per visualizzare il controllo dell'OverlapSphere
+    void OnDrawGizmos()
     {
-        // Controlla se il giocatore tocca il terreno
-        if (collision.contacts[0].normal.y > 0.5f)
+        Gizmos.color = Color.red;
+
+        if (playerCollider != null)
         {
-            isGrounded = true;
-            isJumping = false;
+            Vector3 groundCheckPosition = playerCollider.bounds.center - new Vector3(0, playerCollider.bounds.extents.y, 0);
+            Gizmos.DrawWireSphere(groundCheckPosition, groundCheckRadius);
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    // Getter per le variabili che servono ad altri script
+    public bool IsGrounded()
     {
-        // Quando il giocatore lascia il terreno
-        if (collision.contacts.Length > 0 && collision.contacts[0].normal.y > 0.5f)
-        {
-            isGrounded = false;
-        }
+        return isGrounded;
     }
 
-    private void OnDisable()
+    public float GetCurrentSpeed()
     {
-        OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+        return currentSpeed;
+    }
+
+    public bool IsJumping()
+    {
+        return isJumping;
+    }
+
+    public float GetJumpChargeTime()
+    {
+        return jumpChargeTime;
     }
 }
