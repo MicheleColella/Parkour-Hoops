@@ -12844,8 +12844,12 @@ GameObject:
   - component: {fileID: 1119699641}
   - component: {fileID: 1119699649}
   - component: {fileID: 1119699650}
-  - component: {fileID: 1119699648}
-  - component: {fileID: 1119699651}
+  - component: {fileID: 1119699657}
+  - component: {fileID: 1119699656}
+  - component: {fileID: 1119699655}
+  - component: {fileID: 1119699654}
+  - component: {fileID: 1119699653}
+  - component: {fileID: 1119699652}
   m_Layer: 15
   m_Name: '[BuildingBlock] Camera Rig'
   m_TagString: Untagged
@@ -12995,42 +12999,6 @@ Transform:
   - {fileID: 212690133}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1119699648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1119699640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e9bf5e7a1860483aacfdac1ec72add6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerCamera: {fileID: 1577980941}
-  leftController: {fileID: 2099704951}
-  rightController: {fileID: 898216931}
-  playerRigidbody: {fileID: 1119699650}
-  playerCollider: {fileID: 1119699649}
-  baseWalkSpeed: 2
-  maxWalkSpeed: 15
-  movementSensitivity: 0.02
-  movementLerpSpeed: 10
-  inertiaDuration: 0.5
-  decelerationRate: 2
-  movementMultiplier: 5
-  minJumpForce: 5
-  maxJumpForce: 10
-  maxJumpChargeTime: 3
-  reducedGravity: 0.5
-  vibrationStartIntensity: 0.2
-  vibrationMaxIntensity: 1
-  snapTurnAngle: 45
-  snapTurnCooldown: 0.1
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 2097152
-  groundCheckRadius: 0.12
 --- !u!136 &1119699649
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -13081,7 +13049,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!114 &1119699651
+--- !u!114 &1119699652
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13090,13 +13058,98 @@ MonoBehaviour:
   m_GameObject: {fileID: 1119699640}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a50d8856c45940859eeac626f7b9376, type: 3}
+  m_Script: {fileID: 11500000, guid: c39509e89d14f44338c41e0ca881946c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  locomotionController: {fileID: 1119699648}
-  statsTextMeshPro: {fileID: 277456871}
-  consoleTextMeshPro: {fileID: 1427840058}
-  maxLogMessages: 5
+--- !u!114 &1119699653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119699640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81984d0695398469989bad862440e29f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  locomotionManager: {fileID: 1119699657}
+  playerRigidbody: {fileID: 1119699650}
+--- !u!114 &1119699654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119699640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09c31517d76ec48aeaf6b5d18ceba64b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  locomotionManager: {fileID: 1119699657}
+--- !u!114 &1119699655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119699640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a256a0a2f3d48ae9820feb5a23593b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  locomotionManager: {fileID: 1119699657}
+  playerRigidbody: {fileID: 1119699650}
+  playerCollider: {fileID: 1119699649}
+--- !u!114 &1119699656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119699640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e60b3e95d45e4c30bf8b665eb0d4df5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  locomotionManager: {fileID: 1119699657}
+  playerCamera: {fileID: 1577980941}
+  leftController: {fileID: 2099704951}
+  rightController: {fileID: 898216931}
+--- !u!114 &1119699657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119699640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9ec8b9581744df4a59a3fa8da602e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseWalkSpeed: 2
+  maxWalkSpeed: 10
+  movementSensitivity: 0.02
+  movementLerpSpeed: 10
+  inertiaDuration: 0.5
+  decelerationRate: 2
+  movementMultiplier: 4
+  minJumpForce: 5
+  maxJumpForce: 10
+  maxJumpChargeTime: 3
+  reducedGravity: 0.5
+  vibrationStartIntensity: 0.2
+  vibrationMaxIntensity: 1
+  snapTurnAngle: 45
+  snapTurnCooldown: 0.1
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 2097152
+  groundCheckRadius: 0.12
 --- !u!1 &1130286994
 GameObject:
   m_ObjectHideFlags: 0
