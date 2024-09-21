@@ -36,7 +36,7 @@ public class VRStatsDisplay : MonoBehaviour
         // Mostra i log della console
         if (consoleTextMeshPro != null)
         {
-            consoleTextMeshPro.text = GetConsoleLogs();
+            consoleTextMeshPro.text = GetConsoleLogs(); // Aggiorna il contenuto di TextMeshPro con i log
         }
     }
 
@@ -68,7 +68,7 @@ public class VRStatsDisplay : MonoBehaviour
 
     string GetConsoleLogs()
     {
-        // Combina tutti i log presenti nella coda in un'unica stringa
+        // Combina tutti i log presenti nella coda in un'unica stringa separata da nuove righe
         return string.Join("\n", consoleLogQueue.ToArray());
     }
 }

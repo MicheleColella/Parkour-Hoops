@@ -130,12 +130,13 @@ public class VRLocomotionController : MonoBehaviour
 
         if (inertiaTime > 0)
         {
-            Vector3 movement = currentMovementDirection * currentSpeed;
+            Vector3 movement = currentMovementDirection * currentSpeed * Time.fixedDeltaTime;
 
-            // Imposta la velocità del rigidbody mantenendo la componente verticale
-            playerRigidbody.velocity = new Vector3(movement.x, playerRigidbody.velocity.y, movement.z);
+            // Usa MovePosition per un movimento più fluido
+            playerRigidbody.MovePosition(playerRigidbody.position + movement);
         }
     }
+
 
     void ApplyInertia()
     {
