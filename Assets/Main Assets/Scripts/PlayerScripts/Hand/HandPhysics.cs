@@ -11,13 +11,20 @@ public class HandPhysics : MonoBehaviour
     [Header("Movement Settings")]
     public float maxVelocity = 10f; // Velocità massima
     public float maxAngularVelocity = 10f; // Velocità angolare massima
+    public float contactDamping = 0.8f; // Smorzamento durante il contatto
+    public float stopThreshold = 0.05f; // Soglia per considerare la mano reale "ferma"
+    public float rotationSmoothing = 0.1f; // Fattore di smoothing per la rotazione
+    public float distanceTolerance = 0.01f; // Soglia di tolleranza per fermare le correzioni continue
+    public float angleTolerance = 2f; // Soglia angolare per fermare le correzioni rotazionali
+    public float collisionFriction = 0.95f; // Frizione aggiuntiva quando la mano è in contatto con una superficie
 
     [Header("Teleport Settings")]
     public float teleportThreshold = 0.2f; // Soglia di distanza per il teletrasporto
 
     private Rigidbody rb;
     private bool isColliding = false;
-    private Vector3 collisionNormal;
+    private Vector3 collisionNormal; // La normale della superficie di collisione
+    private Quaternion initialLocalRotation; // Memorizza la rotazione iniziale della mano fisica rispetto al controller
 
     void Awake()
     {
@@ -29,13 +36,16 @@ public class HandPhysics : MonoBehaviour
         rb.mass = 0.1f;
         rb.drag = 0f;
         rb.angularDrag = 0f;
+
+        // Memorizza la rotazione iniziale locale rispetto al controller
+        initialLocalRotation = Quaternion.Inverse(controllerTransform.rotation) * transform.rotation;
     }
 
     void FixedUpdate()
     {
         // Calcola la posizione e rotazione target con offset
         Vector3 targetPosition = controllerTransform.position + positionOffset;
-        Quaternion targetRotation = Quaternion.Euler(controllerTransform.eulerAngles + rotationOffset);
+        Quaternion targetRotation = controllerTransform.rotation * initialLocalRotation * Quaternion.Euler(rotationOffset);
         
         // Calcola la distanza tra la mano fisica e il controller
         float distance = Vector3.Distance(transform.position, targetPosition);
@@ -50,44 +60,70 @@ public class HandPhysics : MonoBehaviour
             return;
         }
 
-        // Calcola la velocità desiderata per seguire il controller
-        Vector3 desiredVelocity = (targetPosition - rb.position) / Time.fixedDeltaTime;
-        desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, maxVelocity);
-        rb.velocity = desiredVelocity;
+        // Muovi la mano fisica solo se la distanza è superiore alla tolleranza
+        if (distance > distanceTolerance)
+        {
+            Vector3 desiredVelocity = (targetPosition - rb.position) / Time.fixedDeltaTime;
+            desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, maxVelocity);
+            rb.velocity = desiredVelocity;
+        }
+        else
+        {
+            // Ferma la mano fisica se è sufficientemente vicina alla destinazione
+            rb.velocity = Vector3.zero;
+        }
 
-        // Calcola la velocità angolare desiderata per allineare la rotazione
+        // Calcola l'errore angolare tra la mano fisica e la rotazione target
         Quaternion rotationDelta = targetRotation * Quaternion.Inverse(rb.rotation);
         rotationDelta.ToAngleAxis(out float angle, out Vector3 axis);
-        if (angle > 180f)
-        {
-            angle -= 360f;
-        }
-        Vector3 desiredAngularVelocity = axis.normalized * Mathf.Deg2Rad * angle / Time.fixedDeltaTime;
-        desiredAngularVelocity = Vector3.ClampMagnitude(desiredAngularVelocity, maxAngularVelocity);
-        rb.angularVelocity = desiredAngularVelocity;
 
-        // Prevenzione della penetrazione negli oggetti
+        // Applica la rotazione solo se l'angolo è superiore alla soglia di tolleranza
+        if (Mathf.Abs(angle) > angleTolerance)
+        {
+            Vector3 desiredAngularVelocity = axis.normalized * Mathf.Deg2Rad * angle / Time.fixedDeltaTime;
+            desiredAngularVelocity = Vector3.ClampMagnitude(desiredAngularVelocity, maxAngularVelocity);
+            rb.angularVelocity = desiredAngularVelocity;
+        }
+        else
+        {
+            // Ferma la rotazione se è abbastanza allineata
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        // Se la mano è in contatto con una superficie, applica lo smorzamento e frizione
         if (isColliding)
         {
-            Vector3 relativeVelocity = rb.velocity;
-            float dot = Vector3.Dot(relativeVelocity, collisionNormal);
-            if (dot < 0)
-            {
-                rb.velocity -= collisionNormal * dot; // Rimuove la componente di velocità verso il muro
-            }
+            rb.velocity *= contactDamping;
+            rb.velocity *= collisionFriction;  // Applica una frizione aggiuntiva per ridurre lo scivolamento
+
+            // Adatta la rotazione della mano alla superficie solo se la differenza è significativa
+            Quaternion surfaceAlignedRotation = AlignRotationToSurface(targetRotation);
+            rb.rotation = Quaternion.Slerp(rb.rotation, surfaceAlignedRotation, rotationSmoothing);
         }
+    }
+
+    // Allinea la rotazione alla superficie mantenendo la rotazione perpendicolare alla superficie
+    private Quaternion AlignRotationToSurface(Quaternion targetRotation)
+    {
+        // Allinea la mano alla normale della superficie, mantenendo l'orientamento locale della mano
+        Quaternion surfaceRotation = Quaternion.FromToRotation(Vector3.up, collisionNormal) * targetRotation;
+
+        // Ritorna la rotazione della mano fisica allineata alla superficie
+        return surfaceRotation;
     }
 
     // Rileva la collisione con qualsiasi oggetto fisico
     private void OnCollisionEnter(Collision collision)
     {
         isColliding = true;
-        collisionNormal = collision.contacts[0].normal;
+        collisionNormal = collision.contacts[0].normal; // Memorizza la normale della superficie
+        rb.angularVelocity = Vector3.zero;  // Ferma la rotazione per evitare jittering immediato
     }
 
     private void OnCollisionExit(Collision collision)
     {
         isColliding = false;
+        collisionNormal = Vector3.zero; // Resetta la normale quando non c'è collisione
     }
 
     // Disegna i Gizmos per debug
@@ -99,6 +135,12 @@ public class HandPhysics : MonoBehaviour
             Gizmos.DrawLine(controllerTransform.position, transform.position); // Linea tra controller e mano fisica
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, teleportThreshold); // Soglia di teletrasporto
+
+            if (isColliding)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawRay(transform.position, collisionNormal); // Visualizza la normale della collisione
+            }
         }
     }
 }
