@@ -96,20 +96,16 @@ public class HandPhysics : MonoBehaviour
             rb.velocity *= contactDamping;
             rb.velocity *= collisionFriction;  // Applica una frizione aggiuntiva per ridurre lo scivolamento
 
-            // Adatta la rotazione della mano alla superficie solo se la differenza è significativa
-            Quaternion surfaceAlignedRotation = AlignRotationToSurface(targetRotation);
-            rb.rotation = Quaternion.Slerp(rb.rotation, surfaceAlignedRotation, rotationSmoothing);
+            // Impedisci che la velocità diventi troppo bassa e causi jittering
+            if (rb.velocity.magnitude < stopThreshold)
+            {
+                rb.velocity = Vector3.zero;
+            }
+
+            // Modifica della rotazione per evitare rotazioni brusche
+            Quaternion surfaceAlignedRotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSmoothing);
+            rb.rotation = surfaceAlignedRotation;
         }
-    }
-
-    // Allinea la rotazione alla superficie mantenendo la rotazione perpendicolare alla superficie
-    private Quaternion AlignRotationToSurface(Quaternion targetRotation)
-    {
-        // Allinea la mano alla normale della superficie, mantenendo l'orientamento locale della mano
-        Quaternion surfaceRotation = Quaternion.FromToRotation(Vector3.up, collisionNormal) * targetRotation;
-
-        // Ritorna la rotazione della mano fisica allineata alla superficie
-        return surfaceRotation;
     }
 
     // Rileva la collisione con qualsiasi oggetto fisico
