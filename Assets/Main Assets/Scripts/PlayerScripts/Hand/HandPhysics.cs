@@ -17,6 +17,7 @@ public class HandPhysics : MonoBehaviour
     public float distanceTolerance = 0.01f; // Soglia di tolleranza per fermare le correzioni continue
     public float angleTolerance = 2f; // Soglia angolare per fermare le correzioni rotazionali
     public float collisionFriction = 0.95f; // Frizione aggiuntiva quando la mano è in contatto con una superficie
+    public float rotationAngleRange = 20f; // Range di tolleranza angolare per evitare jittering
 
     [Header("Teleport Settings")]
     public float teleportThreshold = 0.2f; // Soglia di distanza per il teletrasporto
@@ -102,9 +103,15 @@ public class HandPhysics : MonoBehaviour
                 rb.velocity = Vector3.zero;
             }
 
-            // Modifica della rotazione per evitare rotazioni brusche
-            Quaternion surfaceAlignedRotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSmoothing);
-            rb.rotation = surfaceAlignedRotation;
+            // Calcola l'angolo tra la rotazione corrente e la rotazione target
+            float angleBetweenRotations = Quaternion.Angle(rb.rotation, targetRotation);
+
+            // Se l'angolo è all'interno del range di tolleranza, evita correzioni brusche
+            if (angleBetweenRotations < rotationAngleRange)
+            {
+                Quaternion smoothRotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSmoothing);
+                rb.rotation = smoothRotation;
+            }
         }
     }
 
