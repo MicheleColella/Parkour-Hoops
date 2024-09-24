@@ -12153,7 +12153,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2097152
   minClimbAngle: 0
-  maxClimbAngle: 120
+  maxClimbAngle: 50
   isGrabbing: 0
 --- !u!1 &996763564
 GameObject:
@@ -13631,6 +13631,8 @@ MonoBehaviour:
   movementController: {fileID: 1119699656}
   jumpController: {fileID: 1119699655}
   climbingSpeedMultiplier: 1
+  inertiaMultiplier: 0.1
+  velocityThreshold: 1
 --- !u!1 &1130286994
 GameObject:
   m_ObjectHideFlags: 0
@@ -18794,7 +18796,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2097152
   minClimbAngle: 0
-  maxClimbAngle: 120
+  maxClimbAngle: 50
   isGrabbing: 0
 --- !u!1 &1452709977
 GameObject:

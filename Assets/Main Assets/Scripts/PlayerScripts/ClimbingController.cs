@@ -8,10 +8,14 @@ public class ClimbingController : MonoBehaviour
     public MovementController movementController;
     public JumpController jumpController;
     public float climbingSpeedMultiplier = 1f;
+    public float inertiaMultiplier = 0.1f; // Regolato per un effetto di inerzia moderato
+    public float velocityThreshold = 1f; // Soglia per movimenti veloci
 
     private bool isClimbing = false;
     private Vector3 leftHandPrevControllerLocalPos;
     private Vector3 rightHandPrevControllerLocalPos;
+    private Vector3 leftHandVelocity = Vector3.zero;
+    private Vector3 rightHandVelocity = Vector3.zero;
 
     private void Start()
     {
@@ -30,17 +34,11 @@ public class ClimbingController : MonoBehaviour
         {
             if (!isClimbing)
             {
-                // Entra nello stato di arrampicata
                 isClimbing = true;
-                // Disabilita movimento e salto
                 movementController.enabled = false;
                 jumpController.enabled = false;
-                // Disabilita la gravità
                 playerRigidbody.useGravity = false;
-                // Azzera la velocità del player
                 playerRigidbody.velocity = Vector3.zero;
-
-                // Inizializza le posizioni precedenti dei controller
                 leftHandPrevControllerLocalPos = playerRigidbody.transform.InverseTransformPoint(leftHandPhysics.ControllerTransform.position);
                 rightHandPrevControllerLocalPos = playerRigidbody.transform.InverseTransformPoint(rightHandPhysics.ControllerTransform.position);
             }
@@ -49,45 +47,58 @@ public class ClimbingController : MonoBehaviour
 
             if (leftGrabbing)
             {
-                climbingMovement += CalculateClimbingMovement(leftHandPhysics, ref leftHandPrevControllerLocalPos);
+                climbingMovement += CalculateClimbingMovement(leftHandPhysics, ref leftHandPrevControllerLocalPos, ref leftHandVelocity);
             }
             if (rightGrabbing)
             {
-                climbingMovement += CalculateClimbingMovement(rightHandPhysics, ref rightHandPrevControllerLocalPos);
+                climbingMovement += CalculateClimbingMovement(rightHandPhysics, ref rightHandPrevControllerLocalPos, ref rightHandVelocity);
             }
 
-            // Applica il movimento al player
-            playerRigidbody.MovePosition(playerRigidbody.position - climbingMovement * climbingSpeedMultiplier);
+            // Movimento fluido con Lerp
+            Vector3 targetPosition = playerRigidbody.position - climbingMovement * climbingSpeedMultiplier;
+            playerRigidbody.position = Vector3.Lerp(playerRigidbody.position, targetPosition, Time.fixedDeltaTime * 10f);
+
+            // Applicazione dell'inerzia
+            ApplyInertia();
         }
         else
         {
             if (isClimbing)
             {
-                // Esce dallo stato di arrampicata
                 isClimbing = false;
-                // Riabilita movimento e salto
                 movementController.enabled = true;
                 jumpController.enabled = true;
-                // Riabilita la gravità
                 playerRigidbody.useGravity = true;
-                // Azzera la velocità residua
                 playerRigidbody.velocity = Vector3.zero;
             }
         }
-
-        Debug.Log("isClimbing: " + isClimbing);
-        Debug.Log("useGravity: " + playerRigidbody.useGravity);
-        Debug.Log("Player Velocity: " + playerRigidbody.velocity);
     }
 
-    private Vector3 CalculateClimbingMovement(HandPhysics handPhysics, ref Vector3 handPrevControllerLocalPos)
+    private Vector3 CalculateClimbingMovement(HandPhysics handPhysics, ref Vector3 handPrevControllerLocalPos, ref Vector3 handVelocity)
     {
-        // Ottiene la posizione locale corrente del controller rispetto al player
         Vector3 currentControllerLocalPos = playerRigidbody.transform.InverseTransformPoint(handPhysics.ControllerTransform.position);
-        // Calcola il delta di movimento tra il frame precedente e quello corrente
         Vector3 handDelta = currentControllerLocalPos - handPrevControllerLocalPos;
-        // Aggiorna la posizione precedente per il prossimo frame
+        handVelocity = handDelta / Time.fixedDeltaTime;
         handPrevControllerLocalPos = currentControllerLocalPos;
         return handDelta;
+    }
+
+    private void ApplyInertia()
+    {
+        Vector3 totalHandVelocity = Vector3.zero;
+        if (leftHandPhysics.isGrabbing && leftHandVelocity.magnitude > velocityThreshold)
+        {
+            totalHandVelocity += leftHandVelocity;
+        }
+        if (rightHandPhysics.isGrabbing && rightHandVelocity.magnitude > velocityThreshold)
+        {
+            totalHandVelocity += rightHandVelocity;
+        }
+
+        if (totalHandVelocity != Vector3.zero)
+        {
+            Vector3 inertiaForce = totalHandVelocity * inertiaMultiplier;
+            playerRigidbody.AddForce(-inertiaForce, ForceMode.VelocityChange);
+        }
     }
 }
