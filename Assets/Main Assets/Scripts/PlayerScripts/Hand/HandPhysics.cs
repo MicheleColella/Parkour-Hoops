@@ -22,6 +22,24 @@ public class HandPhysics : MonoBehaviour
     [Header("Teleport Settings")]
     public float teleportThreshold = 0.2f; // Soglia di distanza per il teletrasporto
 
+    [Header("Climbing Settings")]
+    public LayerMask climbableLayers; // Layer arrampicabili
+    public float minClimbAngle = 0f; // Angolo minimo (0 gradi è verso l'alto)
+    public float maxClimbAngle = 120f; // Angolo massimo
+
+    [HideInInspector]
+    public bool isGrabbing = false;
+
+    public Transform ControllerTransform
+    {
+        get { return controllerTransform; }
+    }
+
+    public Transform PhysicalHandTransform
+    {
+        get { return this.transform; }
+    }
+
     private Rigidbody rb;
     private bool isColliding = false;
     private Vector3 collisionNormal; // La normale della superficie di collisione
@@ -121,13 +139,51 @@ public class HandPhysics : MonoBehaviour
         isColliding = true;
         collisionNormal = collision.contacts[0].normal; // Memorizza la normale della superficie
         rb.angularVelocity = Vector3.zero;  // Ferma la rotazione per evitare jittering immediato
+
+        Debug.Log($"{gameObject.name} OnCollisionEnter with {collision.gameObject.name}");
+
+        // Verifica se ha colliso con una superficie arrampicabile
+        if (IsClimbable(collision))
+        {
+            isGrabbing = true;
+            Debug.Log($"{gameObject.name} started grabbing {collision.gameObject.name}");
+        }
     }
 
     private void OnCollisionExit(Collision collision)
     {
         isColliding = false;
         collisionNormal = Vector3.zero; // Resetta la normale quando non c'è collisione
+
+        Debug.Log($"{gameObject.name} OnCollisionExit with {collision.gameObject.name}");
+
+        // Verifica se era in contatto con una superficie arrampicabile
+        
+            isGrabbing = false;
+            Debug.Log($"{gameObject.name} stopped grabbing {collision.gameObject.name}");
+        
     }
+
+    bool IsClimbable(Collision collision)
+    {
+        // Verifica se l'oggetto di collisione è in un layer arrampicabile
+        bool inLayer = ((1 << collision.gameObject.layer) & climbableLayers.value) != 0;
+
+        if (inLayer)
+        {
+            // Controllo opzionale: verifica l'angolo tra la normale della superficie e il vettore up
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                float angle = Vector3.Angle(contact.normal, Vector3.up);
+                if (angle >= minClimbAngle && angle <= maxClimbAngle)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     // Disegna i Gizmos per debug
     void OnDrawGizmos()
