@@ -13683,8 +13683,9 @@ MonoBehaviour:
   playerCollider: {fileID: 1119699649}
   leftController: {fileID: 2099704953}
   rightController: {fileID: 898216933}
-  adjustedHeight: 0.7
-  restoreDelay: 1.5
+  adjustedHeight: 0.3
+  adjustSpeed: 1.3
+  restoreDelayDuration: 1
 --- !u!114 &1119699659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21147,7 +21148,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.18
+  m_Radius: 0.13
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1579694467
 GameObject:
