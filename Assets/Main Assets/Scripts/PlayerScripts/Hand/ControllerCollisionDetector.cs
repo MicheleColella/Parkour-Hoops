@@ -4,18 +4,28 @@ public class ControllerCollisionDetector : MonoBehaviour
 {
     public bool isTouchingSurface = false;
 
-    void OnTriggerEnter(Collider collision)
+    void OnTriggerEnter(Collider other)
     {
-        isTouchingSurface = true;
+        // Assicurati che il controller non stia rilevando collisioni con i colliders del player stesso
+        if (other.gameObject.layer != LayerMask.NameToLayer("Player"))
+        {
+            isTouchingSurface = true;
+        }
     }
 
-    void OnTriggerExit(Collider collision)
+    void OnTriggerExit(Collider other)
     {
-        isTouchingSurface = false;
+        if (other.gameObject.layer != LayerMask.NameToLayer("Player"))
+        {
+            isTouchingSurface = false;
+        }
     }
 
     void OnTriggerStay(Collider other)
     {
-        isTouchingSurface = true;
+        if (other.gameObject.layer != LayerMask.NameToLayer("Player"))
+        {
+            isTouchingSurface = true;
+        }
     }
 }

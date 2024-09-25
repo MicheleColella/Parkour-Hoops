@@ -3,11 +3,14 @@ using UnityEngine;
 public class ClimbingColliderAdjuster : MonoBehaviour
 {
     [Header("References")]
-    public CapsuleCollider playerCollider;            // Riferimento al CapsuleCollider del player
-    public ControllerCollisionDetector leftController;  // Riferimento al script per la collisione del controller sinistro
-    public ControllerCollisionDetector rightController; // Riferimento al script per la collisione del controller destro
+    public CapsuleCollider playerCollider;             // Riferimento al CapsuleCollider del player
+    public ControllerCollisionDetector leftController;  // Riferimento allo script del controller sinistro
+    public ControllerCollisionDetector rightController; // Riferimento allo script del controller destro
 
-    private float originalHeight; 
+    [Header("Collider Settings")]
+    public float adjustedHeight = 1.0f; // Altezza del collider quando si arrampica (impostabile dall'inspector)
+
+    private float originalHeight;
     private Vector3 originalCenter;
 
     void Start()
@@ -40,11 +43,12 @@ public class ClimbingColliderAdjuster : MonoBehaviour
 
     private void AdjustColliderHeight()
     {
-        // Riduci l'altezza del collider alla metà dell'altezza originale
-        playerCollider.height = originalHeight / 2f;
+        // Riduci l'altezza del collider al valore impostato dall'inspector
+        playerCollider.height = adjustedHeight;
 
         // Modifica il centro per mantenere il top all'altezza originale (accorcia il collider dal basso verso l'alto)
-        playerCollider.center = originalCenter + new Vector3(0, originalHeight / 4f, 0);
+        float heightDifference = originalHeight - adjustedHeight;
+        playerCollider.center = originalCenter + new Vector3(0, heightDifference / 2f, 0);
     }
 
     private void RestoreColliderHeight()
