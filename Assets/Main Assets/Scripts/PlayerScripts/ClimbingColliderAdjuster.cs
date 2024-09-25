@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class ClimbingColliderAdjuster : MonoBehaviour
 {
@@ -11,6 +10,13 @@ public class ClimbingColliderAdjuster : MonoBehaviour
     [Header("Collider Settings")]
     public float adjustedHeight = 1.0f;      // Altezza del collider durante la scalata
     public float adjustSpeed = 2.0f;         // Velocità di regolazione dell'altezza del collider
+
+    public float groundCheckRadius = 0.1f;  // Raggio della sfera di controllo del terreno
+    public Vector3 groundPosOffset = new Vector3(0, 0.05f, 0); // Offset per evitare sovrapposizioni col capsule collider
+
+    [Header("Ground Check")]
+    public LayerMask groundLayers;          // LayerMask per specificare i layer del terreno
+    public bool isTouchingGround = false;   // Indica se il giocatore tocca il pavimento
 
     private float originalHeight;
     private Vector3 originalCenter;
@@ -39,8 +45,10 @@ public class ClimbingColliderAdjuster : MonoBehaviour
 
     void Update()
     {
-        // Verifica se il giocatore è a terra
-        if (IsGrounded())
+        // Verifica se il giocatore è a terra e aggiorna il booleano isTouchingGround
+        isTouchingGround = IsGrounded();
+
+        if (isTouchingGround)
         {
             // Reset del timer di ritardo
             restoreDelayTimer = 0f;
@@ -71,17 +79,22 @@ public class ClimbingColliderAdjuster : MonoBehaviour
                     // Ripristina l'altezza del collider dopo il ritardo
                     RestoreColliderHeight();
                 }
-                else
-                {
-                    // Mantieni l'altezza corrente del collider
-                    // Non cambiare targetHeight o targetCenter
-                }
             }
         }
 
         // Interpola gradualmente l'altezza e il centro del collider verso i valori target
         playerCollider.height = Mathf.Lerp(playerCollider.height, targetHeight, Time.deltaTime * adjustSpeed);
         playerCollider.center = Vector3.Lerp(playerCollider.center, targetCenter, Time.deltaTime * adjustSpeed);
+    }
+
+    public bool IsGrounded()
+    {
+        // Calcola la posizione della base del CapsuleCollider e aggiungi un piccolo offset verso il basso per evitare sovrapposizione con il capsule collider
+        Vector3 bottom = transform.position + playerCollider.center - Vector3.up * (playerCollider.height / 2f);
+        Vector3 groundCheckPosition = bottom + groundPosOffset; // Aggiungi l'offset per evitare sovrapposizioni
+
+        // Verifica se l'OverlapSphere tocca il terreno, usando il LayerMask configurabile dall'Inspector
+        return Physics.CheckSphere(groundCheckPosition, groundCheckRadius, groundLayers, QueryTriggerInteraction.Ignore);
     }
 
     private void AdjustColliderHeight()
@@ -99,11 +112,6 @@ public class ClimbingColliderAdjuster : MonoBehaviour
         // Imposta l'altezza e il centro target ai valori originali
         targetHeight = originalHeight;
         targetCenter = originalCenter;
-    }
-
-    private bool IsGrounded()
-    {
-        return GetComponent<MovementController>().IsGrounded();
     }
 
     private void OnDrawGizmos()
@@ -130,6 +138,11 @@ public class ClimbingColliderAdjuster : MonoBehaviour
             Gizmos.DrawLine(top - transform.right * radius, bottom - transform.right * radius);
             Gizmos.DrawLine(top + transform.forward * radius, bottom + transform.forward * radius);
             Gizmos.DrawLine(top - transform.forward * radius, bottom - transform.forward * radius);
+
+            // Disegna l'OverlapSphere per il controllo del terreno
+            Gizmos.color = Color.red;
+            Vector3 groundCheckPosition = transform.position + playerCollider.center - Vector3.up * (playerCollider.height / 2f) + groundPosOffset;
+            Gizmos.DrawWireSphere(groundCheckPosition, groundCheckRadius);
         }
     }
 }

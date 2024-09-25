@@ -15,12 +15,16 @@ public class MovementController : MonoBehaviour
     private float inertiaTime;
     private float currentSpeed;
 
+    private ClimbingColliderAdjuster climbingColliderAdjuster;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         leftPrevPos = leftController.localPosition;
         rightPrevPos = rightController.localPosition;
         currentSpeed = locomotionManager.baseWalkSpeed;
+
+        climbingColliderAdjuster = GetComponent<ClimbingColliderAdjuster>();
     }
 
     void FixedUpdate()
@@ -55,7 +59,7 @@ public class MovementController : MonoBehaviour
         }
 
         // Applica lo scivolamento verso il basso quando non si è a terra
-        if (!IsGrounded())
+        if (!climbingColliderAdjuster.IsGrounded())
         {
             rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y - 1f * Time.fixedDeltaTime, rb.velocity.z);
         }
@@ -69,7 +73,6 @@ public class MovementController : MonoBehaviour
         }
     }
 
-
     void ApplyInertia()
     {
         if (inertiaTime > 0)
@@ -81,12 +84,5 @@ public class MovementController : MonoBehaviour
             currentMovementDirection = Vector3.zero;
             currentSpeed = locomotionManager.baseWalkSpeed;
         }
-    }
-
-    public bool IsGrounded()
-    {
-        CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
-        Vector3 groundCheckPos = playerCollider.bounds.center - new Vector3(0, playerCollider.bounds.extents.y, 0);
-        return Physics.OverlapSphere(groundCheckPos, locomotionManager.groundCheckRadius, locomotionManager.groundLayers).Length > 0;
     }
 }

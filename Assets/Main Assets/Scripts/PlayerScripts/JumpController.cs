@@ -6,10 +6,17 @@ public class JumpController : MonoBehaviour
     public Rigidbody playerRigidbody;
     public CapsuleCollider playerCollider;
 
+    private ClimbingColliderAdjuster climbingColliderAdjuster;
+
     private enum JumpState { NotCharging, Charging, InAir }
     private JumpState jumpState = JumpState.NotCharging;
     private bool isJumping = false;
     private float jumpChargeTime = 0f;
+
+    void Start()
+    {
+        climbingColliderAdjuster = GetComponent<ClimbingColliderAdjuster>();
+    }
 
     void FixedUpdate()
     {
@@ -21,7 +28,7 @@ public class JumpController : MonoBehaviour
         switch (jumpState)
         {
             case JumpState.NotCharging:
-                if (OVRInput.Get(OVRInput.Button.One) && IsGrounded())
+                if (OVRInput.Get(OVRInput.Button.One) && climbingColliderAdjuster.IsGrounded())
                 {
                     jumpState = JumpState.Charging;
                     jumpChargeTime = 0f;
@@ -36,7 +43,7 @@ public class JumpController : MonoBehaviour
             case JumpState.Charging:
                 if (!OVRInput.Get(OVRInput.Button.One))
                 {
-                    if (IsGrounded())
+                    if (climbingColliderAdjuster.IsGrounded())
                     {
                         float appliedJumpForce = Mathf.Lerp(locomotionManager.minJumpForce, locomotionManager.maxJumpForce, jumpChargeTime / locomotionManager.maxJumpChargeTime);
                         appliedJumpForce = Mathf.Clamp(appliedJumpForce, locomotionManager.minJumpForce, locomotionManager.maxJumpForce);
@@ -55,7 +62,7 @@ public class JumpController : MonoBehaviour
                     jumpChargeTime = 0f;
                     VibrationController.Instance.StopVibration();
                 }
-                else if (!IsGrounded())
+                else if (!climbingColliderAdjuster.IsGrounded())
                 {
                     jumpState = JumpState.NotCharging;
                     jumpChargeTime = 0f;
@@ -71,7 +78,7 @@ public class JumpController : MonoBehaviour
                 break;
 
             case JumpState.InAir:
-                if (IsGrounded())
+                if (climbingColliderAdjuster.IsGrounded())
                 {
                     jumpState = JumpState.NotCharging;
                     isJumping = false;
@@ -86,11 +93,5 @@ public class JumpController : MonoBehaviour
                 }
                 break;
         }
-    }
-
-    bool IsGrounded()
-    {
-        Vector3 groundCheckPos = playerCollider.bounds.center - new Vector3(0, playerCollider.bounds.extents.y, 0);
-        return Physics.OverlapSphere(groundCheckPos, locomotionManager.groundCheckRadius, locomotionManager.groundLayers).Length > 0;
     }
 }

@@ -47,7 +47,7 @@ public class ClimbingMovementController : MonoBehaviour
     void HandleClimbingMovement()
     {
         // Check if the player is in the air
-        bool isPlayerInAir = !GetComponent<MovementController>().IsGrounded();
+        bool isPlayerInAir = !GetComponent<ClimbingColliderAdjuster>().IsGrounded();
 
         // Check if either controller is touching a surface
         bool isLeftControllerTouching = leftControllerDetector.isTouchingSurface;
