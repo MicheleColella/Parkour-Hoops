@@ -12147,14 +12147,7 @@ MonoBehaviour:
   distanceTolerance: 0
   angleTolerance: 2
   collisionFriction: 0.95
-  rotationAngleRange: 20
   teleportThreshold: 0.8
-  climbableLayers:
-    serializedVersion: 2
-    m_Bits: 2097152
-  minClimbAngle: 0
-  maxClimbAngle: 50
-  isGrabbing: 0
 --- !u!1 &996763564
 GameObject:
   m_ObjectHideFlags: 0
@@ -13312,7 +13305,6 @@ GameObject:
   - component: {fileID: 1119699654}
   - component: {fileID: 1119699653}
   - component: {fileID: 1119699652}
-  - component: {fileID: 1119699658}
   m_Layer: 15
   m_Name: '[BuildingBlock] Camera Rig'
   m_TagString: Untagged
@@ -13613,26 +13605,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2097152
   groundCheckRadius: 0.12
---- !u!114 &1119699658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1119699640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cf1d525f080046bf89e8579ea3dc1f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerRigidbody: {fileID: 1119699650}
-  leftHandPhysics: {fileID: 989364309}
-  rightHandPhysics: {fileID: 1447671621}
-  movementController: {fileID: 1119699656}
-  jumpController: {fileID: 1119699655}
-  climbingSpeedMultiplier: 1
-  inertiaMultiplier: 0.1
-  velocityThreshold: 1
 --- !u!1 &1130286994
 GameObject:
   m_ObjectHideFlags: 0
@@ -18790,14 +18762,7 @@ MonoBehaviour:
   distanceTolerance: 0
   angleTolerance: 2
   collisionFriction: 0.95
-  rotationAngleRange: 20
   teleportThreshold: 0.8
-  climbableLayers:
-    serializedVersion: 2
-    m_Bits: 2097152
-  minClimbAngle: 0
-  maxClimbAngle: 50
-  isGrabbing: 0
 --- !u!1 &1452709977
 GameObject:
   m_ObjectHideFlags: 0
