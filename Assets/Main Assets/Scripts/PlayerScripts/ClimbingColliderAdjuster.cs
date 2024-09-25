@@ -1,17 +1,22 @@
 using UnityEngine;
+using System.Collections;
 
 public class ClimbingColliderAdjuster : MonoBehaviour
 {
     [Header("References")]
-    public CapsuleCollider playerCollider;             // Riferimento al CapsuleCollider del player
-    public ControllerCollisionDetector leftController;  // Riferimento allo script del controller sinistro
-    public ControllerCollisionDetector rightController; // Riferimento allo script del controller destro
+    public CapsuleCollider playerCollider;             // Reference to the player's CapsuleCollider
+    public ControllerCollisionDetector leftController;  // Reference to the left controller's script
+    public ControllerCollisionDetector rightController; // Reference to the right controller's script
 
     [Header("Collider Settings")]
-    public float adjustedHeight = 1.0f; // Altezza del collider quando si arrampica (impostabile dall'inspector)
+    public float adjustedHeight = 1.0f;      // Height of the collider when climbing
+    public float adjustSpeed = 2.0f;         // Speed at which the collider height adjusts
 
     private float originalHeight;
     private Vector3 originalCenter;
+
+    private float targetHeight;
+    private Vector3 targetCenter;
 
     void Start()
     {
@@ -20,17 +25,21 @@ public class ClimbingColliderAdjuster : MonoBehaviour
             playerCollider = GetComponent<CapsuleCollider>();
         }
 
-        // Memorizza l'altezza e il centro originale del capsule collider
+        // Store the original height and center of the capsule collider
         originalHeight = playerCollider.height;
         originalCenter = playerCollider.center;
+
+        // Initialize target values
+        targetHeight = originalHeight;
+        targetCenter = originalCenter;
     }
 
     void Update()
     {
-        // Verifica se uno o entrambi i controller stanno toccando una superficie
+        // Check if either controller is touching a surface
         bool isControllerTouchingSurface = leftController.isTouchingSurface || rightController.isTouchingSurface;
 
-        // Se il player è in aria e almeno un controller tocca una superficie, riduci il collider
+        // If the player is in the air and at least one controller is touching a surface, adjust the collider
         if (!IsGrounded() && isControllerTouchingSurface)
         {
             AdjustColliderHeight();
@@ -39,28 +48,37 @@ public class ClimbingColliderAdjuster : MonoBehaviour
         {
             RestoreColliderHeight();
         }
+
+        // Smoothly interpolate the collider's height and center to the target values
+        playerCollider.height = Mathf.Lerp(playerCollider.height, targetHeight, Time.deltaTime * adjustSpeed);
+        playerCollider.center = Vector3.Lerp(playerCollider.center, targetCenter, Time.deltaTime * adjustSpeed);
     }
 
     private void AdjustColliderHeight()
     {
-        // Riduci l'altezza del collider al valore impostato dall'inspector
-        playerCollider.height = adjustedHeight;
+        // Set the target height to the adjusted height
+        targetHeight = adjustedHeight;
 
-        // Modifica il centro per mantenere il top all'altezza originale (accorcia il collider dal basso verso l'alto)
+        // Calculate the center adjustment to shorten from the bottom
         float heightDifference = originalHeight - adjustedHeight;
-        playerCollider.center = originalCenter + new Vector3(0, heightDifference / 2f, 0);
+        targetCenter = originalCenter + new Vector3(0, heightDifference / 2f, 0);
     }
 
     private void RestoreColliderHeight()
     {
-        // Ripristina l'altezza e il centro originali
-        playerCollider.height = originalHeight;
-        playerCollider.center = originalCenter;
+        // Set the target height and center back to the original values
+        targetHeight = originalHeight;
+        targetCenter = originalCenter;
     }
 
     private bool IsGrounded()
     {
-        return GetComponent<MovementController>().IsGrounded();
+        // Use the adjusted capsule collider dimensions for ground check
+        float radius = playerCollider.radius * 0.9f;
+        Vector3 bottom = transform.position + playerCollider.center - Vector3.up * (playerCollider.height / 2f - radius);
+
+        // Check if the capsule collider is colliding with the ground
+        return Physics.CheckSphere(bottom, radius, LayerMask.GetMask("Ground"), QueryTriggerInteraction.Ignore);
     }
 
     private void OnDrawGizmos()
@@ -69,24 +87,24 @@ public class ClimbingColliderAdjuster : MonoBehaviour
         {
             Gizmos.color = Color.green;
 
-            // Calcola le posizioni top e bottom del CapsuleCollider
-            Vector3 colliderWorldCenter = playerCollider.transform.TransformPoint(playerCollider.center);
+            // Calculate top and bottom positions of the CapsuleCollider
+            Vector3 colliderWorldCenter = transform.TransformPoint(playerCollider.center);
             float height = playerCollider.height;
             float radius = playerCollider.radius;
             float halfHeight = Mathf.Max(0, (height / 2f) - radius);
 
-            Vector3 top = colliderWorldCenter + playerCollider.transform.up * halfHeight;
-            Vector3 bottom = colliderWorldCenter - playerCollider.transform.up * halfHeight;
+            Vector3 top = colliderWorldCenter + transform.up * halfHeight;
+            Vector3 bottom = colliderWorldCenter - transform.up * halfHeight;
 
-            // Disegna il CapsuleCollider
+            // Draw the CapsuleCollider
             Gizmos.DrawWireSphere(top, radius);
             Gizmos.DrawWireSphere(bottom, radius);
 
-            // Disegna le linee che collegano le sfere
-            Gizmos.DrawLine(top + playerCollider.transform.right * radius, bottom + playerCollider.transform.right * radius);
-            Gizmos.DrawLine(top - playerCollider.transform.right * radius, bottom - playerCollider.transform.right * radius);
-            Gizmos.DrawLine(top + playerCollider.transform.forward * radius, bottom + playerCollider.transform.forward * radius);
-            Gizmos.DrawLine(top - playerCollider.transform.forward * radius, bottom - playerCollider.transform.forward * radius);
+            // Draw lines connecting the spheres
+            Gizmos.DrawLine(top + transform.right * radius, bottom + transform.right * radius);
+            Gizmos.DrawLine(top - transform.right * radius, bottom - transform.right * radius);
+            Gizmos.DrawLine(top + transform.forward * radius, bottom + transform.forward * radius);
+            Gizmos.DrawLine(top - transform.forward * radius, bottom - transform.forward * radius);
         }
     }
 }

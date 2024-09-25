@@ -2,30 +2,40 @@ using UnityEngine;
 
 public class ControllerCollisionDetector : MonoBehaviour
 {
+    [Header("Settings")]
+    public LayerMask climbableLayers; // LayerMask per specificare i layer scalabili
+
+    [HideInInspector]
     public bool isTouchingSurface = false;
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        // Assicurati che il controller non stia rilevando collisioni con i colliders del player stesso
-        if (other.gameObject.layer != LayerMask.NameToLayer("Player"))
+        // Verifica se l'oggetto è nei layer scalabili
+        if (IsLayerInLayerMask(other.gameObject.layer, climbableLayers))
         {
             isTouchingSurface = true;
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.layer != LayerMask.NameToLayer("Player"))
+        if (IsLayerInLayerMask(other.gameObject.layer, climbableLayers))
         {
             isTouchingSurface = false;
         }
     }
 
-    void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.layer != LayerMask.NameToLayer("Player"))
+        if (IsLayerInLayerMask(other.gameObject.layer, climbableLayers))
         {
             isTouchingSurface = true;
         }
+    }
+
+    // Funzione helper per verificare se un layer è in un LayerMask
+    private bool IsLayerInLayerMask(int layer, LayerMask layerMask)
+    {
+        return ((layerMask.value & (1 << layer)) > 0);
     }
 }

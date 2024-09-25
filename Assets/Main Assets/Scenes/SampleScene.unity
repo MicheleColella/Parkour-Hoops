@@ -11122,6 +11122,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0369e86d5d5c746f1bf0c6cd84f7453a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  climbableLayers:
+    serializedVersion: 2
+    m_Bits: 2097152
   isTouchingSurface: 0
 --- !u!65 &898216934
 BoxCollider:
@@ -13681,6 +13684,7 @@ MonoBehaviour:
   leftController: {fileID: 2099704953}
   rightController: {fileID: 898216933}
   adjustedHeight: 0.7
+  restoreDelay: 1.5
 --- !u!114 &1119699659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13699,6 +13703,8 @@ MonoBehaviour:
   rightControllerTransform: {fileID: 898216931}
   playerRigidbody: {fileID: 1119699650}
   movementMultiplier: 1
+  smoothingFactor: 0.1
+  maxClimbSpeed: 5
 --- !u!1 &1130286994
 GameObject:
   m_ObjectHideFlags: 0
@@ -30779,6 +30785,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0369e86d5d5c746f1bf0c6cd84f7453a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  climbableLayers:
+    serializedVersion: 2
+    m_Bits: 2097152
   isTouchingSurface: 0
 --- !u!65 &2099704954
 BoxCollider:

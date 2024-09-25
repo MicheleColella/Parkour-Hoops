@@ -11,10 +11,19 @@ public class ClimbingMovementController : MonoBehaviour
     public Rigidbody playerRigidbody;
 
     [Header("Settings")]
-    public float movementMultiplier = 1.0f; // Moltiplicatore per la velocità di spostamento del player
+    public float movementMultiplier = 1.0f; // Movement speed multiplier
+    public float smoothingFactor = 0.05f;   // Smoothing factor for movement
+    public float maxClimbSpeed = 5.0f;      // Maximum climb speed
 
-    private Vector3 leftControllerPrevLocalPos;
-    private Vector3 rightControllerPrevLocalPos;
+    private Vector3 leftHandGrabPoint;
+    private Vector3 rightHandGrabPoint;
+    private bool isLeftHandGrabbing = false;
+    private bool isRightHandGrabbing = false;
+
+    private Vector3 currentVelocity = Vector3.zero; // For SmoothDamp
+
+    // Store the previous player position
+    private Vector3 previousPlayerPosition;
 
     void Start()
     {
@@ -23,56 +32,88 @@ public class ClimbingMovementController : MonoBehaviour
             playerRigidbody = GetComponent<Rigidbody>();
         }
 
-        // Inizializza le posizioni precedenti dei controller
-        leftControllerPrevLocalPos = leftControllerTransform.localPosition;
-        rightControllerPrevLocalPos = rightControllerTransform.localPosition;
+        // Initialize previous player position
+        previousPlayerPosition = transform.position;
     }
 
     void FixedUpdate()
     {
         HandleClimbingMovement();
+
+        // Update the previous player position
+        previousPlayerPosition = transform.position;
     }
 
     void HandleClimbingMovement()
     {
-        // Verifica se il player è in aria
+        // Check if the player is in the air
         bool isPlayerInAir = !GetComponent<MovementController>().IsGrounded();
 
-        // Verifica se uno dei controller sta toccando una superficie
+        // Check if either controller is touching a surface
         bool isLeftControllerTouching = leftControllerDetector.isTouchingSurface;
         bool isRightControllerTouching = rightControllerDetector.isTouchingSurface;
 
-        // Se il player è in aria e almeno un controller sta toccando una superficie
-        if (isPlayerInAir && (isLeftControllerTouching || isRightControllerTouching))
+        // Handle left hand grabbing state
+        if (isLeftControllerTouching && !isLeftHandGrabbing)
+        {
+            // Left hand starts grabbing
+            isLeftHandGrabbing = true;
+            leftHandGrabPoint = leftControllerTransform.position;
+        }
+        else if (!isLeftControllerTouching && isLeftHandGrabbing)
+        {
+            // Left hand stops grabbing
+            isLeftHandGrabbing = false;
+        }
+
+        // Handle right hand grabbing state
+        if (isRightControllerTouching && !isRightHandGrabbing)
+        {
+            // Right hand starts grabbing
+            isRightHandGrabbing = true;
+            rightHandGrabPoint = rightControllerTransform.position;
+        }
+        else if (!isRightControllerTouching && isRightHandGrabbing)
+        {
+            // Right hand stops grabbing
+            isRightHandGrabbing = false;
+        }
+
+        // If the player is in the air and at least one hand is grabbing
+        if (isPlayerInAir && (isLeftHandGrabbing || isRightHandGrabbing))
         {
             Vector3 totalMovement = Vector3.zero;
 
-            if (isLeftControllerTouching)
+            // Calculate player movement based on left hand
+            if (isLeftHandGrabbing)
             {
-                Vector3 leftControllerDelta = leftControllerPrevLocalPos - leftControllerTransform.localPosition;
-                totalMovement += leftControllerDelta;
+                Vector3 leftHandDelta = (leftHandGrabPoint - leftControllerTransform.position) - (transform.position - previousPlayerPosition);
+                totalMovement += leftHandDelta;
             }
 
-            if (isRightControllerTouching)
+            // Calculate player movement based on right hand
+            if (isRightHandGrabbing)
             {
-                Vector3 rightControllerDelta = rightControllerPrevLocalPos - rightControllerTransform.localPosition;
-                totalMovement += rightControllerDelta;
+                Vector3 rightHandDelta = (rightHandGrabPoint - rightControllerTransform.position) - (transform.position - previousPlayerPosition);
+                totalMovement += rightHandDelta;
             }
 
-            // Trasforma il movimento locale in movimento nel mondo
-            Vector3 worldMovement = transform.TransformDirection(totalMovement) * movementMultiplier;
+            // Apply movement multiplier
+            totalMovement *= movementMultiplier;
 
-            // Ignora il movimento sull'asse Y (verticale)
-            worldMovement.y = 0;
+            // Apply smoothing to the movement
+            Vector3 smoothedMovement = Vector3.SmoothDamp(Vector3.zero, totalMovement, ref currentVelocity, smoothingFactor);
 
-            // Sposta il player nella direzione calcolata
-            playerRigidbody.MovePosition(playerRigidbody.position + worldMovement);
+            // Limit maximum climb speed
+            smoothedMovement = Vector3.ClampMagnitude(smoothedMovement, maxClimbSpeed * Time.fixedDeltaTime);
 
-            // Nota: Non stiamo modificando l'asse Y poiché le interazioni verticali sono gestite dai colliders
+            // Move the player
+            playerRigidbody.MovePosition(playerRigidbody.position + smoothedMovement);
         }
-
-        // Aggiorna le posizioni precedenti dei controller
-        leftControllerPrevLocalPos = leftControllerTransform.localPosition;
-        rightControllerPrevLocalPos = rightControllerTransform.localPosition;
+        else
+        {
+            // Reset current velocity to avoid unwanted movement
+            currentVelocity = Vector3.zero;
+        }
     }
 }
