@@ -6,10 +6,12 @@ public class ClimbingColliderAdjuster : MonoBehaviour
     public CapsuleCollider playerCollider;             // Riferimento al CapsuleCollider del giocatore
     public ControllerCollisionDetector leftController;  // Riferimento allo script del controller sinistro
     public ControllerCollisionDetector rightController; // Riferimento allo script del controller destro
+    public Transform playerCamera;                      // Riferimento alla testa del giocatore (CenterEyeAnchor)
 
     [Header("Collider Settings")]
-    public float adjustedHeight = 1.0f;      // Altezza del collider durante la scalata
-    public float adjustSpeed = 2.0f;         // Velocità di regolazione dell'altezza del collider
+    public float adjustedHeight = 1.0f;      // Altezza del collider durante la scalata e il salto
+    // Rimosso jumpAdjustedHeight
+    public float adjustSpeed = 2.0f;         // Velocità di regolazione dell'altezza
 
     public float groundCheckRadius = 0.1f;  // Raggio della sfera di controllo del terreno
     public Vector3 groundPosOffset = new Vector3(0, 0.05f, 0); // Offset per evitare sovrapposizioni col capsule collider
@@ -48,43 +50,50 @@ public class ClimbingColliderAdjuster : MonoBehaviour
         // Verifica se il giocatore è a terra e aggiorna il booleano isTouchingGround
         isTouchingGround = IsGrounded();
 
+        // Verifica se uno dei controller sta toccando una superficie
+        bool isControllerTouchingSurface = leftController.isTouchingSurface || rightController.isTouchingSurface;
+
+        // Determina se il giocatore è in aria e non sta arrampicando
+        bool isInAir = !isTouchingGround && !isControllerTouchingSurface;
+
         if (isTouchingGround)
         {
             // Reset del timer di ritardo
             restoreDelayTimer = 0f;
 
-            // Ripristina immediatamente l'altezza del collider
+            // Ripristina l'altezza del collider
             RestoreColliderHeight();
+        }
+        else if (isControllerTouchingSurface || isInAir)
+        {
+            // Reset del timer di ritardo
+            restoreDelayTimer = 0f;
+
+            // Regola l'altezza del collider per l'arrampicata e il salto
+            AdjustColliderHeight(adjustedHeight);
         }
         else
         {
-            // Verifica se uno dei controller sta toccando una superficie
-            bool isControllerTouchingSurface = leftController.isTouchingSurface || rightController.isTouchingSurface;
+            // Incrementa il timer di ritardo
+            restoreDelayTimer += Time.deltaTime;
 
-            if (isControllerTouchingSurface)
+            if (restoreDelayTimer >= restoreDelayDuration)
             {
-                // Reset del timer di ritardo
-                restoreDelayTimer = 0f;
-
-                // Regola l'altezza del collider
-                AdjustColliderHeight();
-            }
-            else
-            {
-                // Incrementa il timer di ritardo
-                restoreDelayTimer += Time.deltaTime;
-
-                if (restoreDelayTimer >= restoreDelayDuration)
-                {
-                    // Ripristina l'altezza del collider dopo il ritardo
-                    RestoreColliderHeight();
-                }
+                // Ripristina l'altezza del collider dopo il ritardo
+                RestoreColliderHeight();
             }
         }
 
         // Interpola gradualmente l'altezza e il centro del collider verso i valori target
         playerCollider.height = Mathf.Lerp(playerCollider.height, targetHeight, Time.deltaTime * adjustSpeed);
         playerCollider.center = Vector3.Lerp(playerCollider.center, targetCenter, Time.deltaTime * adjustSpeed);
+
+        // Aggiorna il centro del collider per seguire la posizione della testa negli assi X e Z
+        Vector3 localHeadPos = transform.InverseTransformPoint(playerCamera.position);
+        targetCenter.x = localHeadPos.x;
+        targetCenter.z = localHeadPos.z;
+
+        playerCollider.center = new Vector3(targetCenter.x, playerCollider.center.y, targetCenter.z);
     }
 
     public bool IsGrounded()
@@ -97,21 +106,21 @@ public class ClimbingColliderAdjuster : MonoBehaviour
         return Physics.CheckSphere(groundCheckPosition, groundCheckRadius, groundLayers, QueryTriggerInteraction.Ignore);
     }
 
-    private void AdjustColliderHeight()
+    private void AdjustColliderHeight(float newHeight)
     {
-        // Imposta l'altezza target all'altezza regolata
-        targetHeight = adjustedHeight;
+        // Imposta l'altezza target
+        targetHeight = newHeight;
 
         // Calcola l'adattamento del centro per accorciare dal basso
-        float heightDifference = originalHeight - adjustedHeight;
-        targetCenter = originalCenter + new Vector3(0, heightDifference / 2f, 0);
+        float heightDifference = originalHeight - newHeight;
+        targetCenter.y = originalCenter.y + (heightDifference / 2f);
     }
 
     private void RestoreColliderHeight()
     {
         // Imposta l'altezza e il centro target ai valori originali
         targetHeight = originalHeight;
-        targetCenter = originalCenter;
+        targetCenter.y = originalCenter.y;
     }
 
     private void OnDrawGizmos()

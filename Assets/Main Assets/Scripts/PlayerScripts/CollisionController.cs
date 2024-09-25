@@ -14,13 +14,13 @@ public class CollisionController : MonoBehaviour
         {
             currentWallNormal = GetWallNormal(collision);
             float dot = Vector3.Dot(playerRigidbody.velocity, currentWallNormal);
-            
+
             // Se il player è in volo e colpisce un muro, rimuove la componente di velocità lungo il muro e applica lo scivolamento
             if (dot > 0)
             {
                 playerRigidbody.velocity -= dot * currentWallNormal;
             }
-            
+
             // Aggiungi una forza costante verso il basso per simulare lo scivolamento lungo il muro
             Vector3 slideForce = new Vector3(0, -1f, 0);  // Forza di scivolamento verso il basso
             playerRigidbody.AddForce(slideForce, ForceMode.Acceleration);
