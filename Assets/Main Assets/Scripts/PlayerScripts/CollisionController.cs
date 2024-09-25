@@ -14,18 +14,16 @@ public class CollisionController : MonoBehaviour
         {
             currentWallNormal = GetWallNormal(collision);
             float dot = Vector3.Dot(playerRigidbody.velocity, currentWallNormal);
+            
+            // Se il player è in volo e colpisce un muro, rimuove la componente di velocità lungo il muro e applica lo scivolamento
             if (dot > 0)
             {
-                // Rimuove la componente di velocità che spinge il player nel muro
                 playerRigidbody.velocity -= dot * currentWallNormal;
             }
-
-            // Applica una piccola forza verso il basso solo se il player è a terra
-            if (IsGrounded())
-            {
-                Vector3 slideForce = new Vector3(0, -0.2f, 0);  // Forza verticale ridotta per meno scivolamento
-                playerRigidbody.AddForce(slideForce, ForceMode.Acceleration);
-            }
+            
+            // Aggiungi una forza costante verso il basso per simulare lo scivolamento lungo il muro
+            Vector3 slideForce = new Vector3(0, -1f, 0);  // Forza di scivolamento verso il basso
+            playerRigidbody.AddForce(slideForce, ForceMode.Acceleration);
         }
     }
 
@@ -39,6 +37,7 @@ public class CollisionController : MonoBehaviour
 
     bool IsGrounded()
     {
+        // Implementa qui il controllo per entrambi i collider (corpo e testa) se necessario
         CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
         Vector3 groundCheckPos = playerCollider.bounds.center - new Vector3(0, playerCollider.bounds.extents.y, 0);
         return Physics.OverlapSphere(groundCheckPos, locomotionManager.groundCheckRadius, locomotionManager.groundLayers).Length > 0;
@@ -48,6 +47,7 @@ public class CollisionController : MonoBehaviour
     {
         foreach (ContactPoint contact in collision.contacts)
         {
+            // Verifica se il contatto non è con il suolo, quindi è un muro
             if (Mathf.Abs(Vector3.Dot(contact.normal, Vector3.up)) < 0.5f)
             {
                 return true;

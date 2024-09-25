@@ -54,12 +54,10 @@ public class MovementController : MonoBehaviour
             inertiaTime = locomotionManager.inertiaDuration;
         }
 
-        // Aggiunta di interpolazione per la velocità verticale quando a terra
-        if (IsGrounded())
+        // Applica lo scivolamento verso il basso quando non si è a terra
+        if (!IsGrounded())
         {
-            Vector3 velocity = rb.velocity;
-            velocity.y = Mathf.Lerp(velocity.y, 0, Time.fixedDeltaTime * 10f); // Interpola Y verso 0
-            rb.velocity = velocity;
+            rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y - 1f * Time.fixedDeltaTime, rb.velocity.z);
         }
 
         if (inertiaTime > 0)
@@ -70,6 +68,7 @@ public class MovementController : MonoBehaviour
             inertiaTime -= Time.fixedDeltaTime;
         }
     }
+
 
     void ApplyInertia()
     {
@@ -84,7 +83,7 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    bool IsGrounded()
+    public bool IsGrounded()
     {
         CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
         Vector3 groundCheckPos = playerCollider.bounds.center - new Vector3(0, playerCollider.bounds.extents.y, 0);

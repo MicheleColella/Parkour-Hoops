@@ -126,7 +126,7 @@ public class HandPhysics : MonoBehaviour
         collisionNormal = collision.contacts[0].normal; // Memorizza la normale della superficie
         rb.angularVelocity = Vector3.zero;  // Ferma la rotazione per evitare jittering immediato
 
-        Debug.Log($"{gameObject.name} OnCollisionEnter with {collision.gameObject.name}");
+        //Debug.Log($"{gameObject.name} OnCollisionEnter with {collision.gameObject.name}");
 
     }
 
@@ -135,7 +135,7 @@ public class HandPhysics : MonoBehaviour
         isColliding = false;
         collisionNormal = Vector3.zero; // Resetta la normale quando non c'è collisione
 
-        Debug.Log($"{gameObject.name} OnCollisionExit with {collision.gameObject.name}");
+        //Debug.Log($"{gameObject.name} OnCollisionExit with {collision.gameObject.name}");
     }
 
     // Disegna i Gizmos per debug
