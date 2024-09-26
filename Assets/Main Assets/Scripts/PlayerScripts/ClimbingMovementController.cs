@@ -9,24 +9,24 @@ public class ClimbingMovementController : MonoBehaviour
     public Transform leftControllerTransform;
     public Transform rightControllerTransform;
     public Rigidbody playerRigidbody;
+    public CapsuleCollider playerCollider; // Riferimento al collider del giocatore
 
     [Header("Settings")]
-    public float movementMultiplier = 1.0f; // Moltiplicatore di velocità di movimento
-    public float smoothingFactor = 0.05f;   // Fattore di smoothing per il movimento
+    public float movementMultiplier = 1.0f; // Moltiplicatore per il movimento di arrampicata
     public float maxClimbSpeed = 5.0f;      // Velocità massima di arrampicata
+    public float smoothingFactor = 0.1f;    // Fattore di smoothing per il movimento
 
     private Vector3 leftHandGrabPoint;
     private Vector3 rightHandGrabPoint;
     private bool isLeftHandGrabbing = false;
     private bool isRightHandGrabbing = false;
 
-    private Vector3 currentVelocity = Vector3.zero; // Per SmoothDamp
-
-    // Memorizza la posizione precedente del giocatore
-    private Vector3 previousPlayerPosition;
-
-    // Aggiunto bool per indicare lo stato di arrampicata
+    // Indica se il giocatore sta arrampicando
     public bool isClimbing = false;
+
+    // Layer originali
+    private int originalLayer;
+    public int climbingLayer; // Layer da assegnare durante l'arrampicata
 
     void Start()
     {
@@ -35,104 +35,104 @@ public class ClimbingMovementController : MonoBehaviour
             playerRigidbody = GetComponent<Rigidbody>();
         }
 
-        // Inizializza la posizione precedente del giocatore
-        previousPlayerPosition = transform.position;
+        if (playerCollider == null)
+        {
+            playerCollider = GetComponent<CapsuleCollider>();
+        }
+
+        // Memorizza il layer originale del giocatore
+        originalLayer = gameObject.layer;
     }
 
     void FixedUpdate()
     {
         HandleClimbingMovement();
-
-        // Aggiorna la posizione precedente del giocatore
-        previousPlayerPosition = transform.position;
     }
 
     void HandleClimbingMovement()
     {
-        // Verifica se il giocatore è in aria
-        bool isPlayerInAir = !GetComponent<ClimbingColliderAdjuster>().IsGrounded();
+        // Input per la presa (puoi cambiare i pulsanti secondo le tue preferenze)
+        bool leftGrabInput = OVRInput.Get(OVRInput.Button.PrimaryHandTrigger);
+        bool rightGrabInput = OVRInput.Get(OVRInput.Button.SecondaryHandTrigger);
 
-        // Verifica se uno dei controller sta toccando una superficie scalabile
-        bool isLeftControllerTouching = leftControllerDetector.isTouchingSurface;
-        bool isRightControllerTouching = rightControllerDetector.isTouchingSurface;
-
-        // Aggiorna lo stato di arrampicata
-        isClimbing = isPlayerInAir && (isLeftControllerTouching || isRightControllerTouching);
-
-        // Aggiungi debug per monitorare le condizioni
-        Debug.Log($"isPlayerInAir: {isPlayerInAir}, isLeftControllerTouching: {isLeftControllerTouching}, isRightControllerTouching: {isRightControllerTouching}, isClimbing: {isClimbing}");
+        // Verifica se le mani stanno afferrando
+        bool leftHandCanGrab = leftControllerDetector.isTouchingSurface && leftGrabInput;
+        bool rightHandCanGrab = rightControllerDetector.isTouchingSurface && rightGrabInput;
 
         // Gestisci lo stato di grabbing della mano sinistra
-        if (isLeftControllerTouching && !isLeftHandGrabbing)
+        if (leftHandCanGrab && !isLeftHandGrabbing)
         {
-            // La mano sinistra inizia a afferrare
+            // Inizia a afferrare con la mano sinistra
             isLeftHandGrabbing = true;
             leftHandGrabPoint = leftControllerTransform.position;
-
-            Debug.Log("La mano sinistra ha iniziato ad afferrare.");
         }
-        else if (!isLeftControllerTouching && isLeftHandGrabbing)
+        else if (!leftHandCanGrab && isLeftHandGrabbing)
         {
-            // La mano sinistra smette di afferrare
+            // Smette di afferrare con la mano sinistra
             isLeftHandGrabbing = false;
-
-            Debug.Log("La mano sinistra ha smesso di afferrare.");
         }
 
         // Gestisci lo stato di grabbing della mano destra
-        if (isRightControllerTouching && !isRightHandGrabbing)
+        if (rightHandCanGrab && !isRightHandGrabbing)
         {
-            // La mano destra inizia a afferrare
+            // Inizia a afferrare con la mano destra
             isRightHandGrabbing = true;
             rightHandGrabPoint = rightControllerTransform.position;
-
-            Debug.Log("La mano destra ha iniziato ad afferrare.");
         }
-        else if (!isRightControllerTouching && isRightHandGrabbing)
+        else if (!rightHandCanGrab && isRightHandGrabbing)
         {
-            // La mano destra smette di afferrare
+            // Smette di afferrare con la mano destra
             isRightHandGrabbing = false;
-
-            Debug.Log("La mano destra ha smesso di afferrare.");
         }
 
-        // Se il giocatore sta arrampicando
+        // Determina se il giocatore sta arrampicando
+        bool wasClimbing = isClimbing;
+        isClimbing = isLeftHandGrabbing || isRightHandGrabbing;
+
+        // Cambia il layer del giocatore se lo stato di arrampicata è cambiato
+        if (isClimbing && !wasClimbing)
+        {
+            // Inizia l'arrampicata: cambia il layer
+            gameObject.layer = climbingLayer;
+        }
+        else if (!isClimbing && wasClimbing)
+        {
+            // Termina l'arrampicata: ripristina il layer originale
+            gameObject.layer = originalLayer;
+        }
+
         if (isClimbing)
         {
-            Vector3 totalMovement = Vector3.zero;
+            Vector3 movement = Vector3.zero;
 
-            // Calcola il movimento del giocatore basato sulla mano sinistra
             if (isLeftHandGrabbing)
             {
-                Vector3 leftHandDelta = (leftHandGrabPoint - leftControllerTransform.position) - (transform.position - previousPlayerPosition);
-                totalMovement += leftHandDelta;
+                Vector3 leftHandDelta = leftHandGrabPoint - leftControllerTransform.position;
+                movement += leftHandDelta;
             }
 
-            // Calcola il movimento del giocatore basato sulla mano destra
             if (isRightHandGrabbing)
             {
-                Vector3 rightHandDelta = (rightHandGrabPoint - rightControllerTransform.position) - (transform.position - previousPlayerPosition);
-                totalMovement += rightHandDelta;
+                Vector3 rightHandDelta = rightHandGrabPoint - rightControllerTransform.position;
+                movement += rightHandDelta;
             }
 
             // Applica il moltiplicatore di movimento
-            totalMovement *= movementMultiplier;
-
-            // Applica smoothing al movimento
-            Vector3 smoothedMovement = Vector3.SmoothDamp(Vector3.zero, totalMovement, ref currentVelocity, smoothingFactor);
+            movement *= movementMultiplier;
 
             // Limita la velocità massima di arrampicata
-            smoothedMovement = Vector3.ClampMagnitude(smoothedMovement, maxClimbSpeed * Time.fixedDeltaTime);
+            float maxMovementPerFrame = maxClimbSpeed * Time.fixedDeltaTime;
+            if (movement.magnitude > maxMovementPerFrame)
+            {
+                movement = movement.normalized * maxMovementPerFrame;
+            }
+
+            // Applica smoothing al movimento
+            Vector3 targetPosition = playerRigidbody.position + movement;
+            Vector3 smoothedPosition = Vector3.Lerp(playerRigidbody.position, targetPosition, smoothingFactor);
 
             // Muovi il giocatore
-            playerRigidbody.MovePosition(playerRigidbody.position + smoothedMovement);
-
-            Debug.Log($"Movimento di arrampicata applicato: {smoothedMovement}");
-        }
-        else
-        {
-            // Resetta la velocità corrente per evitare movimenti indesiderati
-            currentVelocity = Vector3.zero;
+            playerRigidbody.MovePosition(smoothedPosition);
         }
     }
 }
