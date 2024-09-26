@@ -11125,6 +11125,7 @@ MonoBehaviour:
   climbableLayers:
     serializedVersion: 2
     m_Bits: 2097152
+  maxSurfaceAngle: 30
   isTouchingSurface: 0
 --- !u!135 &898216934
 SphereCollider:
@@ -30796,6 +30797,7 @@ MonoBehaviour:
   climbableLayers:
     serializedVersion: 2
     m_Bits: 2097152
+  maxSurfaceAngle: 30
   isTouchingSurface: 0
 --- !u!135 &2099704954
 SphereCollider:

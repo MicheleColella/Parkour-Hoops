@@ -11,19 +11,22 @@ public class ClimbingMovementController : MonoBehaviour
     public Rigidbody playerRigidbody;
 
     [Header("Settings")]
-    public float movementMultiplier = 1.0f; // Movement speed multiplier
-    public float smoothingFactor = 0.05f;   // Smoothing factor for movement
-    public float maxClimbSpeed = 5.0f;      // Maximum climb speed
+    public float movementMultiplier = 1.0f; // Moltiplicatore di velocità di movimento
+    public float smoothingFactor = 0.05f;   // Fattore di smoothing per il movimento
+    public float maxClimbSpeed = 5.0f;      // Velocità massima di arrampicata
 
     private Vector3 leftHandGrabPoint;
     private Vector3 rightHandGrabPoint;
     private bool isLeftHandGrabbing = false;
     private bool isRightHandGrabbing = false;
 
-    private Vector3 currentVelocity = Vector3.zero; // For SmoothDamp
+    private Vector3 currentVelocity = Vector3.zero; // Per SmoothDamp
 
-    // Store the previous player position
+    // Memorizza la posizione precedente del giocatore
     private Vector3 previousPlayerPosition;
+
+    // Aggiunto bool per indicare lo stato di arrampicata
+    public bool isClimbing = false;
 
     void Start()
     {
@@ -32,7 +35,7 @@ public class ClimbingMovementController : MonoBehaviour
             playerRigidbody = GetComponent<Rigidbody>();
         }
 
-        // Initialize previous player position
+        // Inizializza la posizione precedente del giocatore
         previousPlayerPosition = transform.position;
     }
 
@@ -40,79 +43,95 @@ public class ClimbingMovementController : MonoBehaviour
     {
         HandleClimbingMovement();
 
-        // Update the previous player position
+        // Aggiorna la posizione precedente del giocatore
         previousPlayerPosition = transform.position;
     }
 
     void HandleClimbingMovement()
     {
-        // Check if the player is in the air
+        // Verifica se il giocatore è in aria
         bool isPlayerInAir = !GetComponent<ClimbingColliderAdjuster>().IsGrounded();
 
-        // Check if either controller is touching a surface
+        // Verifica se uno dei controller sta toccando una superficie scalabile
         bool isLeftControllerTouching = leftControllerDetector.isTouchingSurface;
         bool isRightControllerTouching = rightControllerDetector.isTouchingSurface;
 
-        // Handle left hand grabbing state
+        // Aggiorna lo stato di arrampicata
+        isClimbing = isPlayerInAir && (isLeftControllerTouching || isRightControllerTouching);
+
+        // Aggiungi debug per monitorare le condizioni
+        Debug.Log($"isPlayerInAir: {isPlayerInAir}, isLeftControllerTouching: {isLeftControllerTouching}, isRightControllerTouching: {isRightControllerTouching}, isClimbing: {isClimbing}");
+
+        // Gestisci lo stato di grabbing della mano sinistra
         if (isLeftControllerTouching && !isLeftHandGrabbing)
         {
-            // Left hand starts grabbing
+            // La mano sinistra inizia a afferrare
             isLeftHandGrabbing = true;
             leftHandGrabPoint = leftControllerTransform.position;
+
+            Debug.Log("La mano sinistra ha iniziato ad afferrare.");
         }
         else if (!isLeftControllerTouching && isLeftHandGrabbing)
         {
-            // Left hand stops grabbing
+            // La mano sinistra smette di afferrare
             isLeftHandGrabbing = false;
+
+            Debug.Log("La mano sinistra ha smesso di afferrare.");
         }
 
-        // Handle right hand grabbing state
+        // Gestisci lo stato di grabbing della mano destra
         if (isRightControllerTouching && !isRightHandGrabbing)
         {
-            // Right hand starts grabbing
+            // La mano destra inizia a afferrare
             isRightHandGrabbing = true;
             rightHandGrabPoint = rightControllerTransform.position;
+
+            Debug.Log("La mano destra ha iniziato ad afferrare.");
         }
         else if (!isRightControllerTouching && isRightHandGrabbing)
         {
-            // Right hand stops grabbing
+            // La mano destra smette di afferrare
             isRightHandGrabbing = false;
+
+            Debug.Log("La mano destra ha smesso di afferrare.");
         }
 
-        // If the player is in the air and at least one hand is grabbing
-        if (isPlayerInAir && (isLeftHandGrabbing || isRightHandGrabbing))
+        // Se il giocatore sta arrampicando
+        if (isClimbing)
         {
             Vector3 totalMovement = Vector3.zero;
 
-            // Calculate player movement based on left hand
+            // Calcola il movimento del giocatore basato sulla mano sinistra
             if (isLeftHandGrabbing)
             {
                 Vector3 leftHandDelta = (leftHandGrabPoint - leftControllerTransform.position) - (transform.position - previousPlayerPosition);
                 totalMovement += leftHandDelta;
             }
 
-            // Calculate player movement based on right hand
+            // Calcola il movimento del giocatore basato sulla mano destra
             if (isRightHandGrabbing)
             {
                 Vector3 rightHandDelta = (rightHandGrabPoint - rightControllerTransform.position) - (transform.position - previousPlayerPosition);
                 totalMovement += rightHandDelta;
             }
 
-            // Apply movement multiplier
+            // Applica il moltiplicatore di movimento
             totalMovement *= movementMultiplier;
 
-            // Apply smoothing to the movement
+            // Applica smoothing al movimento
             Vector3 smoothedMovement = Vector3.SmoothDamp(Vector3.zero, totalMovement, ref currentVelocity, smoothingFactor);
 
-            // Limit maximum climb speed
+            // Limita la velocità massima di arrampicata
             smoothedMovement = Vector3.ClampMagnitude(smoothedMovement, maxClimbSpeed * Time.fixedDeltaTime);
 
-            // Move the player
+            // Muovi il giocatore
             playerRigidbody.MovePosition(playerRigidbody.position + smoothedMovement);
+
+            Debug.Log($"Movimento di arrampicata applicato: {smoothedMovement}");
         }
         else
         {
-            // Reset current velocity to avoid unwanted movement
+            // Resetta la velocità corrente per evitare movimenti indesiderati
             currentVelocity = Vector3.zero;
         }
     }
