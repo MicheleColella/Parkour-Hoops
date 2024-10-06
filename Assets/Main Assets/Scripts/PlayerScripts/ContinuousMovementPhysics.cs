@@ -5,7 +5,9 @@ using UnityEngine;
 public class ContinuousMovementPhysics : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float speed = 5f;
+    public float speed = 8f; // Increased speed for faster movement
+    public float acceleration = 30f; // Increased acceleration for quicker response
+    public float deceleration = 40f; // Increased deceleration for quicker stopping
     public float jumpHeight = 1.5f;
     public bool onlyMoveWhenGrounded = true;
 
@@ -24,6 +26,7 @@ public class ContinuousMovementPhysics : MonoBehaviour
     private float inputTurnAxis;
     private bool isGrounded;
     private float lastSnapTurnTime;
+    private Vector3 currentVelocity;
 
     void Start()
     {
@@ -82,11 +85,13 @@ public class ContinuousMovementPhysics : MonoBehaviour
         {
             // Calculate movement direction based on the player's head or body orientation
             Quaternion yaw = Quaternion.Euler(0, directionSource.eulerAngles.y, 0);
-            Vector3 direction = yaw * new Vector3(inputMoveAxis.x, 0, inputMoveAxis.y).normalized;
+            Vector3 targetDirection = yaw * new Vector3(inputMoveAxis.x, 0, inputMoveAxis.y).normalized;
+
+            // Adjust the current velocity towards the target direction for smoother acceleration and deceleration
+            currentVelocity = Vector3.MoveTowards(currentVelocity, targetDirection * speed, (targetDirection.sqrMagnitude > 0 ? acceleration : deceleration) * Time.fixedDeltaTime);
 
             // Apply movement force
-            Vector3 movementForce = direction * speed;
-            rb.AddForce(movementForce, ForceMode.Acceleration);
+            rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z); // Directly set velocity for more immediate response
         }
     }
 

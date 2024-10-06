@@ -18553,6 +18553,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  acceleration: 10
+  deceleration: 20
   jumpHeight: 2
   onlyMoveWhenGrounded: 1
   snapTurnAngle: 45
