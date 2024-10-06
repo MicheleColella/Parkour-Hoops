@@ -4,43 +4,48 @@ using UnityEngine;
 
 public class GrabPhysics : MonoBehaviour
 {
+    public enum HandType
+    {
+        Left,
+        Right
+    }
+
+    public HandType handType;
+    public GameObject grabOrigin;  // Assegnato come origine per l'OverlapSphere
     public float radius = 0.1f;
     public LayerMask grabLayer;
 
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
 
-    // Specify whether this script is for the left or right hand
-    public bool isLeftHand;
-
     void FixedUpdate()
     {
-        // Use the correct grip button based on which hand this script is attached to
-        bool isGrabButtonPressed = isLeftHand
-            ? OVRInput.Get(OVRInput.Button.PrimaryHandTrigger)  // Left hand grip
-            : OVRInput.Get(OVRInput.Button.SecondaryHandTrigger);  // Right hand grip
+        // Usa il pulsante corretto in base alla mano selezionata
+        bool isGrabButtonPressed = handType == HandType.Left
+            ? OVRInput.Get(OVRInput.Button.PrimaryHandTrigger)  // Mano sinistra
+            : OVRInput.Get(OVRInput.Button.SecondaryHandTrigger);  // Mano destra
 
         if (isGrabButtonPressed && !isGrabbing)
         {
-            // Detect nearby colliders to grab
-            Collider[] nearbyColliders = Physics.OverlapSphere(transform.position, radius, grabLayer, QueryTriggerInteraction.Ignore);
+            // Usa l'origine assegnata per rilevare i collider nelle vicinanze
+            Collider[] nearbyColliders = Physics.OverlapSphere(grabOrigin.transform.position, radius, grabLayer, QueryTriggerInteraction.Ignore);
 
             if (nearbyColliders.Length > 0)
             {
                 Rigidbody nearbyRigidBody = nearbyColliders[0].attachedRigidbody;
 
-                // Create a FixedJoint to attach the grabbed object
+                // Crea un FixedJoint per attaccare l'oggetto preso
                 fixedJoint = gameObject.AddComponent<FixedJoint>();
                 fixedJoint.autoConfigureConnectedAnchor = false;
 
                 if (nearbyRigidBody)
                 {
                     fixedJoint.connectedBody = nearbyRigidBody;
-                    fixedJoint.connectedAnchor = nearbyRigidBody.transform.InverseTransformPoint(transform.position);
+                    fixedJoint.connectedAnchor = nearbyRigidBody.transform.InverseTransformPoint(grabOrigin.transform.position);
                 }
                 else
                 {
-                    fixedJoint.connectedAnchor = transform.position;
+                    fixedJoint.connectedAnchor = grabOrigin.transform.position;
                 }
 
                 isGrabbing = true;
@@ -48,13 +53,23 @@ public class GrabPhysics : MonoBehaviour
         }
         else if (!isGrabButtonPressed && isGrabbing)
         {
-            // Release the object
+            // Rilascia l'oggetto
             isGrabbing = false;
 
             if (fixedJoint)
             {
                 Destroy(fixedJoint);
             }
+        }
+    }
+
+    // Visualizza l'OverlapSphere nel editor
+    void OnDrawGizmos()
+    {
+        if (grabOrigin != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(grabOrigin.transform.position, radius);
         }
     }
 }
