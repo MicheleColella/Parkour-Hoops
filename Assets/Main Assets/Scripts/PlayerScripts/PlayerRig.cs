@@ -19,17 +19,58 @@ public class PlayerRig : MonoBehaviour
     public float bodyHeightMin = 0.5f;
     public float bodyHeightMax = 2f;
 
+    [Header("Joint Settings")]
+    public float jointPositionSpring = 5000f; // Increased to make joints respond faster
+    public float jointPositionDamper = 300f; // Increased damping for quicker response
+    public float jointMaximumForce = float.MaxValue;
+
+    void Start()
+    {
+        ConfigureJoint(leftHandJoint);
+        ConfigureJoint(rightHandJoint);
+    }
+
     void FixedUpdate()
     {
         bodyCollider.height = Mathf.Clamp(playerHead.localPosition.y, bodyHeightMin, bodyHeightMax);
         bodyCollider.center = new Vector3(playerHead.localPosition.x, bodyCollider.height / 2, playerHead.localPosition.z);
 
-        leftHandJoint.targetPosition = leftController.localPosition;
-        leftHandJoint.targetRotation = leftController.localRotation;
+        UpdateJointTarget(leftHandJoint, leftController);
+        UpdateJointTarget(rightHandJoint, rightController);
+        UpdateJointTarget(headJoint, playerHead);
+    }
 
-        rightHandJoint.targetPosition = rightController.localPosition;
-        rightHandJoint.targetRotation = rightController.localRotation;
+    void ConfigureJoint(ConfigurableJoint joint)
+    {
+        if (joint != null)
+        {
+            JointDrive drive = new JointDrive
+            {
+                positionSpring = jointPositionSpring,
+                positionDamper = jointPositionDamper,
+                maximumForce = jointMaximumForce
+            };
+            joint.xDrive = drive;
+            joint.yDrive = drive;
+            joint.zDrive = drive;
 
-        headJoint.targetPosition = playerHead.localPosition;
+            JointDrive angularDrive = new JointDrive
+            {
+                positionSpring = jointPositionSpring,
+                positionDamper = jointPositionDamper,
+                maximumForce = jointMaximumForce
+            };
+            joint.angularXDrive = angularDrive;
+            joint.angularYZDrive = angularDrive;
+        }
+    }
+
+    void UpdateJointTarget(ConfigurableJoint joint, Transform target)
+    {
+        if (joint != null && target != null)
+        {
+            joint.targetPosition = target.localPosition;
+            joint.targetRotation = target.localRotation;
+        }
     }
 }
