@@ -16,7 +16,7 @@ public class GrabPhysics : MonoBehaviour
     void FixedUpdate()
     {
         // Use the correct grip button based on which hand this script is attached to
-        bool isGrabButtonPressed = isLeftHand 
+        bool isGrabButtonPressed = isLeftHand
             ? OVRInput.Get(OVRInput.Button.PrimaryHandTrigger)  // Left hand grip
             : OVRInput.Get(OVRInput.Button.SecondaryHandTrigger);  // Right hand grip
 

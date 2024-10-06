@@ -4,37 +4,71 @@ using UnityEngine;
 
 public class ContinuousMovementPhysics : MonoBehaviour
 {
-    public float speed = 1;
-    public Rigidbody rb;
-    public float turnSpeed = 60;
-    private float jumpVelocity;
+    [Header("Movement Settings")]
+    public float speed = 5f;
     public float jumpHeight = 1.5f;
+    public bool onlyMoveWhenGrounded = true;
+
+    [Header("Turn Settings")]
+    public float snapTurnAngle = 45f; // Angle of each snap turn
+    public float snapTurnCooldown = 0.5f; // Time in seconds between each snap turn
+
+    [Header("References")]
+    public Rigidbody rb;
     public Transform directionSource; // Used to determine the movement direction (e.g., player head)
     public CapsuleCollider bodyCollider;
-    private Vector2 inputMoveAxis;
-    private float inputTurnAxis;
-
-    public bool onlyMoveWhenGrounded = false;
-
     public Transform turnSource; // Used to apply the turn rotation
     public LayerMask groundLayer;
 
+    private Vector2 inputMoveAxis;
+    private float inputTurnAxis;
     private bool isGrounded;
+    private float lastSnapTurnTime;
+
+    void Start()
+    {
+        // Initialize the last snap turn time to ensure immediate turn availability
+        lastSnapTurnTime = -snapTurnCooldown;
+    }
 
     void Update()
     {
         // Get the input from the Meta Quest controllers using OVRInput
-        inputMoveAxis = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);  // Left thumbstick for movement
-        inputTurnAxis = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;  // Right thumbstick for turning
+        Vector2 controllerMove = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);  // Left thumbstick for movement
+        float controllerTurn = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;  // Right thumbstick for turning
 
-        // Check for the jump input using the "A" button on the right controller
-        bool jumpInput = OVRInput.GetDown(OVRInput.Button.One);  // "A" button on the right Meta Quest controller
+        // Get input from keyboard
+        float keyboardHorizontal = Input.GetAxis("Horizontal"); // A/D or Left/Right arrows
+        float keyboardVertical = Input.GetAxis("Vertical"); // W/S or Up/Down arrows
+        float keyboardTurn = Input.GetAxis("Mouse X"); // Mouse movement for turning
+
+        // Combine controller and keyboard inputs
+        inputMoveAxis = controllerMove + new Vector2(keyboardHorizontal, keyboardVertical);
+        inputTurnAxis = controllerTurn + keyboardTurn;
+
+        // Normalize to prevent faster diagonal movement
+        if (inputMoveAxis.sqrMagnitude > 1)
+        {
+            inputMoveAxis.Normalize();
+        }
+
+        // Check for the jump input using the "A" button on the right controller or spacebar
+        bool jumpInput = OVRInput.GetDown(OVRInput.Button.One) || Input.GetKeyDown(KeyCode.Space);
 
         // If jump button is pressed and the player is grounded, apply the jump force
         if (jumpInput && isGrounded)
         {
-            jumpVelocity = Mathf.Sqrt(2 * -Physics.gravity.y * jumpHeight);
-            rb.velocity = Vector3.up * jumpVelocity;
+            float jumpVelocity = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y));
+            Vector3 velocity = rb.velocity;
+            rb.velocity = new Vector3(velocity.x, jumpVelocity, velocity.z);
+        }
+
+        // Handle snap turn logic
+        if (Mathf.Abs(inputTurnAxis) > 0.5f && Time.time - lastSnapTurnTime > snapTurnCooldown)
+        {
+            float turnDirection = inputTurnAxis > 0 ? 1f : -1f;
+            rb.MoveRotation(rb.rotation * Quaternion.Euler(0, snapTurnAngle * turnDirection, 0));
+            lastSnapTurnTime = Time.time;
         }
     }
 
@@ -48,27 +82,11 @@ public class ContinuousMovementPhysics : MonoBehaviour
         {
             // Calculate movement direction based on the player's head or body orientation
             Quaternion yaw = Quaternion.Euler(0, directionSource.eulerAngles.y, 0);
-            Vector3 direction = yaw * new Vector3(inputMoveAxis.x, 0, inputMoveAxis.y);
+            Vector3 direction = yaw * new Vector3(inputMoveAxis.x, 0, inputMoveAxis.y).normalized;
 
-            // Move the Rigidbody based on calculated direction
-            Vector3 targetMovePosition = rb.position + direction * Time.fixedDeltaTime * speed;
-
-            // Handle rotation using the right thumbstick
-            if (Mathf.Abs(inputTurnAxis) > 0.1f)
-            {
-                float turnAngle = inputTurnAxis * turnSpeed * Time.fixedDeltaTime;
-                Quaternion rotation = Quaternion.Euler(0, turnAngle, 0);
-
-                rb.MoveRotation(rb.rotation * rotation);
-
-                // Apply rotation adjustment to the movement to maintain relative positioning
-                Vector3 newPosition = rotation * (targetMovePosition - turnSource.position) + turnSource.position;
-                rb.MovePosition(newPosition);
-            }
-            else
-            {
-                rb.MovePosition(targetMovePosition);
-            }
+            // Apply movement force
+            Vector3 movementForce = direction * speed;
+            rb.AddForce(movementForce, ForceMode.Acceleration);
         }
     }
 
@@ -76,8 +94,8 @@ public class ContinuousMovementPhysics : MonoBehaviour
     public bool CheckIfGrounded()
     {
         Vector3 start = bodyCollider.transform.TransformPoint(bodyCollider.center);
-        float rayLength = bodyCollider.height / 2 - bodyCollider.radius + 0.05f;
+        float rayLength = bodyCollider.height / 2 - bodyCollider.radius + 0.1f;
 
-        return Physics.SphereCast(start, bodyCollider.radius, Vector3.down, out RaycastHit hitInfo, rayLength, groundLayer);
+        return Physics.SphereCast(start, bodyCollider.radius * 0.9f, Vector3.down, out RaycastHit hitInfo, rayLength, groundLayer);
     }
 }
