@@ -18555,7 +18555,9 @@ MonoBehaviour:
   speed: 5
   acceleration: 10
   deceleration: 20
-  jumpHeight: 2
+  minJumpHeight: 1
+  maxJumpHeight: 4
+  maxJumpHoldTime: 3
   onlyMoveWhenGrounded: 1
   snapTurnAngle: 45
   snapTurnCooldown: 0.3

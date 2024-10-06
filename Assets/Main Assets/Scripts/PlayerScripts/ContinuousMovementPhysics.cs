@@ -5,21 +5,23 @@ using UnityEngine;
 public class ContinuousMovementPhysics : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float speed = 8f; // Increased speed for faster movement
-    public float acceleration = 30f; // Increased acceleration for quicker response
-    public float deceleration = 40f; // Increased deceleration for quicker stopping
-    public float jumpHeight = 1.5f;
+    public float speed = 8f;
+    public float acceleration = 30f;
+    public float deceleration = 40f;
+    public float minJumpHeight = 1.5f;
+    public float maxJumpHeight = 4.5f;
+    public float maxJumpHoldTime = 3f;
     public bool onlyMoveWhenGrounded = true;
 
     [Header("Turn Settings")]
-    public float snapTurnAngle = 45f; // Angle of each snap turn
-    public float snapTurnCooldown = 0.5f; // Time in seconds between each snap turn
+    public float snapTurnAngle = 45f;
+    public float snapTurnCooldown = 0.5f;
 
     [Header("References")]
     public Rigidbody rb;
-    public Transform directionSource; // Used to determine the movement direction (e.g., player head)
+    public Transform directionSource;
     public CapsuleCollider bodyCollider;
-    public Transform turnSource; // Used to apply the turn rotation
+    public Transform turnSource;
     public LayerMask groundLayer;
 
     private Vector2 inputMoveAxis;
@@ -27,46 +29,50 @@ public class ContinuousMovementPhysics : MonoBehaviour
     private bool isGrounded;
     private float lastSnapTurnTime;
     private Vector3 currentVelocity;
+    private float jumpHoldTime;
+    private bool isJumping;
 
     void Start()
     {
-        // Initialize the last snap turn time to ensure immediate turn availability
         lastSnapTurnTime = -snapTurnCooldown;
+        jumpHoldTime = 0f;
+        isJumping = false;
     }
 
     void Update()
     {
-        // Get the input from the Meta Quest controllers using OVRInput
-        Vector2 controllerMove = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);  // Left thumbstick for movement
-        float controllerTurn = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;  // Right thumbstick for turning
+        Vector2 controllerMove = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+        float controllerTurn = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;
 
-        // Get input from keyboard
-        float keyboardHorizontal = Input.GetAxis("Horizontal"); // A/D or Left/Right arrows
-        float keyboardVertical = Input.GetAxis("Vertical"); // W/S or Up/Down arrows
-        float keyboardTurn = Input.GetAxis("Mouse X"); // Mouse movement for turning
+        float keyboardHorizontal = Input.GetAxis("Horizontal");
+        float keyboardVertical = Input.GetAxis("Vertical");
+        float keyboardTurn = Input.GetAxis("Mouse X");
 
-        // Combine controller and keyboard inputs
         inputMoveAxis = controllerMove + new Vector2(keyboardHorizontal, keyboardVertical);
         inputTurnAxis = controllerTurn + keyboardTurn;
 
-        // Normalize to prevent faster diagonal movement
         if (inputMoveAxis.sqrMagnitude > 1)
         {
             inputMoveAxis.Normalize();
         }
 
-        // Check for the jump input using the "A" button on the right controller or spacebar
-        bool jumpInput = OVRInput.GetDown(OVRInput.Button.One) || Input.GetKeyDown(KeyCode.Space);
+        bool jumpInputHeld = OVRInput.Get(OVRInput.Button.One) || Input.GetKey(KeyCode.Space);
+        bool jumpInputReleased = OVRInput.GetUp(OVRInput.Button.One) || Input.GetKeyUp(KeyCode.Space);
 
-        // If jump button is pressed and the player is grounded, apply the jump force
-        if (jumpInput && isGrounded)
+        if (jumpInputHeld && isGrounded)
         {
-            float jumpVelocity = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y));
-            Vector3 velocity = rb.velocity;
-            rb.velocity = new Vector3(velocity.x, jumpVelocity, velocity.z);
+            jumpHoldTime += Time.deltaTime;
+            jumpHoldTime = Mathf.Clamp(jumpHoldTime, 0, maxJumpHoldTime);
         }
 
-        // Handle snap turn logic
+        if (jumpInputReleased && isGrounded)
+        {
+            float jumpPower = Mathf.Lerp(minJumpHeight, maxJumpHeight, jumpHoldTime / maxJumpHoldTime);
+            float jumpVelocity = Mathf.Sqrt(2 * jumpPower * Mathf.Abs(Physics.gravity.y));
+            rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
+            jumpHoldTime = 0f;
+        }
+
         if (Mathf.Abs(inputTurnAxis) > 0.5f && Time.time - lastSnapTurnTime > snapTurnCooldown)
         {
             float turnDirection = inputTurnAxis > 0 ? 1f : -1f;
@@ -77,25 +83,19 @@ public class ContinuousMovementPhysics : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Check if the player is grounded
         isGrounded = CheckIfGrounded();
 
-        // Only allow movement when grounded if the flag is set, otherwise always move
         if (!onlyMoveWhenGrounded || (onlyMoveWhenGrounded && isGrounded))
         {
-            // Calculate movement direction based on the player's head or body orientation
             Quaternion yaw = Quaternion.Euler(0, directionSource.eulerAngles.y, 0);
             Vector3 targetDirection = yaw * new Vector3(inputMoveAxis.x, 0, inputMoveAxis.y).normalized;
 
-            // Adjust the current velocity towards the target direction for smoother acceleration and deceleration
             currentVelocity = Vector3.MoveTowards(currentVelocity, targetDirection * speed, (targetDirection.sqrMagnitude > 0 ? acceleration : deceleration) * Time.fixedDeltaTime);
 
-            // Apply movement force
-            rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z); // Directly set velocity for more immediate response
+            rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
         }
     }
 
-    // Function to check if the player is grounded using a sphere cast
     public bool CheckIfGrounded()
     {
         Vector3 start = bodyCollider.transform.TransformPoint(bodyCollider.center);
