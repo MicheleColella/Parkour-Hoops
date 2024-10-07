@@ -18,25 +18,27 @@ public class GrabPhysics : MonoBehaviour
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
 
-    void FixedUpdate()
+    private Collider[] nearbyColliders = new Collider[10]; // Pre-allocate an array
+
+    void FixedUpdate() 
     {
-        // Usa il pulsante corretto in base alla mano selezionata
         bool isGrabButtonPressed = handType == HandType.Left
-            ? OVRInput.Get(OVRInput.Button.PrimaryHandTrigger)  // Mano sinistra
-            : OVRInput.Get(OVRInput.Button.SecondaryHandTrigger);  // Mano destra
+            ? OVRInput.Get(OVRInput.Button.PrimaryHandTrigger)
+            : OVRInput.Get(OVRInput.Button.SecondaryHandTrigger);
 
         if (isGrabButtonPressed && !isGrabbing)
         {
-            // Usa l'origine assegnata per rilevare i collider nelle vicinanze
-            Collider[] nearbyColliders = Physics.OverlapSphere(grabOrigin.transform.position, radius, grabLayer, QueryTriggerInteraction.Ignore);
+            int numColliders = Physics.OverlapSphereNonAlloc(grabOrigin.transform.position, radius, nearbyColliders, grabLayer, QueryTriggerInteraction.Ignore);
 
-            if (nearbyColliders.Length > 0)
+            if (numColliders > 0)
             {
                 Rigidbody nearbyRigidBody = nearbyColliders[0].attachedRigidbody;
 
-                // Crea un FixedJoint per attaccare l'oggetto preso
-                fixedJoint = gameObject.AddComponent<FixedJoint>();
-                fixedJoint.autoConfigureConnectedAnchor = false;
+                if (fixedJoint == null)
+                {
+                    fixedJoint = gameObject.AddComponent<FixedJoint>();
+                    fixedJoint.autoConfigureConnectedAnchor = false;
+                }
 
                 if (nearbyRigidBody)
                 {
@@ -53,7 +55,6 @@ public class GrabPhysics : MonoBehaviour
         }
         else if (!isGrabButtonPressed && isGrabbing)
         {
-            // Rilascia l'oggetto
             isGrabbing = false;
 
             if (fixedJoint)
@@ -62,6 +63,7 @@ public class GrabPhysics : MonoBehaviour
             }
         }
     }
+
 
     // Visualizza l'OverlapSphere nel editor
     void OnDrawGizmos()

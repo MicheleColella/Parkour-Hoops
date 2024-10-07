@@ -30,15 +30,20 @@ public class PlayerRig : MonoBehaviour
         ConfigureJoint(rightHandJoint);
     }
 
-    void FixedUpdate()
+    void FixedUpdate() 
     {
-        bodyCollider.height = Mathf.Clamp(playerHead.localPosition.y, bodyHeightMin, bodyHeightMax);
-        bodyCollider.center = new Vector3(playerHead.localPosition.x, bodyCollider.height / 2, playerHead.localPosition.z);
+        float headHeight = Mathf.Clamp(playerHead.localPosition.y, bodyHeightMin, bodyHeightMax);
+        if (!Mathf.Approximately(bodyCollider.height, headHeight))
+        {
+            bodyCollider.height = headHeight;
+            bodyCollider.center = new Vector3(playerHead.localPosition.x, headHeight / 2, playerHead.localPosition.z);
+        }
 
         UpdateJointTarget(leftHandJoint, leftController);
         UpdateJointTarget(rightHandJoint, rightController);
         UpdateJointTarget(headJoint, playerHead);
     }
+
 
     void ConfigureJoint(ConfigurableJoint joint)
     {

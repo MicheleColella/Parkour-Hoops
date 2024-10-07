@@ -18867,6 +18867,7 @@ MonoBehaviour:
   maxJumpHeight: 4
   maxJumpHoldTime: 3
   onlyMoveWhenGrounded: 1
+  liftHeightWhenNotGrounded: 0.5
   snapTurnAngle: 45
   snapTurnCooldown: 0.3
   rb: {fileID: 1029682083}
@@ -18876,6 +18877,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  groundCheckOffset: 0.1
 --- !u!1 &1345379465
 GameObject:
   m_ObjectHideFlags: 0

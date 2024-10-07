@@ -39,8 +39,9 @@ public class ContinuousMovementPhysics : MonoBehaviour
         isJumping = false;
     }
 
-    void Update()
+    void Update() 
     {
+        // Recuperiamo input solo se cambiano
         Vector2 controllerMove = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
         float controllerTurn = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;
 
@@ -48,13 +49,19 @@ public class ContinuousMovementPhysics : MonoBehaviour
         float keyboardVertical = Input.GetAxis("Vertical");
         float keyboardTurn = Input.GetAxis("Mouse X");
 
-        inputMoveAxis = controllerMove + new Vector2(keyboardHorizontal, keyboardVertical);
-        inputTurnAxis = controllerTurn + keyboardTurn;
-
-        if (inputMoveAxis.sqrMagnitude > 1)
+        Vector2 newInputMoveAxis = controllerMove + new Vector2(keyboardHorizontal, keyboardVertical);
+        if (newInputMoveAxis.sqrMagnitude > 1)
         {
-            inputMoveAxis.Normalize();
+            newInputMoveAxis.Normalize();
         }
+
+        // Aggiorniamo solo se l'input è cambiato
+        if (!Mathf.Approximately(newInputMoveAxis.x, inputMoveAxis.x) || !Mathf.Approximately(newInputMoveAxis.y, inputMoveAxis.y))
+        {
+            inputMoveAxis = newInputMoveAxis;
+        }
+
+        inputTurnAxis = controllerTurn + keyboardTurn;
 
         bool jumpInputHeld = OVRInput.Get(OVRInput.Button.One) || Input.GetKey(KeyCode.Space);
         bool jumpInputReleased = OVRInput.GetUp(OVRInput.Button.One) || Input.GetKeyUp(KeyCode.Space);
@@ -90,11 +97,13 @@ public class ContinuousMovementPhysics : MonoBehaviour
             Quaternion yaw = Quaternion.Euler(0, directionSource.eulerAngles.y, 0);
             Vector3 targetDirection = yaw * new Vector3(inputMoveAxis.x, 0, inputMoveAxis.y).normalized;
 
-            currentVelocity = Vector3.MoveTowards(currentVelocity, targetDirection * speed, (targetDirection.sqrMagnitude > 0 ? acceleration : deceleration) * Time.fixedDeltaTime);
+            float movementSpeed = (targetDirection.sqrMagnitude > 0 ? acceleration : deceleration) * Time.fixedDeltaTime;
+            currentVelocity = Vector3.MoveTowards(currentVelocity, targetDirection * speed, movementSpeed);
 
             rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
         }
     }
+
 
     public bool CheckIfGrounded()
     {
@@ -102,5 +111,36 @@ public class ContinuousMovementPhysics : MonoBehaviour
         float rayLength = bodyCollider.height / 2 - bodyCollider.radius + 0.1f;
 
         return Physics.SphereCast(start, bodyCollider.radius * 0.9f, Vector3.down, out RaycastHit hitInfo, rayLength, groundLayer);
+    } 
+
+    void OnDrawGizmos()
+    {
+        if (bodyCollider == null)
+            return;
+
+        // Imposta il colore del gizmo per il ground check
+        Gizmos.color = isGrounded ? Color.green : Color.red;
+
+        // Calcola il punto iniziale del SphereCast
+        Vector3 start = bodyCollider.transform.TransformPoint(bodyCollider.center);
+        float rayLength = bodyCollider.height / 2 - bodyCollider.radius + 0.1f;
+
+        // Disegna la sfera alla base del capsule collider
+        Gizmos.DrawWireSphere(start - new Vector3(0, rayLength, 0), bodyCollider.radius * 0.9f);
+
+        // Imposta il colore del gizmo per il capsule collider
+        Gizmos.color = Color.blue;
+
+        // Disegna il capsule collider come due semisfere collegate da un cilindro
+        Vector3 topSphere = start + Vector3.up * (bodyCollider.height / 2 - bodyCollider.radius);
+        Vector3 bottomSphere = start + Vector3.down * (bodyCollider.height / 2 - bodyCollider.radius);
+
+        Gizmos.DrawWireSphere(topSphere, bodyCollider.radius);
+        Gizmos.DrawWireSphere(bottomSphere, bodyCollider.radius);
+        Gizmos.DrawLine(topSphere + Vector3.forward * bodyCollider.radius, bottomSphere + Vector3.forward * bodyCollider.radius);
+        Gizmos.DrawLine(topSphere - Vector3.forward * bodyCollider.radius, bottomSphere - Vector3.forward * bodyCollider.radius);
+        Gizmos.DrawLine(topSphere + Vector3.right * bodyCollider.radius, bottomSphere + Vector3.right * bodyCollider.radius);
+        Gizmos.DrawLine(topSphere - Vector3.right * bodyCollider.radius, bottomSphere - Vector3.right * bodyCollider.radius);
     }
+
 }
