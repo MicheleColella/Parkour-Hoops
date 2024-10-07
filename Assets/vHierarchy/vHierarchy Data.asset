@@ -29,6 +29,10 @@ MonoBehaviour:
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1055821571-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-571442847-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-322597876-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-2066876598-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1048891132-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-247596039-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-618518095-0
         values:
         - iColor: 1
           icon: PreMatQuad
@@ -50,549 +54,17 @@ MonoBehaviour:
           icon: Terrain Icon
         - iColor: 7
           icon: Terrain Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: 
+        - iColor: 4
+          icon: 
+        - iColor: 4
+          icon: 
       goDatasByInstanceId:
-        keys: 8e960000a2970000e29600007c98000028940000289a0000549600008abb00009ebc0000debb000078bd000024b9000024bf000050bb000038ec00004ced00008cec000026ee0000c8e90000d2ef0000f4eb0000c4180100d819010018190100b21a0100541601005e1c010080180100d2710100e672010026720100c0730100626f01006c7501008e7101002c790100407a0100807901001a7b0100c6760100c67c0100f2780100009e0100129f0100549e0100ec9f01009a9b010098a10100c69d0100b4890200c88a0200088a0200a28b0200488702004e8d020074890200a8ae0200beaf0200fcae020098b002003cac020044b2020068ae0200feda020014dc020052db0200eedc020092d802009ade0200beda020082f8020098f90200d6f8020072fa020016f602001efc020042f80200e4240300fa25030038250300d42603007822030080280300a4240300369403004c9503008a94030026960300ca910300d2970300f69303007ac0030090c10300cec003006ac203000ebe030016c403003ac003000c2104002222040060210400fc220400a01e0400a8240400cc200400b0540400c655040004550400a0560400445204004c58040070540400347204004a7304008872040024740400c86f0400d0750400f4710400b88f0400ce9004000c900400a89104004c8d040054930400788f04003cad040052ae040090ad04002caf0400d0aa0400d8b00400fcac0400c0ca0400d6cb040014cb0400b0cc040054c804005cce040080ca04008cd90400a2da0400e0d904007cdb040020d7040028dd04004cd904007efe040094ff0400d2fe04006e00050012fc04001a0205003efe04000c1c0500241d0500601c0500fe1d0500a0190500aa1f0500cc1b050098390500b03a0500ec3905008a3b05002c370500363d050058390500024105001842050056410500f2420500963e05009e440500c2400500fa650500106705004e660500ea6705008e63050096690500ba650500848305009a840500d883050074850500188105002087050044830500c6cd0500dcce05001ace0500b6cf05005acb050062d1050086cd0500b6350600cc3606000a360600a63706004a3306005239060076350600345306004a5406008853060024550600ca500600d0560600f65206007c7f060092800600d07f06006c810600107d0600188306003c7f0600089d06001e9e06005c9d0600f89e06009c9a0600a4a00600c89c06008cba0600a2bb0600e0ba06007cbc060020b8060028be06004cba060010d8060026d9060064d8060000da0600a4d50600acdb0600d0d7060004fd06001afe060058fd0600f4fe060098fa0600a0000700c4fc06002e13070044140700821307001e150700c2100700ca160700ee120700a2b5e4ff90b5e4ff88b5e4ffc2e6070000e807000ce907001ee907005eea0700b0090800ee0a0800fa0b08000c0c08004c0d0800ea25080028270800342808004628080086290800aa4f0800e8500800fc5108000e5208004e53080010510800b64f0800d24f0800604e0800604d0800
+        keys: e69600000a9800002c9900003e9900005c9a000032980000ee96000006970000aa950000b2940000ec7f01001081010032820100448201006283010038810100f47f01000c800100b07e0100b87d01007e9a0100a29b0100c49c0100d69c0100f49d0100ca9b0100869a01009e9a0100429901004a980100aa030200e404020020060200320602006c07020010050200b2030200ca0302004e02020042010200365af7ff225af7ff105af7ff085af7ff
         values:
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
         - iColor: 1
           icon: PreMatQuad
         - iColor: 1
@@ -613,6 +85,74 @@ MonoBehaviour:
           icon: Terrain Icon
         - iColor: 7
           icon: Terrain Icon
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Folder Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Folder Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 4
+          icon: ScriptableObject Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Folder Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 7
+          icon: Terrain Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: 
+        - iColor: 4
+          icon: 
+        - iColor: 4
+          icon: 
     - goDatasByGlobalId:
         keys: []
         values: []
