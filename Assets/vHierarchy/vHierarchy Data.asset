@@ -21,130 +21,42 @@ MonoBehaviour:
         keys:
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1006140509-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1283383523-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1608564156-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1628704222-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1960590897-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1330138279-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1029682077-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1055821571-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-571442847-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-322597876-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-2066876598-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1048891132-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-247596039-0
-        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-618518095-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-939690077-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-34400778-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1301325691-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-628746236-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1311535016-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-518344270-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-401950658-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1991542288-0
         values:
         - iColor: 1
           icon: PreMatQuad
         - iColor: 1
           icon: PreMatQuad
         - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 2
-          icon: AvatarMask On Icon
-        - iColor: 4
-          icon: Folder Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 2
-          icon: AvatarMask On Icon
-        - iColor: 4
           icon: 
         - iColor: 4
           icon: 
         - iColor: 4
+          icon: 
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 2
+          icon: 
+        - iColor: 7
+          icon: 
+        - iColor: 7
+          icon: 
+        - iColor: 7
           icon: 
       goDatasByInstanceId:
-        keys: e69600000a9800002c9900003e9900005c9a000032980000ee96000006970000aa950000b2940000ec7f01001081010032820100448201006283010038810100f47f01000c800100b07e0100b87d01007e9a0100a29b0100c49c0100d69c0100f49d0100ca9b0100869a01009e9a0100429901004a980100aa030200e404020020060200320602006c07020010050200b2030200ca0302004e02020042010200365af7ff225af7ff105af7ff085af7ff
+        keys: c0960000da9700005e950000549400002a9600001a990000f2f1ffffc4f1ffffccf1ffffdef1ffff6654faff4246faff0027fafffa25faff
         values:
         - iColor: 1
           icon: PreMatQuad
         - iColor: 1
           icon: PreMatQuad
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 2
-          icon: AvatarMask On Icon
-        - iColor: 4
-          icon: Folder Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 2
-          icon: AvatarMask On Icon
-        - iColor: 4
-          icon: Folder Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 2
-          icon: AvatarMask On Icon
-        - iColor: 4
-          icon: Folder Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 1
-          icon: PreMatQuad
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 4
-          icon: ScriptableObject Icon
-        - iColor: 2
-          icon: AvatarMask On Icon
-        - iColor: 4
-          icon: Folder Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
-        - iColor: 7
-          icon: Terrain Icon
         - iColor: 2
           icon: AvatarMask On Icon
         - iColor: 4
@@ -152,6 +64,22 @@ MonoBehaviour:
         - iColor: 4
           icon: 
         - iColor: 4
+          icon: 
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: 
+        - iColor: 4
+          icon: 
+        - iColor: 4
+          icon: 
+        - iColor: 2
+          icon: 
+        - iColor: 7
+          icon: 
+        - iColor: 7
+          icon: 
+        - iColor: 7
           icon: 
     - goDatasByGlobalId:
         keys: []
