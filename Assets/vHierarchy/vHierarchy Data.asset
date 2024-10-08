@@ -51,14 +51,12 @@ MonoBehaviour:
         - iColor: 7
           icon: 
       goDatasByInstanceId:
-        keys: c0960000da9700005e950000549400002a9600001a990000f2f1ffffc4f1ffffccf1ffffdef1ffff6654faff4246faff0027fafffa25faff
+        keys: fa96000014980000d4960000e6930000269800001e9600003c980000c49500003a950000769a000096f0ffff
         values:
         - iColor: 1
           icon: PreMatQuad
         - iColor: 1
           icon: PreMatQuad
-        - iColor: 2
-          icon: AvatarMask On Icon
         - iColor: 4
           icon: 
         - iColor: 4
@@ -67,12 +65,6 @@ MonoBehaviour:
           icon: 
         - iColor: 2
           icon: AvatarMask On Icon
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
-        - iColor: 4
-          icon: 
         - iColor: 2
           icon: 
         - iColor: 7
@@ -80,6 +72,8 @@ MonoBehaviour:
         - iColor: 7
           icon: 
         - iColor: 7
+          icon: 
+        - iColor: 0
           icon: 
     - goDatasByGlobalId:
         keys: []
