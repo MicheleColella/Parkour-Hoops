@@ -15,21 +15,40 @@ public class PhysicRig : MonoBehaviour
     public CapsuleCollider bodyCollider;
 
     public float bodyHeightMin = 0.5f;
-    public float bodyHeightMax = 2;
+    public float bodyHeightMax = 2f;
 
-    private void Update()
+    private void Start()
+    {
+        // Abilita l'interpolazione per i corpi rigidi delle mani per migliorare la fluidità
+        Rigidbody leftHandRigidbody = leftHandJoint.GetComponent<Rigidbody>();
+        Rigidbody rightHandRigidbody = rightHandJoint.GetComponent<Rigidbody>();
+        if (leftHandRigidbody != null)
+        {
+            leftHandRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+        }
+        if (rightHandRigidbody != null)
+        {
+            rightHandRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+        }
+    }
+
+    private void FixedUpdate()
     {
         // Aggiorna la posizione del collider del corpo in base alla posizione della testa
         bodyCollider.height = Mathf.Clamp(playerHead.localPosition.y, bodyHeightMin, bodyHeightMax);
         bodyCollider.center = new Vector3(playerHead.localPosition.x, bodyCollider.height / 2, playerHead.localPosition.z);
 
         // Aggiorna i giunti delle mani e della testa in base alla posizione dei controller
-        leftHandJoint.targetPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch);
-        leftHandJoint.targetRotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.LTouch);
+        UpdateHandJoint(leftHandJoint, OVRInput.Controller.LTouch);
+        UpdateHandJoint(rightHandJoint, OVRInput.Controller.RTouch);
 
-        rightHandJoint.targetPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
-        rightHandJoint.targetRotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
-
+        // Posizione della testa
         headJoint.targetPosition = playerHead.localPosition;
+    }
+
+    private void UpdateHandJoint(ConfigurableJoint joint, OVRInput.Controller controller)
+    {
+        joint.targetPosition = OVRInput.GetLocalControllerPosition(controller);
+        joint.targetRotation = OVRInput.GetLocalControllerRotation(controller);
     }
 }

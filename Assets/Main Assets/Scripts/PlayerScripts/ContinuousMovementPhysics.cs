@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ContinuousMovementPhysics : MonoBehaviour
 {
-    public float speed = 1;
-    public float turnSpeed = 60;
-    private float jumpVelocity = 7;
+    public float speed = 10f;  // Aumenta la velocità per compensare l'uso di AddForce
+    public float maxSpeed = 5f; // Velocità massima del player
+    public float jumpForce = 7f;
     public float jumpHeight = 1.5f;
 
     public bool onlyMoveWhenGrounded = false;
@@ -15,27 +15,31 @@ public class ContinuousMovementPhysics : MonoBehaviour
     public LayerMask groundLayer;
 
     public Transform directionSource;
-    public Transform turnSource;
 
     public CapsuleCollider bodyCollider;
 
     private Vector2 inputMoveAxis;
-    private float inputTurnAxis;
 
     private bool isGrounded;
 
-    // Update is called once per frame
+    private void Start()
+    {
+        // Abilita l'interpolazione per migliorare la fluidità del movimento
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+    }
+
     void Update()
     {
+        // Raccogli input solo in Update, perché Update è chiamato a ogni frame
         inputMoveAxis = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
-        inputTurnAxis = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;
 
         bool jumpInput = OVRInput.GetDown(OVRInput.Button.One);
 
         if (jumpInput && isGrounded)
         {
-            jumpVelocity = Mathf.Sqrt(2 * -Physics.gravity.y * jumpHeight);
-            rb.velocity = Vector3.up * jumpVelocity;
+            // Usa AddForce per il salto
+            float jumpVelocity = Mathf.Sqrt(2 * -Physics.gravity.y * jumpHeight);
+            rb.AddForce(Vector3.up * jumpVelocity, ForceMode.VelocityChange);
         }
     }
 
@@ -45,21 +49,23 @@ public class ContinuousMovementPhysics : MonoBehaviour
 
         if (!onlyMoveWhenGrounded || (onlyMoveWhenGrounded && isGrounded))
         {
+            // Movimento fluido utilizzando AddForce
             Quaternion yaw = Quaternion.Euler(0, directionSource.eulerAngles.y, 0);
             Vector3 direction = yaw * new Vector3(inputMoveAxis.x, 0, inputMoveAxis.y);
 
-            Vector3 targetMovePosition = rb.position + direction * Time.fixedDeltaTime * speed;
+            if (direction.magnitude > 0.1f)  // Applica il movimento solo se l'input è significativo
+            {
+                // Controlla la velocità attuale del player
+                Vector3 currentVelocity = rb.velocity;
+                Vector3 horizontalVelocity = new Vector3(currentVelocity.x, 0, currentVelocity.z);
 
-            Vector3 axis = Vector3.up;
-            float angle = turnSpeed * Time.fixedDeltaTime * inputTurnAxis;
-
-            Quaternion q = Quaternion.AngleAxis(angle, axis);
-
-            rb.MoveRotation(rb.rotation * q);
-
-            Vector3 newPosition = q * (targetMovePosition - turnSource.position) + turnSource.position;
-
-            rb.MovePosition(newPosition);
+                // Se la velocità è inferiore alla velocità massima, applica la forza
+                if (horizontalVelocity.magnitude < maxSpeed)
+                {
+                    // Applica la forza nella direzione del movimento
+                    rb.AddForce(direction.normalized * speed, ForceMode.Force);
+                }
+            }
         }
     }
 
