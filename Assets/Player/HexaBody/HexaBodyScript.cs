@@ -20,11 +20,6 @@ public class HexaBodyScript : MonoBehaviour
     public ActionBasedController RightHandController;
     public ActionBasedController LeftHandController;
 
-    public InputActionReference RightTrackPadPressed;
-    public InputActionReference RightTrackPadTouch;
-
-    public InputActionReference LeftTrackPadClick;
-
     [Header("Hexabody Parts")]
     public GameObject Head;
     public GameObject Chest;
@@ -68,16 +63,15 @@ public class HexaBodyScript : MonoBehaviour
     private Quaternion RightHandControllerRotation;
     private Quaternion LeftHandControllerRotation;
 
-    private Vector2 RightTrackpad;
     private Vector2 LeftTrackpad;
 
-    private float RightTrackpadPressed;
-    private float leftTrackpadPressed;
 
-    private float RightTrackpadTouched;
+    private XRControllerInputManager inputManager;
+
 
     void Start()
     {
+        inputManager = XRControllerInputManager.Instance;
         additionalHight = (0.5f * Monoball.transform.lossyScale.y) + (0.5f * Fender.transform.lossyScale.y) + (Head.transform.position.y - Chest.transform.position.y);
     }
 
@@ -106,32 +100,32 @@ public class HexaBodyScript : MonoBehaviour
 
     private void getContollerInputValues()
     {
-        //Right Controller
-        //Position & Rotation
+        // Right Controller: Position & Rotation
         RightHandControllerPos = RightHandController.positionAction.action.ReadValue<Vector3>();
         RightHandControllerRotation = RightHandController.rotationAction.action.ReadValue<Quaternion>();
 
-        //Trackpad
-        RightTrackpad = RightHandController.translateAnchorAction.action.ReadValue<Vector2>();
-        RightTrackpadPressed = RightTrackPadPressed.action.ReadValue<float>();
-        RightTrackpadTouched = RightTrackPadTouch.action.ReadValue<float>();
+        // Trackpad (Stick Sinistro per movimento)
+        LeftTrackpad = inputManager.GetLeftThumbstickValue();  // Prendi i valori dello stick sinistro
+        Debug.Log("Left Thumbstick X: " + LeftTrackpad.x + ", Y: " + LeftTrackpad.y);  // Monitorare l'input del thumbstick sinistro
 
-        //Left Contoller
-        //Position & Rotation
+        // Left Controller: Position & Rotation
         LeftHandControllerPos = LeftHandController.positionAction.action.ReadValue<Vector3>();
         LeftHandControllerRotation = LeftHandController.rotationAction.action.ReadValue<Quaternion>();
 
-        //Trackpad
-        LeftTrackpad = LeftHandController.translateAnchorAction.action.ReadValue<Vector2>();
-        leftTrackpadPressed = LeftTrackPadClick.action.ReadValue<float>();
-
-        //Camera Inputs
+        // Camera Inputs
         CameraControllerPos = CameraController.positionAction.action.ReadValue<Vector3>();
 
-        headYaw = Quaternion.Euler(0, XROrigin.Camera.transform.eulerAngles.y, 0);  // Modificato da XRRig.cameraGameObject
-        moveDirection = headYaw * new Vector3(RightTrackpad.x, 0, RightTrackpad.y);
+        // Calcolo della direzione del movimento basato sull'orientamento della testa
+        headYaw = Quaternion.Euler(0, XROrigin.Camera.transform.eulerAngles.y, 0);
+
+        // Movimento in tutte le direzioni: avanti/indietro (Y) e destra/sinistra (X)
+        moveDirection = headYaw * new Vector3(LeftTrackpad.x, 0, LeftTrackpad.y);
+
+        // Torque per il monoball (movimento)
         monoballTorque = new Vector3(moveDirection.z, 0, -moveDirection.x);
     }
+
+
 
     //------Transforms---------------------------------------------------------------------------------------
     private void CameraToPlayer()
@@ -154,36 +148,33 @@ public class HexaBodyScript : MonoBehaviour
     {
         if (!jumping)
         {
-            if (RightTrackpadTouched == 0)
+            if (LeftTrackpad == Vector2.zero)  // Se lo stick sinistro non viene mosso, ferma il movimento
             {
                 stopMonoball();
             }
-
-            else if (RightTrackpadPressed == 0 && RightTrackpadTouched == 1)
+            else if (!inputManager.GetLeftPrimaryButton())  // Movimento normale (camminata)
             {
                 moveMonoball(moveForceWalk);
             }
-
-            else if (RightTrackpadPressed == 1)
+            else if (inputManager.GetLeftPrimaryButton())  // Corsa con primary button sinistro
             {
                 moveMonoball(moveForceSprint);
             }
         }
-
         else if (jumping)
         {
-            if (RightTrackpadTouched == 0)
+            if (LeftTrackpad == Vector2.zero)
             {
                 stopMonoball();
             }
-
-            else if (RightTrackpadTouched == 1)
+            else
             {
                 moveMonoball(moveForceCrouch);
             }
         }
-
     }
+
+
     private void moveMonoball(float force)
     {
         Monoball.GetComponent<Rigidbody>().freezeRotation = false;
@@ -204,19 +195,18 @@ public class HexaBodyScript : MonoBehaviour
     //------Jumping------------------------------------------------------------------------------------------
     private void jump()
     {
-        if (leftTrackpadPressed == 1 && LeftTrackpad.y < 0)
+        if (inputManager.GetRightPrimaryButton())  // Crouch con primary button destro
         {
             jumping = true;
-            jumpSitDown();
+            jumpSitDown();  // Mantiene la posizione accovacciata mentre il pulsante è premuto
         }
-
-        else if ((leftTrackpadPressed == 0) && jumping == true)
+        else if (!inputManager.GetRightPrimaryButton() && jumping == true)
         {
             jumping = false;
-            jumpSitUp();
+            jumpSitUp();  // Torna alla posizione in piedi quando il pulsante viene rilasciato
         }
-
     }
+
     private void jumpSitDown()
     {
         if (CrouchTarget.y >= lowesCrouch)
@@ -225,11 +215,13 @@ public class HexaBodyScript : MonoBehaviour
             Spine.targetPosition = new Vector3(0, CrouchTarget.y, 0);
         }
     }
+
     private void jumpSitUp()
     {
         CrouchTarget = new Vector3(0, highestCrouch - additionalHight, 0);
         Spine.targetPosition = CrouchTarget;
     }
+
 
     //------Joint Controll-----------------------------------------------------------------------------------
     private void spineContractionOnRealWorldCrouch()

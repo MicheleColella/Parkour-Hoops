@@ -29,6 +29,7 @@ public class XRControllerInputManager : MonoBehaviour
     public InputActionReference rightThumbstickRotate;
     public InputActionReference rightThumbstickClickAction;
 
+    // Variabili per tracciare i valori X e Y degli stick sinistro e destro
     private Vector2 leftThumbstickValue = Vector2.zero;
     private Vector2 rightThumbstickValue = Vector2.zero;
 
@@ -46,18 +47,42 @@ public class XRControllerInputManager : MonoBehaviour
     }
 
     // ======================================================
-    // Metodo OnEnable - Attivazione delle azioni
+    // Metodo OnEnable - Attivazione delle azioni e iscrizione agli eventi
     // ======================================================
     private void OnEnable()
     {
+        // Sinistra
+        leftThumbstickTranslate.action.performed += OnLeftThumbstickTranslatePerformed;
+        leftThumbstickTranslate.action.canceled += OnLeftThumbstickTranslateCanceled;  // Azzerare quando viene rilasciato
+        leftThumbstickRotate.action.performed += OnLeftThumbstickRotatePerformed;
+        leftThumbstickRotate.action.canceled += OnLeftThumbstickRotateCanceled;  // Azzerare quando viene rilasciato
+
+        // Destra
+        rightThumbstickTranslate.action.performed += OnRightThumbstickTranslatePerformed;
+        rightThumbstickTranslate.action.canceled += OnRightThumbstickTranslateCanceled;  // Azzerare quando viene rilasciato
+        rightThumbstickRotate.action.performed += OnRightThumbstickRotatePerformed;
+        rightThumbstickRotate.action.canceled += OnRightThumbstickRotateCanceled;  // Azzerare quando viene rilasciato
+
         EnableActions();
     }
 
     // ======================================================
-    // Metodo OnDisable - Disattivazione delle azioni
+    // Metodo OnDisable - Disattivazione delle azioni e rimozione degli eventi
     // ======================================================
     private void OnDisable()
     {
+        // Sinistra
+        leftThumbstickTranslate.action.performed -= OnLeftThumbstickTranslatePerformed;
+        leftThumbstickTranslate.action.canceled -= OnLeftThumbstickTranslateCanceled;
+        leftThumbstickRotate.action.performed -= OnLeftThumbstickRotatePerformed;
+        leftThumbstickRotate.action.canceled -= OnLeftThumbstickRotateCanceled;
+
+        // Destra
+        rightThumbstickTranslate.action.performed -= OnRightThumbstickTranslatePerformed;
+        rightThumbstickTranslate.action.canceled -= OnRightThumbstickTranslateCanceled;
+        rightThumbstickRotate.action.performed -= OnRightThumbstickRotatePerformed;
+        rightThumbstickRotate.action.canceled -= OnRightThumbstickRotateCanceled;
+
         DisableActions();
     }
 
@@ -106,21 +131,71 @@ public class XRControllerInputManager : MonoBehaviour
     }
 
     // ======================================================
+    // Gestione del Thumbstick Sinistro (Traslazione)
+    // ======================================================
+    private void OnLeftThumbstickTranslatePerformed(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.y = context.ReadValue<Vector2>().y;
+        Debug.Log($"Left Thumbstick Translate - Y: {leftThumbstickValue.y}");
+    }
+
+    private void OnLeftThumbstickTranslateCanceled(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.y = 0f;  // Azzerare il valore Y quando viene rilasciato
+        Debug.Log($"Left Thumbstick Translate Released - Y reset to {leftThumbstickValue.y}");
+    }
+
+    // ======================================================
+    // Gestione del Thumbstick Sinistro (Rotazione)
+    // ======================================================
+    private void OnLeftThumbstickRotatePerformed(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.x = context.ReadValue<Vector2>().x;
+        Debug.Log($"Left Thumbstick Rotate - X: {leftThumbstickValue.x}");
+    }
+
+    private void OnLeftThumbstickRotateCanceled(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.x = 0f;  // Azzerare il valore X quando viene rilasciato
+        Debug.Log($"Left Thumbstick Rotate Released - X reset to {leftThumbstickValue.x}");
+    }
+
+    // ======================================================
+    // Gestione del Thumbstick Destro (Traslazione)
+    // ======================================================
+    private void OnRightThumbstickTranslatePerformed(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.y = context.ReadValue<Vector2>().y;
+        Debug.Log($"Right Thumbstick Translate - Y: {rightThumbstickValue.y}");
+    }
+
+    private void OnRightThumbstickTranslateCanceled(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.y = 0f;  // Azzerare il valore Y quando viene rilasciato
+        Debug.Log($"Right Thumbstick Translate Released - Y reset to {rightThumbstickValue.y}");
+    }
+
+    // ======================================================
+    // Gestione del Thumbstick Destro (Rotazione)
+    // ======================================================
+    private void OnRightThumbstickRotatePerformed(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.x = context.ReadValue<Vector2>().x;
+        Debug.Log($"Right Thumbstick Rotate - X: {rightThumbstickValue.x}");
+    }
+
+    private void OnRightThumbstickRotateCanceled(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.x = 0f;  // Azzerare il valore X quando viene rilasciato
+        Debug.Log($"Right Thumbstick Rotate Released - X reset to {rightThumbstickValue.x}");
+    }
+
+    // ======================================================
     // Metodi pubblici per ottenere gli input sinistro
     // ======================================================
-    public float GetLeftTriggerValue()
-    {
-        return leftTriggerAction.action.ReadValue<float>();
-    }
-
-    public float GetLeftGripValue()
-    {
-        return leftGripAction.action.ReadValue<float>();
-    }
-
     public Vector2 GetLeftThumbstickValue()
     {
-        return leftThumbstickTranslate.action.ReadValue<Vector2>();
+        return leftThumbstickValue;
     }
 
     public bool GetLeftPrimaryButton()
@@ -138,24 +213,12 @@ public class XRControllerInputManager : MonoBehaviour
         return leftThumbstickClickAction.action.ReadValue<float>() > 0.5f;
     }
 
-
     // ======================================================
     // Metodi pubblici per ottenere gli input destro
     // ======================================================
-
-    public float GetRightTriggerValue()
-    {
-        return rightTriggerAction.action.ReadValue<float>();
-    }
-
-    public float GetRightGripValue()
-    {
-        return rightGripAction.action.ReadValue<float>();
-    }
-
     public Vector2 GetRightThumbstickValue()
     {
-        return rightThumbstickTranslate.action.ReadValue<Vector2>();
+        return rightThumbstickValue;
     }
 
     public bool GetRightPrimaryButton()

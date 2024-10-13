@@ -2511,12 +2511,6 @@ MonoBehaviour:
   CameraController: {fileID: 1912265649}
   RightHandController: {fileID: 273038835}
   LeftHandController: {fileID: 2115496331}
-  RightTrackPadPressed: {fileID: -880603583068926154, guid: c348712bda248c246b8c49b3db54643f,
-    type: 3}
-  RightTrackPadTouch: {fileID: -311596800211843078, guid: c348712bda248c246b8c49b3db54643f,
-    type: 3}
-  LeftTrackPadClick: {fileID: -4169994470994347006, guid: c348712bda248c246b8c49b3db54643f,
-    type: 3}
   Head: {fileID: 8732607023210212967}
   Chest: {fileID: 8732607022704123875}
   Fender: {fileID: 8732607022772071448}
@@ -2530,7 +2524,7 @@ MonoBehaviour:
   angularDragOnMove: 5
   angularBreakDrag: 200
   crouchSpeed: 1.5
-  lowesCrouch: 0
+  lowesCrouch: 0.05
   highestCrouch: 1.8
 --- !u!54 &8732607022660418776
 Rigidbody:
