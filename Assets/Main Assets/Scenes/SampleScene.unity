@@ -14863,10 +14863,14 @@ MonoBehaviour:
   LeftHandJoint: {fileID: 8732607023210212965}
   Spine: {fileID: 8732607022772071454}
   moveForceCrouch: 5
-  moveForceWalk: 10
-  moveForceSprint: 15
+  moveForceWalk: 700
+  moveForceSprint: 700
   angularDragOnMove: 5
   angularBreakDrag: 200
+  accelerationMultiplier: 11
+  maxVelocityMagnitude: 5
+  stoppingForce: 10
+  directionChangeForce: 8
   crouchSpeed: 1.5
   lowesCrouch: 0.05
   highestCrouch: 1.8

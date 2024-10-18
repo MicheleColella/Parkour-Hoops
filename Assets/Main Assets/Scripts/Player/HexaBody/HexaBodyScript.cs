@@ -39,6 +39,15 @@ public class HexaBodyScript : MonoBehaviour
     public float angularDragOnMove;
     public float angularBreakDrag;
 
+    [Header("Movement Configuration")]
+    public float accelerationMultiplier = 2.0f; // Moltiplicatore per l'accelerazione iniziale
+    public float maxVelocityMagnitude = 5.0f;   // Velocità massima consentita
+    public float stoppingForce = 10.0f;         // Forza di arresto quando non c'è input
+    public float directionChangeForce = 8.0f;   // Forza extra applicata durante i cambi di direzione
+
+    private Vector3 lastMoveDirection;
+    private Rigidbody monoballRb;
+
     [Header("Hexabody Croch & Jump")]
     bool jumping = false;
 
@@ -73,9 +82,11 @@ public class HexaBodyScript : MonoBehaviour
     {
         inputManager = XRControllerInputManager.Instance;
         additionalHight = (0.5f * Monoball.transform.lossyScale.y) + (0.5f * Fender.transform.lossyScale.y) + (Head.transform.position.y - Chest.transform.position.y);
+        monoballRb = Monoball.GetComponent<Rigidbody>();
+        lastMoveDirection = Vector3.zero;
     }
 
-    
+
     void Update()
     {
         CameraToPlayer();
@@ -106,7 +117,7 @@ public class HexaBodyScript : MonoBehaviour
 
         // Trackpad (Stick Sinistro per movimento)
         LeftTrackpad = inputManager.GetLeftThumbstickValue();  // Prendi i valori dello stick sinistro
-        Debug.Log("Left Thumbstick X: " + LeftTrackpad.x + ", Y: " + LeftTrackpad.y);  // Monitorare l'input del thumbstick sinistro
+        //Debug.Log("Left Thumbstick X: " + LeftTrackpad.x + ", Y: " + LeftTrackpad.y);  // Monitorare l'input del thumbstick sinistro
 
         // Left Controller: Position & Rotation
         LeftHandControllerPos = LeftHandController.positionAction.action.ReadValue<Vector3>();
@@ -177,19 +188,64 @@ public class HexaBodyScript : MonoBehaviour
 
     private void moveMonoball(float force)
     {
-        Monoball.GetComponent<Rigidbody>().freezeRotation = false;
-        Monoball.GetComponent<Rigidbody>().angularDrag = angularDragOnMove;
-        Monoball.GetComponent<Rigidbody>().AddTorque(monoballTorque.normalized * force, ForceMode.Force);
-    }
-    private void stopMonoball()
-    {
-        Monoball.GetComponent<Rigidbody>().angularDrag = angularBreakDrag;
+        if (monoballRb == null) return;
 
-        if (Monoball.GetComponent<Rigidbody>().velocity == Vector3.zero)
+        monoballRb.freezeRotation = false;
+        monoballRb.angularDrag = angularDragOnMove;
+
+        // Calcola l'angolo tra la direzione attuale e quella precedente
+        float directionChange = Vector3.Angle(moveDirection, lastMoveDirection);
+
+        // Applica una forza extra se c'è un cambio di direzione significativo
+        float finalForce = force;
+        if (directionChange > 30f && lastMoveDirection != Vector3.zero)
         {
-            Monoball.GetComponent<Rigidbody>().freezeRotation = true;
+            finalForce *= (1 + directionChangeForce * (directionChange / 180f));
+
+            // Applica una forza contraria alla velocità corrente per facilitare il cambio di direzione
+            Vector3 counterForce = -monoballRb.velocity * directionChangeForce;
+            monoballRb.AddForce(counterForce, ForceMode.Acceleration);
         }
 
+        // Applica un boost all'accelerazione iniziale
+        if (monoballRb.velocity.magnitude < 1f)
+        {
+            finalForce *= accelerationMultiplier;
+        }
+
+        // Applica il torque con la forza calcolata
+        Vector3 torqueForce = monoballTorque.normalized * finalForce;
+        monoballRb.AddTorque(torqueForce, ForceMode.Acceleration);
+
+        // Limita la velocità massima
+        if (monoballRb.velocity.magnitude > maxVelocityMagnitude)
+        {
+            monoballRb.velocity = monoballRb.velocity.normalized * maxVelocityMagnitude;
+        }
+
+        lastMoveDirection = moveDirection;
+    }
+
+    private void stopMonoball()
+    {
+        if (monoballRb == null) return;
+
+        // Applica una forza di arresto proporzionale alla velocità corrente
+        Vector3 currentVel = monoballRb.velocity;
+        if (currentVel.magnitude > 0.1f)
+        {
+            Vector3 stopForce = -currentVel.normalized * stoppingForce;
+            monoballRb.AddForce(stopForce, ForceMode.Acceleration);
+        }
+        else
+        {
+            monoballRb.velocity = Vector3.zero;
+            monoballRb.angularVelocity = Vector3.zero;
+            monoballRb.freezeRotation = true;
+        }
+
+        monoballRb.angularDrag = angularBreakDrag;
+        lastMoveDirection = Vector3.zero;
     }
 
     //------Jumping------------------------------------------------------------------------------------------
