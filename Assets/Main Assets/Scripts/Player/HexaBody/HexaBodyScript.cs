@@ -11,9 +11,8 @@ using Unity.XR.CoreUtils;
 public class HexaBodyScript : MonoBehaviour
 {
     [Header("XR Toolkit Parts")]
-    public XROrigin XROrigin;  // Sostituisci XRRig con XROrigin
-    public GameObject XRCamera;  // Puoi mantenere la XRCamera come GameObject separato
-
+    public XROrigin XROrigin;
+    public GameObject XRCamera;
 
     [Header("Actionbased Controller")]
     public ActionBasedController CameraController;
@@ -40,21 +39,28 @@ public class HexaBodyScript : MonoBehaviour
     public float angularBreakDrag;
 
     [Header("Movement Configuration")]
-    public float accelerationMultiplier = 2.0f; // Moltiplicatore per l'accelerazione iniziale
-    public float maxVelocityMagnitude = 5.0f;   // Velocità massima consentita
-    public float stoppingForce = 10.0f;         // Forza di arresto quando non c'è input
-    public float directionChangeForce = 8.0f;   // Forza extra applicata durante i cambi di direzione
+    public float accelerationMultiplier = 2.0f;
+    public float maxVelocityMagnitude = 5.0f;
+    public float stoppingForce = 10.0f;
+    public float directionChangeForce = 8.0f;
 
     private Vector3 lastMoveDirection;
     private Rigidbody monoballRb;
 
-    [Header("Hexabody Croch & Jump")]
-    bool jumping = false;
 
-    public float crouchSpeed;
+
+    bool jumping = false;
+    bool isButtonCrouching = false;
+    bool isStandingUp = false;  // Nuovo flag per gestire l'alzata
+
+    [Header("Hexabody Crouch & Jump")]
+    public float crouchSpeed = 1.0f;
+    public float standUpSpeed = 1.0f;
     public float lowesCrouch;
     public float highestCrouch;
     private float additionalHight;
+    private float currentHeight;
+    private float targetHeight;
 
     Vector3 CrouchTarget;
 
@@ -84,6 +90,9 @@ public class HexaBodyScript : MonoBehaviour
         additionalHight = (0.5f * Monoball.transform.lossyScale.y) + (0.5f * Fender.transform.lossyScale.y) + (Head.transform.position.y - Chest.transform.position.y);
         monoballRb = Monoball.GetComponent<Rigidbody>();
         lastMoveDirection = Vector3.zero;
+
+        currentHeight = highestCrouch - additionalHight;
+        targetHeight = currentHeight;
     }
 
 
@@ -95,7 +104,7 @@ public class HexaBodyScript : MonoBehaviour
         getContollerInputValues();
     }
 
-    private void FixedUpdate() 
+    private void FixedUpdate()
     {
         movePlayerViaController();
         jump();
@@ -103,6 +112,11 @@ public class HexaBodyScript : MonoBehaviour
         if (!jumping)
         {
             spineContractionOnRealWorldCrouch();
+        }
+
+        if (isButtonCrouching || jumping || isStandingUp)  // Aggiungiamo isStandingUp alla condizione
+        {
+            UpdateHeight();
         }
 
         rotatePlayer();
@@ -251,41 +265,75 @@ public class HexaBodyScript : MonoBehaviour
     //------Jumping------------------------------------------------------------------------------------------
     private void jump()
     {
-        if (inputManager.GetRightPrimaryButton())  // Crouch con primary button destro
+        if (inputManager.GetRightPrimaryButton())
         {
             jumping = true;
-            jumpSitDown();  // Mantiene la posizione accovacciata mentre il pulsante è premuto
+            jumpSitDown();
         }
         else if (!inputManager.GetRightPrimaryButton() && jumping == true)
         {
             jumping = false;
-            jumpSitUp();  // Torna alla posizione in piedi quando il pulsante viene rilasciato
+            jumpSitUp();
         }
     }
 
     private void jumpSitDown()
     {
-        if (CrouchTarget.y >= lowesCrouch)
-        {
-            CrouchTarget.y -= crouchSpeed * Time.fixedDeltaTime;
-            Spine.targetPosition = new Vector3(0, CrouchTarget.y, 0);
-        }
+        isButtonCrouching = true;
+        isStandingUp = false;
+        targetHeight = lowesCrouch;
+        UpdateHeight();
     }
 
     private void jumpSitUp()
     {
-        CrouchTarget = new Vector3(0, highestCrouch - additionalHight, 0);
-        Spine.targetPosition = CrouchTarget;
+        isButtonCrouching = false;
+        isStandingUp = true;
+        targetHeight = highestCrouch - additionalHight;
+        UpdateHeight();
     }
 
+    private void UpdateHeight()
+    {
+        // Se stiamo usando il pulsante o siamo in fase di alzata
+        if (isButtonCrouching || isStandingUp || jumping)
+        {
+            float previousHeight = currentHeight;
 
-    //------Joint Controll-----------------------------------------------------------------------------------
+            if (currentHeight < targetHeight)
+            {
+                currentHeight += standUpSpeed * Time.fixedDeltaTime;
+                if (currentHeight > targetHeight)
+                {
+                    currentHeight = targetHeight;
+                    if (isStandingUp) isStandingUp = false;  // Fine dell'alzata
+                }
+            }
+            else if (currentHeight > targetHeight)
+            {
+                currentHeight -= crouchSpeed * Time.fixedDeltaTime;
+                if (currentHeight < targetHeight)
+                    currentHeight = targetHeight;
+            }
+
+            // Applica la posizione solo se c'è stato un cambiamento
+            if (previousHeight != currentHeight)
+            {
+                Spine.targetPosition = new Vector3(0, currentHeight, 0);
+            }
+        }
+    }
+
     private void spineContractionOnRealWorldCrouch()
     {
-        CrouchTarget.y = Mathf.Clamp(CameraControllerPos.y - additionalHight, lowesCrouch, highestCrouch - additionalHight);
-        Spine.targetPosition = new Vector3(0, CrouchTarget.y, 0);
-
+        if (!jumping && !isButtonCrouching && !isStandingUp)  // Aggiungiamo il controllo per isStandingUp
+        {
+            // Movimento diretto basato sulla posizione del visore
+            currentHeight = Mathf.Clamp(CameraControllerPos.y - additionalHight, lowesCrouch, highestCrouch - additionalHight);
+            Spine.targetPosition = new Vector3(0, currentHeight, 0);
+        }
     }
+
     private void moveAndRotateHand()
     {
         RightHandJoint.targetPosition = RightHandControllerPos - CameraControllerPos;
