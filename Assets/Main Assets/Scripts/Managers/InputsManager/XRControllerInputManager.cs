@@ -6,6 +6,12 @@ public class XRControllerInputManager : MonoBehaviour
     public static XRControllerInputManager Instance { get; private set; }
 
     // ======================================================
+    // Controllo per la visualizzazione dei log di debug
+    // ======================================================
+    [Header("Debug Settings")]
+    public bool enableDebugLogs = false;  // Imposta questo a true per abilitare i log
+
+    // ======================================================
     // Input Actions per il Controller Sinistro
     // ======================================================
     [Header("Controller Sinistro")]
@@ -87,6 +93,74 @@ public class XRControllerInputManager : MonoBehaviour
     }
 
     // ======================================================
+    // Gestione del Thumbstick Sinistro (Traslazione)
+    // ======================================================
+    private void OnLeftThumbstickTranslatePerformed(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.y = context.ReadValue<Vector2>().y;
+        if (enableDebugLogs)
+            Debug.Log($"Left Thumbstick Translate - Y: {leftThumbstickValue.y}");
+    }
+
+    private void OnLeftThumbstickTranslateCanceled(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.y = 0f;  // Azzerare il valore Y quando viene rilasciato
+        if (enableDebugLogs)
+            Debug.Log($"Left Thumbstick Translate Released - Y reset to {leftThumbstickValue.y}");
+    }
+
+    // ======================================================
+    // Gestione del Thumbstick Sinistro (Rotazione)
+    // ======================================================
+    private void OnLeftThumbstickRotatePerformed(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.x = context.ReadValue<Vector2>().x;
+        if (enableDebugLogs)
+            Debug.Log($"Left Thumbstick Rotate - X: {leftThumbstickValue.x}");
+    }
+
+    private void OnLeftThumbstickRotateCanceled(InputAction.CallbackContext context)
+    {
+        leftThumbstickValue.x = 0f;  // Azzerare il valore X quando viene rilasciato
+        if (enableDebugLogs)
+            Debug.Log($"Left Thumbstick Rotate Released - X reset to {leftThumbstickValue.x}");
+    }
+
+    // ======================================================
+    // Gestione del Thumbstick Destro (Traslazione)
+    // ======================================================
+    private void OnRightThumbstickTranslatePerformed(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.y = context.ReadValue<Vector2>().y;
+        if (enableDebugLogs)
+            Debug.Log($"Right Thumbstick Translate - Y: {rightThumbstickValue.y}");
+    }
+
+    private void OnRightThumbstickTranslateCanceled(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.y = 0f;  // Azzerare il valore Y quando viene rilasciato
+        if (enableDebugLogs)
+            Debug.Log($"Right Thumbstick Translate Released - Y reset to {rightThumbstickValue.y}");
+    }
+
+    // ======================================================
+    // Gestione del Thumbstick Destro (Rotazione)
+    // ======================================================
+    private void OnRightThumbstickRotatePerformed(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.x = context.ReadValue<Vector2>().x;
+        if (enableDebugLogs)
+            Debug.Log($"Right Thumbstick Rotate - X: {rightThumbstickValue.x}");
+    }
+
+    private void OnRightThumbstickRotateCanceled(InputAction.CallbackContext context)
+    {
+        rightThumbstickValue.x = 0f;  // Azzerare il valore X quando viene rilasciato
+        if (enableDebugLogs)
+            Debug.Log($"Right Thumbstick Rotate Released - X reset to {rightThumbstickValue.x}");
+    }
+
+    // ======================================================
     // Abilitazione delle azioni del controller
     // ======================================================
     private void EnableActions()
@@ -128,66 +202,6 @@ public class XRControllerInputManager : MonoBehaviour
         rightThumbstickTranslate.action.Disable();
         rightThumbstickRotate.action.Disable();
         rightThumbstickClickAction.action.Disable();
-    }
-
-    // ======================================================
-    // Gestione del Thumbstick Sinistro (Traslazione)
-    // ======================================================
-    private void OnLeftThumbstickTranslatePerformed(InputAction.CallbackContext context)
-    {
-        leftThumbstickValue.y = context.ReadValue<Vector2>().y;
-        Debug.Log($"Left Thumbstick Translate - Y: {leftThumbstickValue.y}");
-    }
-
-    private void OnLeftThumbstickTranslateCanceled(InputAction.CallbackContext context)
-    {
-        leftThumbstickValue.y = 0f;  // Azzerare il valore Y quando viene rilasciato
-        Debug.Log($"Left Thumbstick Translate Released - Y reset to {leftThumbstickValue.y}");
-    }
-
-    // ======================================================
-    // Gestione del Thumbstick Sinistro (Rotazione)
-    // ======================================================
-    private void OnLeftThumbstickRotatePerformed(InputAction.CallbackContext context)
-    {
-        leftThumbstickValue.x = context.ReadValue<Vector2>().x;
-        Debug.Log($"Left Thumbstick Rotate - X: {leftThumbstickValue.x}");
-    }
-
-    private void OnLeftThumbstickRotateCanceled(InputAction.CallbackContext context)
-    {
-        leftThumbstickValue.x = 0f;  // Azzerare il valore X quando viene rilasciato
-        Debug.Log($"Left Thumbstick Rotate Released - X reset to {leftThumbstickValue.x}");
-    }
-
-    // ======================================================
-    // Gestione del Thumbstick Destro (Traslazione)
-    // ======================================================
-    private void OnRightThumbstickTranslatePerformed(InputAction.CallbackContext context)
-    {
-        rightThumbstickValue.y = context.ReadValue<Vector2>().y;
-        Debug.Log($"Right Thumbstick Translate - Y: {rightThumbstickValue.y}");
-    }
-
-    private void OnRightThumbstickTranslateCanceled(InputAction.CallbackContext context)
-    {
-        rightThumbstickValue.y = 0f;  // Azzerare il valore Y quando viene rilasciato
-        Debug.Log($"Right Thumbstick Translate Released - Y reset to {rightThumbstickValue.y}");
-    }
-
-    // ======================================================
-    // Gestione del Thumbstick Destro (Rotazione)
-    // ======================================================
-    private void OnRightThumbstickRotatePerformed(InputAction.CallbackContext context)
-    {
-        rightThumbstickValue.x = context.ReadValue<Vector2>().x;
-        Debug.Log($"Right Thumbstick Rotate - X: {rightThumbstickValue.x}");
-    }
-
-    private void OnRightThumbstickRotateCanceled(InputAction.CallbackContext context)
-    {
-        rightThumbstickValue.x = 0f;  // Azzerare il valore X quando viene rilasciato
-        Debug.Log($"Right Thumbstick Rotate Released - X reset to {rightThumbstickValue.x}");
     }
 
     // ======================================================
