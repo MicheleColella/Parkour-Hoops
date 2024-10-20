@@ -799,6 +799,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "LeftPrimaryButtonPresence",
+                    "type": "Button",
+                    "id": "b5564f3f-2f2a-4d27-ac01-e67a52bf9533",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LeftSecondaryButtonPresence",
+                    "type": "Button",
+                    "id": "52db012b-259c-4003-92fd-6e7f13eb078d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LeftStickPresence",
+                    "type": "Button",
+                    "id": "d1522236-370a-4695-a6ca-962c202db41a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -986,6 +1013,39 @@
                     "processors": "",
                     "groups": "Generic XR Controller",
                     "action": "LeftSecondaryButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "513e9009-523d-4fc5-98f5-2736d95621b1",
+                    "path": "<OculusTouchController>{LeftHand}/primaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "LeftPrimaryButtonPresence",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1821d51c-8e55-490b-9ebd-3c4b2b8290f8",
+                    "path": "<OculusTouchController>{LeftHand}/secondaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "LeftSecondaryButtonPresence",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0a49daa0-6029-4f8c-8fb9-29a354a91299",
+                    "path": "<OculusTouchController>{LeftHand}/thumbstickTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "LeftStickPresence",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1655,6 +1715,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RightPrimaryButtonPresence",
+                    "type": "Button",
+                    "id": "6c810d15-e5f8-4bb1-8823-3144e368859b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightSecondaryButtonPresence",
+                    "type": "Button",
+                    "id": "b1d3d9c6-48f6-4e5b-9754-1f45b0bc0c7e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightStickPresence",
+                    "type": "Button",
+                    "id": "6689ed07-3422-4777-9f58-08dc6e395bac",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1842,6 +1929,39 @@
                     "processors": "",
                     "groups": "Generic XR Controller",
                     "action": "RightSecondaryButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d4fa0098-9655-493a-b5cc-a6fd3b93da6f",
+                    "path": "<OculusTouchController>{RightHand}/primaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "RightPrimaryButtonPresence",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "812ef9f8-52a5-4bd9-82b1-0a43e9be3a40",
+                    "path": "<OculusTouchController>{RightHand}/secondaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "RightSecondaryButtonPresence",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1369d58-a13f-46f3-aac4-9b6739a362fd",
+                    "path": "<OculusTouchController>{RightHand}/thumbstickTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "RightStickPresence",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

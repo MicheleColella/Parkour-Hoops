@@ -19,9 +19,12 @@ public class XRControllerInputManager : MonoBehaviour
     public InputActionReference leftGripAction;
     public InputActionReference leftPrimaryButtonAction;
     public InputActionReference leftSecondaryButtonAction;
+    public InputActionReference leftThumbstickClickAction;
+
+    [Header("Stick Sinistro")]
     public InputActionReference leftThumbstickTranslate;
     public InputActionReference leftThumbstickRotate;
-    public InputActionReference leftThumbstickClickAction;
+    
 
     // ======================================================
     // Input Actions per il Controller Destro
@@ -31,9 +34,12 @@ public class XRControllerInputManager : MonoBehaviour
     public InputActionReference rightGripAction;
     public InputActionReference rightPrimaryButtonAction;
     public InputActionReference rightSecondaryButtonAction;
+    public InputActionReference rightThumbstickClickAction;
+
+    [Header("Stick Destro")]
     public InputActionReference rightThumbstickTranslate;
     public InputActionReference rightThumbstickRotate;
-    public InputActionReference rightThumbstickClickAction;
+    
 
     // Variabili per tracciare i valori X e Y degli stick sinistro e destro
     private Vector2 leftThumbstickValue = Vector2.zero;
