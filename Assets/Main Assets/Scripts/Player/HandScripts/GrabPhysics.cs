@@ -9,9 +9,11 @@ public class GrabPhysics : MonoBehaviour
     public float radius = 0.1f;
     public LayerMask grabLayer;
     public GameObject sphereCenterObject; // Riferimento al GameObject che determina il centro della sfera
+    public List<Collider> handColliders; // Lista di colliders della mano, da assegnare nell'Inspector
 
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
+    private Collider grabbedObjectCollider; // Il collider dell'oggetto afferrato
 
     private void FixedUpdate()
     {
@@ -26,6 +28,16 @@ public class GrabPhysics : MonoBehaviour
             if (nearbyColliders.Length > 0)
             {
                 Rigidbody nearbyRigidbody = nearbyColliders[0].attachedRigidbody;
+
+                // Ignora le collisioni tra ciascun collider della mano e l'oggetto preso
+                grabbedObjectCollider = nearbyColliders[0];
+                if (handColliders != null && grabbedObjectCollider != null)
+                {
+                    foreach (Collider handCollider in handColliders)
+                    {
+                        Physics.IgnoreCollision(handCollider, grabbedObjectCollider, true);
+                    }
+                }
 
                 fixedJoint = gameObject.AddComponent<FixedJoint>();
                 fixedJoint.autoConfigureConnectedAnchor = false;
@@ -46,6 +58,16 @@ public class GrabPhysics : MonoBehaviour
         else if (!isGrabButtonPressed && isGrabbing)
         {
             isGrabbing = false;
+
+            // Ripristina le collisioni tra la mano e l'oggetto rilasciato
+            if (handColliders != null && grabbedObjectCollider != null)
+            {
+                foreach (Collider handCollider in handColliders)
+                {
+                    Physics.IgnoreCollision(handCollider, grabbedObjectCollider, false);
+                }
+                grabbedObjectCollider = null; // Reset del riferimento all'oggetto afferrato
+            }
 
             if (fixedJoint)
             {
