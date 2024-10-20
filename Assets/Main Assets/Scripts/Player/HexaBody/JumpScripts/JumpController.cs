@@ -5,11 +5,15 @@ using UnityEngine;
 public class JumpController : MonoBehaviour
 {
     [Header("Jump Settings")]
-    public float jumpForce = 10.0f;  // Forza applicata per il salto
+    public float minJumpForce = 5.0f;  // Forza minima per il salto
+    public float maxJumpForce = 15.0f;  // Forza massima per il salto
+    public float maxChargeTime = 3.0f;  // Tempo massimo di carica del salto
     public float groundedCheckDelay = 0.2f;  // Delay prima di impostare isGrounded a false
 
     [SerializeField]
     public bool isGrounded = true;  // Stato che indica se la Monoball è a terra, visibile nell'Inspector
+    private bool isCharging = false;  // Controlla se il salto è in fase di carica
+    private float chargeStartTime;  // Tempo di inizio della carica
     private bool canJump = true;  // Controlla se il salto è permesso
 
     [Header("Target Rigidbody")]
@@ -45,21 +49,40 @@ public class JumpController : MonoBehaviour
 
     private void HandleJumpInput()
     {
-        // Verifica se il player è a terra e preme il pulsante di salto (ad esempio, il tasto A del controller)
-        if (isGrounded && canJump && inputManager.GetRightPrimaryButton())
+        // Verifica se il player è a terra e può iniziare a caricare il salto
+        if (isGrounded && canJump && !isCharging && inputManager.GetRightPrimaryButton())
+        {
+            StartCharging();
+        }
+        // Se il pulsante viene rilasciato, esegui il salto
+        else if (isCharging && !inputManager.GetRightPrimaryButton())
         {
             PerformJump();
         }
+    }
+
+    private void StartCharging()
+    {
+        isCharging = true;
+        chargeStartTime = Time.time;  // Memorizza il tempo di inizio della carica
     }
 
     private void PerformJump()
     {
         if (targetRigidbody == null) return;
 
-        //Debug.Log("Jump");
+        // Calcola il tempo di carica
+        float chargeTime = Time.time - chargeStartTime;
+        // Limita il tempo di carica al valore massimo
+        chargeTime = Mathf.Clamp(chargeTime, 0, maxChargeTime);
+
+        // Calcola la forza del salto basata sul tempo di carica
+        float jumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, chargeTime / maxChargeTime);
+
         // Applica la forza verso l'alto al Rigidbody assegnato
         targetRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         isGrounded = false;  // Imposta isGrounded a false subito dopo il salto
+        isCharging = false;  // Reset dello stato di carica
 
         // Inizia il ritardo per aggiornare isGrounded a false se non si è a terra
         StartCoroutine(GroundedCheckDelayCoroutine());

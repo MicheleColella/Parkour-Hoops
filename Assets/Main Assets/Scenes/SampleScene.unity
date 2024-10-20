@@ -28544,7 +28544,7 @@ MonoBehaviour:
   directionChangeForce: 8
   crouchSpeed: 1.5
   standUpSpeed: 1.5
-  minCrouchHeight: 0.05
+  minCrouchHeight: 0
   maxCrouchHeight: 1.8
 --- !u!54 &8732607022660418776
 Rigidbody:
@@ -29207,7 +29207,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbe9d0cd03800ba4bace80fe71a27790, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 200
+  minJumpForce: 100
+  maxJumpForce: 300
+  maxChargeTime: 3
   groundedCheckDelay: 0.2
   isGrounded: 1
   targetRigidbody: {fileID: 8732607022704123873}
