@@ -29166,6 +29166,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8732607022853558230}
   - component: {fileID: 6150939081605479815}
+  - component: {fileID: 8732607022853558231}
   m_Layer: 0
   m_Name: HexaBody
   m_TagString: Untagged
@@ -29194,6 +29195,22 @@ Transform:
   - {fileID: 8732607023095264308}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8732607022853558231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8732607022853558225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbe9d0cd03800ba4bace80fe71a27790, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpForce: 200
+  groundedCheckDelay: 0.2
+  isGrounded: 1
+  targetRigidbody: {fileID: 8732607022704123873}
 --- !u!33 &8732607022970061584
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -29320,6 +29337,7 @@ GameObject:
   - component: {fileID: 8732607022970061587}
   - component: {fileID: 8732607022970061586}
   - component: {fileID: 8732607022970061597}
+  - component: {fileID: 8732607022970061600}
   m_Layer: 6
   m_Name: MonoBall
   m_TagString: Untagged
@@ -29327,6 +29345,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8732607022970061600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8732607022970061599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29ee1f98e363ce1428132141c046fcb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpController: {fileID: 8732607022853558231}
 --- !u!33 &8732607023095264296
 MeshFilter:
   m_ObjectHideFlags: 0

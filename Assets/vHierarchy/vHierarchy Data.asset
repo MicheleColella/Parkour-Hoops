@@ -21,6 +21,8 @@ MonoBehaviour:
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-9883848-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-718044299-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1639362554-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-644270214-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1763765639-0
         values:
         - iColor: 1
           icon: PreMatQuad
@@ -28,8 +30,12 @@ MonoBehaviour:
           icon: PreMatQuad
         - iColor: 4
           icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 8
+          icon: Favorite
       goDatasByInstanceId:
-        keys: 3894ffffc893ffff5c710000
+        keys: 607100002c7300008e750000e0720000bc750000
         values:
         - iColor: 1
           icon: PreMatQuad
@@ -37,3 +43,7 @@ MonoBehaviour:
           icon: PreMatQuad
         - iColor: 4
           icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 8
+          icon: Favorite

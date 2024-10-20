@@ -193,12 +193,12 @@ public class HexaBodyController : MonoBehaviour
 
     private void HandleCrouchInput()
     {
-        if (inputManager.GetRightPrimaryButton())
+        if (inputManager.GetRightSecondaryButton())
         {
             isCrouching = true;
             targetHeight = minCrouchHeight;  // Riduci l'altezza al valore del crouch
         }
-        else if (!inputManager.GetRightPrimaryButton() && isCrouching)
+        else if (!inputManager.GetRightSecondaryButton() && isCrouching)
         {
             isCrouching = false;
             isStandingUp = true;
