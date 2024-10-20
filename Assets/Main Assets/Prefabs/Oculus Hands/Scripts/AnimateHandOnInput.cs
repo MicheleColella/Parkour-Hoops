@@ -13,23 +13,37 @@ public class AnimateHandOnInput : MonoBehaviour
     public InputActionProperty stickPresenceAnimationAction;
     public Animator handAnimator;
 
+    private float thumbButtonPresence;
+    private float primaryButtonPresence;
+    private float secondaryButtonPresence;
+    private float stickPresence;
+    private float triggerValue;
+    private float gripValue;
+
     // Update is called once per frame
     void Update()
     {
-        float triggerValue = pinchAnimationAction.action.ReadValue<float>();
+        triggerValue = pinchAnimationAction.action.ReadValue<float>();
         handAnimator.SetFloat("Trigger", triggerValue);
 
-        float gripValue = gripAnimationAction.action.ReadValue<float>();
+        gripValue = gripAnimationAction.action.ReadValue<float>();
         handAnimator.SetFloat("Grip", gripValue);
 
-        float primaryButtonPresence = primatyButtonPresenceAnimationAction.action.ReadValue<float>();
-        handAnimator.SetFloat("PrimaryButtonPresence", primaryButtonPresence);
+        primaryButtonPresence = primatyButtonPresenceAnimationAction.action.ReadValue<float>();
 
-        float secondaryButtonPresence = secondaryButtonPresenceAnimationAction.action.ReadValue<float>();
-        handAnimator.SetFloat("SecondaryButtonPresence", secondaryButtonPresence);
+        secondaryButtonPresence = secondaryButtonPresenceAnimationAction.action.ReadValue<float>();
 
-        float stickPresence = stickPresenceAnimationAction.action.ReadValue<float>();
-        handAnimator.SetFloat("StickPresence", stickPresence);
+        stickPresence = stickPresenceAnimationAction.action.ReadValue<float>();
 
+        if (primaryButtonPresence == 1 || secondaryButtonPresence == 1 || stickPresence == 1)
+        {
+            thumbButtonPresence = 1;
+        }
+        else
+        {
+            thumbButtonPresence = 0;
+        }
+
+        handAnimator.SetFloat("ThumbButtonPresence", thumbButtonPresence);
     }
 }

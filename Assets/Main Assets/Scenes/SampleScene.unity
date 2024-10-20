@@ -19282,6 +19282,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: stickPresenceAnimationAction.m_Reference
+      value: 
+      objectReference: {fileID: -7133167492897962013, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: stickPresenceAnimationAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: stickPresenceAnimationAction.m_Action.m_Name
       value: Stick Presence Animation
       objectReference: {fileID: 0}
@@ -19293,6 +19304,12 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: secondaryButtonPresenceAnimationAction.m_Reference
+      value: 
+      objectReference: {fileID: -1294669989606002664, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_UseReference
       value: 1
       objectReference: {fileID: 0}
@@ -19300,6 +19317,11 @@ PrefabInstance:
         type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_Action.m_Name
       value: Primaty Button Presence Animation
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: secondaryButtonPresenceAnimationAction.m_UseReference
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
@@ -21782,9 +21804,31 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: stickPresenceAnimationAction.m_Reference
+      value: 
+      objectReference: {fileID: 3817840268289805057, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: stickPresenceAnimationAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: stickPresenceAnimationAction.m_Action.m_Name
+      value: Stick Presence Animation
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_Reference
       value: 
       objectReference: {fileID: 7747523001613525806, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: secondaryButtonPresenceAnimationAction.m_Reference
+      value: 
+      objectReference: {fileID: -1873431834560644666, guid: c348712bda248c246b8c49b3db54643f,
         type: 3}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
@@ -21795,6 +21839,16 @@ PrefabInstance:
         type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_Action.m_Name
       value: Primaty Button Presence Animation
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: secondaryButtonPresenceAnimationAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: secondaryButtonPresenceAnimationAction.m_Action.m_Name
+      value: Secondary Button Presence Animation
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

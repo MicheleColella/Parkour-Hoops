@@ -87,7 +87,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 4
-    m_ConditionEvent: PrimaryButtonPresence
+    m_ConditionEvent: ThumbButtonPresence
     m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 5869694157650388578}
@@ -149,7 +149,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: PrimaryButtonPresence
+  - m_Name: ThumbButtonPresence
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -177,7 +177,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 3
-    m_ConditionEvent: PrimaryButtonPresence
+    m_ConditionEvent: ThumbButtonPresence
     m_EventTreshold: 0.9
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7197635538338428568}
