@@ -10,10 +10,15 @@ public class GrabPhysics : MonoBehaviour
     public LayerMask grabLayer;
     public GameObject sphereCenterObject; // Riferimento al GameObject che determina il centro della sfera
     public List<Collider> handColliders; // Lista di colliders della mano, da assegnare nell'Inspector
+    public Animator handAnimator; // Riferimento all'animator della mano
+    public List<Collider> fingerTipColliders; // Lista dei colliders delle punte delle dita
+    public float grabValueSpeed = 1.0f; // Velocità di incremento di GrabValue
 
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
     private Collider grabbedObjectCollider; // Il collider dell'oggetto afferrato
+    private float grabValue = 0f; // Valore corrente di "GrabValue"
+    private bool objectTouchedByFingers = false; // Per monitorare se l'oggetto è toccato dai colliders delle dita
 
     private void FixedUpdate()
     {
@@ -40,19 +45,15 @@ public class GrabPhysics : MonoBehaviour
                 }
 
                 fixedJoint = gameObject.AddComponent<FixedJoint>();
-                fixedJoint.autoConfigureConnectedAnchor = false;
+                fixedJoint.autoConfigureConnectedAnchor = true; // Lascia auto-configurare l'anchor per mantenere l'oggetto nella sua posizione originale
 
                 if (nearbyRigidbody)
                 {
                     fixedJoint.connectedBody = nearbyRigidbody;
-                    fixedJoint.connectedAnchor = nearbyRigidbody.transform.InverseTransformPoint(spherePosition);
-                }
-                else
-                {
-                    fixedJoint.connectedAnchor = spherePosition;
                 }
 
                 isGrabbing = true;
+                StartCoroutine(IncreaseGrabValue()); // Avvia l'incremento graduale di GrabValue
             }
         }
         else if (!isGrabButtonPressed && isGrabbing)
@@ -73,7 +74,40 @@ public class GrabPhysics : MonoBehaviour
             {
                 Destroy(fixedJoint);
             }
+
+            StopAllCoroutines(); // Ferma l'incremento di GrabValue
+            ResetGrabValue(); // Resetta il valore di GrabValue
         }
+    }
+
+    // Coroutine per aumentare gradualmente GrabValue con velocità regolabile
+    private IEnumerator IncreaseGrabValue()
+    {
+        while (grabValue < 1f && !objectTouchedByFingers)
+        {
+            grabValue += Time.deltaTime * grabValueSpeed; // Aumenta gradualmente GrabValue in base alla velocità impostata
+            handAnimator.SetFloat("GrabValue", grabValue); // Aggiorna il parametro "GrabValue" nell'animator
+
+            // Controlla se uno dei collider delle dita tocca l'oggetto afferrato
+            foreach (Collider fingerTipCollider in fingerTipColliders)
+            {
+                if (fingerTipCollider.bounds.Intersects(grabbedObjectCollider.bounds))
+                {
+                    objectTouchedByFingers = true;
+                    break;
+                }
+            }
+
+            yield return null;
+        }
+    }
+
+    // Funzione per resettare GrabValue
+    private void ResetGrabValue()
+    {
+        grabValue = 0f;
+        objectTouchedByFingers = false;
+        handAnimator.SetFloat("GrabValue", grabValue);
     }
 
     // Funzione per disegnare la sfera nel Scene view
