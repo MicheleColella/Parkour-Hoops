@@ -12,12 +12,15 @@ public class GrabPhysics : MonoBehaviour
     public List<Collider> fingerTipColliders; // List of fingertip colliders
     public float grabValueSpeed = 1.0f; // Speed of GrabValue increment
 
-    // New public field for the grab range collider
+    // Public field for the grab range collider
     public Collider grabRangeCollider; // Assign the trigger collider manually
 
-    // New variables for the prefab instantiation
+    // Variables for the prefab instantiation
     public GameObject prefabToInstantiate; // The prefab to instantiate
     public Vector3 prefabScale = Vector3.one; // Scale of the prefab, set in Inspector
+
+    // Reference point to find the closest object
+    public Transform referencePoint; // Assign the reference point in the Inspector
 
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
@@ -46,14 +49,21 @@ public class GrabPhysics : MonoBehaviour
                     grabLayer,
                     QueryTriggerInteraction.Ignore);
 
-                // Exclude self and hand colliders
+                // Exclude self and hand colliders, and find the closest object to the reference point
                 Collider targetCollider = null;
+                float closestDistance = Mathf.Infinity;
+
                 foreach (Collider collider in nearbyColliders)
                 {
                     if (collider.gameObject != gameObject && !handColliders.Contains(collider))
                     {
-                        targetCollider = collider;
-                        break;
+                        // Calculate distance to the reference point
+                        float distance = Vector3.Distance(referencePoint.position, collider.transform.position);
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            targetCollider = collider;
+                        }
                     }
                 }
 
@@ -72,17 +82,21 @@ public class GrabPhysics : MonoBehaviour
 
                     if (currentCandidateObject != null)
                     {
-                        // Instantiate the prefab at the candidate object's position
-                        if (prefabToInstantiate != null)
+                        // Check if the candidate object's Rigidbody is not kinematic before instantiating the prefab
+                        Rigidbody rb = currentCandidateObject.attachedRigidbody;
+                        if (rb != null && !rb.isKinematic)
                         {
-                            instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.transform.position, currentCandidateObject.transform.rotation);
-                            instantiatedPrefab.transform.localScale = prefabScale;
-                            // Make the instantiated prefab a child of the candidate object
-                            instantiatedPrefab.transform.SetParent(currentCandidateObject.transform);
-                        }
-                        else
-                        {
-                            Debug.LogWarning("Prefab to instantiate is not assigned.");
+                            // Instantiate the prefab at the candidate object's position
+                            if (prefabToInstantiate != null)
+                            {
+                                instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.transform.position, currentCandidateObject.transform.rotation);
+                                instantiatedPrefab.transform.localScale = prefabScale;
+                                // Do not parent the prefab to the candidate object
+                            }
+                            else
+                            {
+                                Debug.LogWarning("Prefab to instantiate is not assigned.");
+                            }
                         }
                     }
                 }
@@ -108,6 +122,13 @@ public class GrabPhysics : MonoBehaviour
                 instantiatedPrefab = null;
             }
             currentCandidateObject = null;
+        }
+
+        // Update the position of the instantiated prefab to match the candidate object's position
+        if (instantiatedPrefab != null && currentCandidateObject != null)
+        {
+            instantiatedPrefab.transform.position = currentCandidateObject.transform.position;
+            instantiatedPrefab.transform.rotation = currentCandidateObject.transform.rotation;
         }
 
         // Grabbing logic
