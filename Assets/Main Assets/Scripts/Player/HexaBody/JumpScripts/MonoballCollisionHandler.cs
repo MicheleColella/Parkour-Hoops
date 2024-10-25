@@ -1,36 +1,34 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MonoballCollisionHandler : MonoBehaviour
 {
-    [Header("References")]
-    public JumpController jumpController;
-
-    [Header("Ground Check Settings")]
-    public float groundNormalThreshold = 0.5f;
+    public JumpController jumpController;  // Riferimento al JumpController
 
     private void OnCollisionEnter(Collision collision)
     {
         if (IsTouchingGround(collision))
         {
-            jumpController?.SetGrounded(true);
+            jumpController.SetGrounded(true);  // Notifica al JumpController che è a terra
         }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        jumpController?.SetGrounded(false);
+        if (IsTouchingGround(collision))
+        {
+            jumpController.SetGrounded(false);  // Notifica al JumpController che ha lasciato il terreno
+        }
     }
 
-    /// <summary>
-    /// Determines if the collision qualifies as touching the ground based on contact normals.
-    /// </summary>
-    /// <param name="collision">Collision data.</param>
-    /// <returns>True if touching ground; otherwise, false.</returns>
+    // Funzione che verifica se la Monoball è effettivamente a contatto con il suolo
     private bool IsTouchingGround(Collision collision)
     {
         foreach (ContactPoint contact in collision.contacts)
         {
-            if (contact.normal.y > groundNormalThreshold)
+            // Considera il contatto come suolo se la normale del contatto punta verso l'alto
+            if (contact.normal.y > 0.5f)
             {
                 return true;
             }
