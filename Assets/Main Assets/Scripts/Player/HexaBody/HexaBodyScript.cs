@@ -35,18 +35,15 @@ public class HexaBodyController : MonoBehaviour
     public float directionChangeForce = 8.0f;
 
     [Header("Crouch Settings")]
-    public float crouchSpeed = 1.0f;
-    public float standUpSpeed = 1.0f;
+    public float crouchSpeed = 5.0f;  // Adjust as needed
+    public float standUpSpeed = 5.0f;  // Adjust as needed
     public float minCrouchHeight;
     public float maxCrouchHeight;
 
     private Rigidbody monoballRb;
     private Vector3 lastMoveDirection;
-    private bool isCrouching = false;
-    private bool isStandingUp = false;
     private float additionalHeight;
     private float currentHeight;
-    private float targetHeight;
 
     private Vector2 leftThumbstickInput;
     private Quaternion headYaw;
@@ -67,7 +64,6 @@ public class HexaBodyController : MonoBehaviour
         lastMoveDirection = Vector3.zero;
 
         currentHeight = maxCrouchHeight - additionalHeight;
-        targetHeight = currentHeight;
     }
 
     void Update()
@@ -80,17 +76,15 @@ public class HexaBodyController : MonoBehaviour
     void FixedUpdate()
     {
         MovePlayer();
-        HandleCrouchInput();  // Aggiunto metodo per gestire il crouch con il pulsante destro
-        UpdateCrouchHeight();
-
-        if (!isCrouching && !isStandingUp)
-        {
-            AdjustSpineForCrouch();
-        }
-
         RotatePlayerToHeadDirection();
         MoveAndRotateHands();
+
+        // Adjust the spine height (handles both crouching and standing)
+        AdjustSpineHeight();
     }
+
+
+
 
     private void ReadControllerInput()
     {
@@ -191,60 +185,36 @@ public class HexaBodyController : MonoBehaviour
         lastMoveDirection = Vector3.zero;
     }
 
-    private void HandleCrouchInput()
+
+    private void AdjustSpineHeight()
     {
+        float headHeight = HeadController.positionAction.action.ReadValue<Vector3>().y - additionalHeight;
+        float desiredHeight;
+
         if (inputManager.GetRightSecondaryButton())
         {
-            isCrouching = true;
-            targetHeight = minCrouchHeight;  // Riduci l'altezza al valore del crouch
+            // If crouch button is pressed, set desired height to crouch height
+            desiredHeight = minCrouchHeight;
         }
-        else if (!inputManager.GetRightSecondaryButton() && isCrouching)
+        else
         {
-            isCrouching = false;
-            isStandingUp = true;
-            targetHeight = maxCrouchHeight - additionalHeight;  // Ritorna all'altezza normale
+            // If crouch button is not pressed, desired height is based on head position
+            desiredHeight = Mathf.Clamp(
+                headHeight,
+                minCrouchHeight,
+                maxCrouchHeight - additionalHeight
+            );
         }
+
+        // Smoothly interpolate currentHeight towards desiredHeight
+        currentHeight = Mathf.Lerp(currentHeight, desiredHeight, Time.fixedDeltaTime * standUpSpeed);
+
+        // Update the spine joint's target position
+        SpineJoint.targetPosition = new Vector3(0, currentHeight, 0);
     }
 
-    private void UpdateCrouchHeight()
-    {
-        if (isCrouching || isStandingUp)
-        {
-            float previousHeight = currentHeight;
 
-            if (currentHeight < targetHeight)
-            {
-                currentHeight += standUpSpeed * Time.fixedDeltaTime;
-                if (currentHeight > targetHeight)
-                {
-                    currentHeight = targetHeight;
-                    if (isStandingUp) isStandingUp = false;
-                }
-            }
-            else if (currentHeight > targetHeight)
-            {
-                currentHeight -= crouchSpeed * Time.fixedDeltaTime;
-                if (currentHeight < targetHeight)
-                {
-                    currentHeight = targetHeight;
-                }
-            }
 
-            if (previousHeight != currentHeight)
-            {
-                SpineJoint.targetPosition = new Vector3(0, currentHeight, 0);
-            }
-        }
-    }
-
-    private void AdjustSpineForCrouch()
-    {
-        if (!isCrouching && !isStandingUp)
-        {
-            currentHeight = Mathf.Clamp(HeadController.positionAction.action.ReadValue<Vector3>().y - additionalHeight, minCrouchHeight, maxCrouchHeight - additionalHeight);
-            SpineJoint.targetPosition = new Vector3(0, currentHeight, 0);
-        }
-    }
 
     private void MoveAndRotateHands()
     {
