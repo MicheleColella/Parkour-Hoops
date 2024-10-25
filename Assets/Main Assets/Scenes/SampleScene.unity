@@ -16630,6 +16630,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303923581}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1318181691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1318181692}
+  - component: {fileID: 1318181693}
+  m_Layer: 8
+  m_Name: GrabRangeL
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1318181692
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318181691}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.329, y: -0.12000024, z: -0.46999997}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8732607023095264308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1318181693
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318181691}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!43 &1331848241
 Mesh:
   m_ObjectHideFlags: 0
@@ -26358,6 +26411,59 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.8504143, y: 0.2805882, z: 4.508976}
   m_Center: {x: 0.92520714, y: -0.3597059, z: -0.43970394}
+--- !u!1 &1929232553
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1929232555}
+  - component: {fileID: 1929232554}
+  m_Layer: 8
+  m_Name: GrabRangeR
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1929232554
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1929232553}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1929232555
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1929232553}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.329, y: -0.12, z: -0.47}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8732607022660418779}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1932575082
 GameObject:
   m_ObjectHideFlags: 0
@@ -28915,6 +29021,7 @@ Transform:
   m_Children:
   - {fileID: 1482115837}
   - {fileID: 1944091228}
+  - {fileID: 1929232555}
   m_Father: {fileID: 8732607022853558230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8732607022660418780
@@ -28942,11 +29049,9 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: -1758520528963094988, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
-  radius: 0.04
   grabLayer:
     serializedVersion: 2
     m_Bits: 32768
-  sphereCenterObject: {fileID: 1944091227}
   handColliders:
   - {fileID: 1974899177}
   - {fileID: 1228214529}
@@ -28969,6 +29074,7 @@ MonoBehaviour:
   - {fileID: 1482115841}
   - {fileID: 1482115842}
   grabValueSpeed: 5
+  grabRangeCollider: {fileID: 1929232554}
 --- !u!4 &8732607022704123872
 Transform:
   m_ObjectHideFlags: 0
@@ -29662,6 +29768,7 @@ Transform:
   m_Children:
   - {fileID: 1701318472}
   - {fileID: 422878635}
+  - {fileID: 1318181692}
   m_Father: {fileID: 8732607022853558230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8732607023095264309
@@ -29734,11 +29841,9 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
-  radius: 0.04
   grabLayer:
     serializedVersion: 2
     m_Bits: 32768
-  sphereCenterObject: {fileID: 422878634}
   handColliders:
   - {fileID: 511495535}
   - {fileID: 1179201101}
@@ -29761,6 +29866,7 @@ MonoBehaviour:
   - {fileID: 1701318475}
   - {fileID: 1701318476}
   grabValueSpeed: 5
+  grabRangeCollider: {fileID: 1318181693}
 --- !u!33 &8732607023210212952
 MeshFilter:
   m_ObjectHideFlags: 0

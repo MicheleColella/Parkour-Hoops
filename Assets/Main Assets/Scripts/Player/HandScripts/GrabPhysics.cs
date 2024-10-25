@@ -6,19 +6,20 @@ using UnityEngine.InputSystem;
 public class GrabPhysics : MonoBehaviour
 {
     public InputActionProperty grabInputSource;
-    public float radius = 0.1f;
     public LayerMask grabLayer;
-    public GameObject sphereCenterObject; // Riferimento al GameObject che determina il centro della sfera
-    public List<Collider> handColliders; // Lista di colliders della mano, da assegnare nell'Inspector
-    public Animator handAnimator; // Riferimento all'animator della mano
-    public List<Collider> fingerTipColliders; // Lista dei colliders delle punte delle dita
-    public float grabValueSpeed = 1.0f; // Velocità di incremento di GrabValue
+    public List<Collider> handColliders; // List of hand colliders, assign in Inspector
+    public Animator handAnimator; // Reference to the hand's animator
+    public List<Collider> fingerTipColliders; // List of fingertip colliders
+    public float grabValueSpeed = 1.0f; // Speed of GrabValue increment
+
+    // New public field for the grab range collider
+    public Collider grabRangeCollider; // Assign the trigger collider manually
 
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
-    private Collider grabbedObjectCollider; // Il collider dell'oggetto afferrato
-    private float grabValue = 0f; // Valore corrente di "GrabValue"
-    private bool objectTouchedByFingers = false; // Per monitorare se l'oggetto è toccato dai colliders delle dita
+    private Collider grabbedObjectCollider; // Collider of the grabbed object
+    private float grabValue = 0f; // Current "GrabValue"
+    private bool objectTouchedByFingers = false; // Monitor if the object is touched by fingertip colliders
 
     private void FixedUpdate()
     {
@@ -26,48 +27,73 @@ public class GrabPhysics : MonoBehaviour
 
         if (isGrabButtonPressed && !isGrabbing)
         {
-            // Usa la posizione del GameObject specificato come centro della sfera
-            Vector3 spherePosition = sphereCenterObject != null ? sphereCenterObject.transform.position : transform.position;
-            Collider[] nearbyColliders = Physics.OverlapSphere(spherePosition, radius, grabLayer, QueryTriggerInteraction.Ignore);
-
-            if (nearbyColliders.Length > 0)
+            // Use the grabRangeCollider's bounds to find nearby colliders
+            if (grabRangeCollider != null)
             {
-                Rigidbody nearbyRigidbody = nearbyColliders[0].attachedRigidbody;
+                Collider[] nearbyColliders = Physics.OverlapBox(
+                    grabRangeCollider.bounds.center,
+                    grabRangeCollider.bounds.extents,
+                    grabRangeCollider.transform.rotation,
+                    grabLayer,
+                    QueryTriggerInteraction.Ignore);
 
-                // Ignora le collisioni tra ciascun collider della mano e l'oggetto preso
-                grabbedObjectCollider = nearbyColliders[0];
-                if (handColliders != null && grabbedObjectCollider != null)
+                if (nearbyColliders.Length > 0)
                 {
-                    foreach (Collider handCollider in handColliders)
+                    // Exclude self and hand colliders
+                    Collider targetCollider = null;
+                    foreach (Collider collider in nearbyColliders)
                     {
-                        Physics.IgnoreCollision(handCollider, grabbedObjectCollider, true);
+                        if (collider.gameObject != gameObject && !handColliders.Contains(collider))
+                        {
+                            targetCollider = collider;
+                            break;
+                        }
+                    }
+
+                    if (targetCollider != null)
+                    {
+                        Rigidbody targetRigidbody = targetCollider.attachedRigidbody;
+
+                        // Ignore collisions between each hand collider and the grabbed object
+                        grabbedObjectCollider = targetCollider;
+                        if (handColliders != null && grabbedObjectCollider != null)
+                        {
+                            foreach (Collider handCollider in handColliders)
+                            {
+                                Physics.IgnoreCollision(handCollider, grabbedObjectCollider, true);
+                            }
+                        }
+
+                        fixedJoint = gameObject.AddComponent<FixedJoint>();
+                        fixedJoint.autoConfigureConnectedAnchor = true; // Auto-configure the anchor to maintain the object's original position
+
+                        if (targetRigidbody)
+                        {
+                            fixedJoint.connectedBody = targetRigidbody;
+                        }
+
+                        isGrabbing = true;
+                        StartCoroutine(IncreaseGrabValue()); // Start gradually increasing GrabValue
                     }
                 }
-
-                fixedJoint = gameObject.AddComponent<FixedJoint>();
-                fixedJoint.autoConfigureConnectedAnchor = true; // Lascia auto-configurare l'anchor per mantenere l'oggetto nella sua posizione originale
-
-                if (nearbyRigidbody)
-                {
-                    fixedJoint.connectedBody = nearbyRigidbody;
-                }
-
-                isGrabbing = true;
-                StartCoroutine(IncreaseGrabValue()); // Avvia l'incremento graduale di GrabValue
+            }
+            else
+            {
+                Debug.LogWarning("Grab Range Collider is not assigned.");
             }
         }
         else if (!isGrabButtonPressed && isGrabbing)
         {
             isGrabbing = false;
 
-            // Ripristina le collisioni tra la mano e l'oggetto rilasciato
+            // Restore collisions between the hand and the released object
             if (handColliders != null && grabbedObjectCollider != null)
             {
                 foreach (Collider handCollider in handColliders)
                 {
                     Physics.IgnoreCollision(handCollider, grabbedObjectCollider, false);
                 }
-                grabbedObjectCollider = null; // Reset del riferimento all'oggetto afferrato
+                grabbedObjectCollider = null; // Reset the reference to the grabbed object
             }
 
             if (fixedJoint)
@@ -75,20 +101,20 @@ public class GrabPhysics : MonoBehaviour
                 Destroy(fixedJoint);
             }
 
-            StopAllCoroutines(); // Ferma l'incremento di GrabValue
-            ResetGrabValue(); // Resetta il valore di GrabValue
+            StopAllCoroutines(); // Stop increasing GrabValue
+            ResetGrabValue(); // Reset the value of GrabValue
         }
     }
 
-    // Coroutine per aumentare gradualmente GrabValue con velocità regolabile
+    // Coroutine to gradually increase GrabValue at adjustable speed
     private IEnumerator IncreaseGrabValue()
     {
         while (grabValue < 1f && !objectTouchedByFingers)
         {
-            grabValue += Time.deltaTime * grabValueSpeed; // Aumenta gradualmente GrabValue in base alla velocità impostata
-            handAnimator.SetFloat("GrabValue", grabValue); // Aggiorna il parametro "GrabValue" nell'animator
+            grabValue += Time.deltaTime * grabValueSpeed; // Gradually increase GrabValue based on the set speed
+            handAnimator.SetFloat("GrabValue", grabValue); // Update the "GrabValue" parameter in the animator
 
-            // Controlla se uno dei collider delle dita tocca l'oggetto afferrato
+            // Check if any of the fingertip colliders are touching the grabbed object
             foreach (Collider fingerTipCollider in fingerTipColliders)
             {
                 if (fingerTipCollider.bounds.Intersects(grabbedObjectCollider.bounds))
@@ -102,7 +128,7 @@ public class GrabPhysics : MonoBehaviour
         }
     }
 
-    // Funzione per resettare GrabValue
+    // Function to reset GrabValue
     private void ResetGrabValue()
     {
         grabValue = 0f;
@@ -110,19 +136,25 @@ public class GrabPhysics : MonoBehaviour
         handAnimator.SetFloat("GrabValue", grabValue);
     }
 
-    // Funzione per disegnare la sfera nel Scene view
+    // Optional: Function to draw the collider bounds in the Scene view
     private void OnDrawGizmos()
     {
-        if (sphereCenterObject == null)
+        if (grabRangeCollider == null)
             return;
 
-        // Imposta il colore del Gizmo
         Gizmos.color = Color.yellow;
-
-        // Usa la posizione del GameObject specificato come centro della sfera
-        Vector3 spherePosition = sphereCenterObject.transform.position;
-
-        // Disegna la sfera
-        Gizmos.DrawWireSphere(spherePosition, radius);
+        // Draw the collider bounds
+        Gizmos.matrix = grabRangeCollider.transform.localToWorldMatrix;
+        if (grabRangeCollider is BoxCollider)
+        {
+            BoxCollider boxCollider = grabRangeCollider as BoxCollider;
+            Gizmos.DrawWireCube(boxCollider.center, boxCollider.size);
+        }
+        else if (grabRangeCollider is SphereCollider)
+        {
+            SphereCollider sphereCollider = grabRangeCollider as SphereCollider;
+            Gizmos.DrawWireSphere(sphereCollider.center, sphereCollider.radius);
+        }
+        // Add other collider types as needed
     }
 }
