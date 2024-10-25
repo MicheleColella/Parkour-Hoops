@@ -18,6 +18,7 @@ public class GrabPhysics : MonoBehaviour
     // Variables for the prefab instantiation
     public GameObject prefabToInstantiate; // The prefab to instantiate
     public Vector3 prefabScale = Vector3.one; // Scale of the prefab, set in Inspector
+    public float prefabFollowSpeed = 100f; // Increased speed for high responsiveness
 
     // Reference point to find the closest object
     public Transform referencePoint; // Assign the reference point in the Inspector
@@ -89,7 +90,7 @@ public class GrabPhysics : MonoBehaviour
                             // Instantiate the prefab at the candidate object's position
                             if (prefabToInstantiate != null)
                             {
-                                instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.transform.position, currentCandidateObject.transform.rotation);
+                                instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.transform.position, Quaternion.identity);
                                 instantiatedPrefab.transform.localScale = prefabScale;
                                 // Do not parent the prefab to the candidate object
                             }
@@ -122,13 +123,6 @@ public class GrabPhysics : MonoBehaviour
                 instantiatedPrefab = null;
             }
             currentCandidateObject = null;
-        }
-
-        // Update the position of the instantiated prefab to match the candidate object's position
-        if (instantiatedPrefab != null && currentCandidateObject != null)
-        {
-            instantiatedPrefab.transform.position = currentCandidateObject.transform.position;
-            instantiatedPrefab.transform.rotation = currentCandidateObject.transform.rotation;
         }
 
         // Grabbing logic
@@ -192,6 +186,31 @@ public class GrabPhysics : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        // Update the position of the instantiated prefab to smoothly follow the candidate object's position
+        if (instantiatedPrefab != null && currentCandidateObject != null)
+        {
+            // Aumenta la velocità di interpolazione per maggiore reattività
+            float step = prefabFollowSpeed * Time.deltaTime;
+
+            // Usa MoveTowards per una maggiore reattività
+            instantiatedPrefab.transform.position = Vector3.MoveTowards(
+                instantiatedPrefab.transform.position,
+                currentCandidateObject.transform.position,
+                step);
+
+            // Se preferisci usare Lerp, puoi usare il seguente codice:
+            /*
+            float lerpFactor = 1f - Mathf.Exp(-prefabFollowSpeed * Time.deltaTime);
+            instantiatedPrefab.transform.position = Vector3.Lerp(
+                instantiatedPrefab.transform.position,
+                currentCandidateObject.transform.position,
+                lerpFactor);
+            */
+        }
+    }
+
     // Coroutine to gradually increase GrabValue at adjustable speed
     private IEnumerator IncreaseGrabValue()
     {
@@ -231,14 +250,12 @@ public class GrabPhysics : MonoBehaviour
         Gizmos.color = Color.yellow;
         // Draw the collider bounds
         Gizmos.matrix = grabRangeCollider.transform.localToWorldMatrix;
-        if (grabRangeCollider is BoxCollider)
+        if (grabRangeCollider is BoxCollider boxCollider)
         {
-            BoxCollider boxCollider = grabRangeCollider as BoxCollider;
             Gizmos.DrawWireCube(boxCollider.center, boxCollider.size);
         }
-        else if (grabRangeCollider is SphereCollider)
+        else if (grabRangeCollider is SphereCollider sphereCollider)
         {
-            SphereCollider sphereCollider = grabRangeCollider as SphereCollider;
             Gizmos.DrawWireSphere(sphereCollider.center, sphereCollider.radius);
         }
         // Add other collider types as needed

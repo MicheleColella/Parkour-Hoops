@@ -17971,13 +17971,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1318181691}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5, y: -0.12000024, z: -0.46999997}
+  m_LocalRotation: {x: 0.16427295, y: 0, z: 0, w: 0.98641497}
+  m_LocalPosition: {x: 0.5, y: -0.23000002, z: -0.38999996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8732607023095264308}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 18.91, y: 0, z: 0}
 --- !u!65 &1318181693
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -18563,6 +18563,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1352629186}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1362496676
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1362496677}
+  - component: {fileID: 1362496678}
+  m_Layer: 8
+  m_Name: KinematicGrabRangeR
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1362496677
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362496676}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.16427295, y: 0, z: 0, w: 0.98641497}
+  m_LocalPosition: {x: -0.5, y: -0.22999978, z: -0.39}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8732607022660418779}
+  m_LocalEulerAnglesHint: {x: 18.91, y: 0, z: 0}
+--- !u!65 &1362496678
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362496676}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.30303186, y: 0.7253629, z: 1}
+  m_Center: {x: 0.14848423, y: 0.03717035, z: 0}
 --- !u!1 &1396941587
 GameObject:
   m_ObjectHideFlags: 0
@@ -28389,13 +28442,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1929232553}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: -0.12, z: -0.47}
+  m_LocalRotation: {x: 0.16427295, y: 0, z: 0, w: 0.98641497}
+  m_LocalPosition: {x: -0.5, y: -0.23, z: -0.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8732607022660418779}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 18.91, y: 0, z: 0}
 --- !u!1 &1932575082
 GameObject:
   m_ObjectHideFlags: 0
@@ -30162,6 +30215,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2089335339}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2089642874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2089642875}
+  - component: {fileID: 2089642876}
+  m_Layer: 8
+  m_Name: KinematicGrabRangeL
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2089642875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089642874}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.16427295, y: 0, z: 0, w: 0.98641497}
+  m_LocalPosition: {x: 0.5, y: -0.23000002, z: -0.38999996}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8732607023095264308}
+  m_LocalEulerAnglesHint: {x: 18.91, y: 0, z: 0}
+--- !u!65 &2089642876
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089642874}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.30303186, y: 0.7253629, z: 1}
+  m_Center: {x: -0.1484842, y: 0.03717035, z: 0}
 --- !u!136 &2105443144 stripped
 CapsuleCollider:
   m_CorrespondingSourceObject: {fileID: 2383332330531928161, guid: 2b8d54df5ac01924fa883f951aba5679,
@@ -31094,6 +31200,7 @@ Transform:
   - {fileID: 1482115837}
   - {fileID: 1944091228}
   - {fileID: 1929232555}
+  - {fileID: 1362496677}
   m_Father: {fileID: 8732607022853558230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8732607022660418780
@@ -31844,6 +31951,7 @@ Transform:
   - {fileID: 1701318472}
   - {fileID: 422878635}
   - {fileID: 1318181692}
+  - {fileID: 2089642875}
   m_Father: {fileID: 8732607022853558230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8732607023095264309
