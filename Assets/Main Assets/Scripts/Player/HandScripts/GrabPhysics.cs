@@ -5,221 +5,196 @@ using UnityEngine.InputSystem;
 
 public class GrabPhysics : MonoBehaviour
 {
+    [Header("Input Settings")]
     public InputActionProperty grabInputSource;
+
+    [Header("Grabbing Settings")]
     public LayerMask grabLayer;
-    public List<Collider> handColliders; // List of hand colliders, assign in Inspector
-    public Animator handAnimator; // Reference to the hand's animator
-    public List<Collider> fingerTipColliders; // List of fingertip colliders
-    public float grabValueSpeed = 1.0f; // Speed of GrabValue increment
+    public List<Collider> handColliders;
+    public Animator handAnimator;
+    public List<Collider> fingerTipColliders;
+    public float grabValueSpeed = 1.0f;
 
-    // Public field for the grab range collider
-    public Collider grabRangeCollider; // Assign the trigger collider manually
+    [Header("Grab Range")]
+    public Collider grabRangeCollider;
 
-    // Variables for the prefab instantiation
-    public GameObject prefabToInstantiate; // The prefab to instantiate
-    public Vector3 prefabScale = Vector3.one; // Scale of the prefab, set in Inspector
-    public float prefabFollowSpeed = 100f; // Increased speed for high responsiveness
+    [Header("Prefab Settings")]
+    public GameObject prefabToInstantiate;
+    public Vector3 prefabScale = Vector3.one;
+    public float prefabFollowSpeed = 100f;
 
-    // Reference point to find the closest object
-    public Transform referencePoint; // Assign the reference point in the Inspector
+    [Header("Reference Point")]
+    public Transform referencePoint;
 
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
-    private Collider grabbedObjectCollider; // Collider of the grabbed object
-    private float grabValue = 0f; // Current "GrabValue"
-    private bool objectTouchedByFingers = false; // Monitor if the object is touched by fingertip colliders
+    private Collider grabbedObjectCollider;
+    private float grabValue = 0f;
+    private bool objectTouchedByFingers = false;
 
-    // Variables for managing the candidate object and instantiated prefab
-    private Collider currentCandidateObject = null; // The current candidate object for grabbing
-    private GameObject instantiatedPrefab = null; // Reference to the instantiated prefab
+    private Collider currentCandidateObject = null;
+    private GameObject instantiatedPrefab = null;
 
     private void FixedUpdate()
     {
         bool isGrabButtonPressed = grabInputSource.action.ReadValue<float>() > 0.1f;
 
-        // Manage candidate object and prefab instantiation only when not grabbing
         if (!isGrabbing)
         {
-            // Use the grabRangeCollider's bounds to find nearby colliders
-            if (grabRangeCollider != null)
+            UpdateCandidateObject();
+
+            if (isGrabButtonPressed && !isGrabbing)
             {
-                Collider[] nearbyColliders = Physics.OverlapBox(
-                    grabRangeCollider.bounds.center,
-                    grabRangeCollider.bounds.extents,
-                    grabRangeCollider.transform.rotation,
-                    grabLayer,
-                    QueryTriggerInteraction.Ignore);
-
-                // Exclude self and hand colliders, and find the closest object to the reference point
-                Collider targetCollider = null;
-                float closestDistance = Mathf.Infinity;
-
-                foreach (Collider collider in nearbyColliders)
-                {
-                    if (collider.gameObject != gameObject && !handColliders.Contains(collider))
-                    {
-                        // Calculate distance to the reference point
-                        float distance = Vector3.Distance(referencePoint.position, collider.transform.position);
-                        if (distance < closestDistance)
-                        {
-                            closestDistance = distance;
-                            targetCollider = collider;
-                        }
-                    }
-                }
-
-                // Check if the candidate object has changed
-                if (targetCollider != currentCandidateObject)
-                {
-                    // Candidate has changed
-                    // Destroy the previous instantiated prefab, if any
-                    if (instantiatedPrefab != null)
-                    {
-                        Destroy(instantiatedPrefab);
-                        instantiatedPrefab = null;
-                    }
-
-                    currentCandidateObject = targetCollider;
-
-                    if (currentCandidateObject != null)
-                    {
-                        // Check if the candidate object's Rigidbody is not kinematic before instantiating the prefab
-                        Rigidbody rb = currentCandidateObject.attachedRigidbody;
-                        if (rb != null && !rb.isKinematic)
-                        {
-                            // Instantiate the prefab at the candidate object's position
-                            if (prefabToInstantiate != null)
-                            {
-                                instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.transform.position, Quaternion.identity);
-                                instantiatedPrefab.transform.localScale = prefabScale;
-                                // Do not parent the prefab to the candidate object
-                            }
-                            else
-                            {
-                                Debug.LogWarning("Prefab to instantiate is not assigned.");
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Grab Range Collider is not assigned.");
-            }
-
-            // If there is no candidate object and instantiatedPrefab is not null, destroy it
-            if (currentCandidateObject == null && instantiatedPrefab != null)
-            {
-                Destroy(instantiatedPrefab);
-                instantiatedPrefab = null;
+                TryGrabObject();
             }
         }
         else
         {
-            // When grabbing, ensure that the instantiatedPrefab is destroyed
-            if (instantiatedPrefab != null)
-            {
-                Destroy(instantiatedPrefab);
-                instantiatedPrefab = null;
-            }
-            currentCandidateObject = null;
+            DestroyInstantiatedPrefab();
         }
 
-        // Grabbing logic
-        if (isGrabButtonPressed && !isGrabbing)
+        if (!isGrabButtonPressed && isGrabbing)
         {
-            if (currentCandidateObject != null)
-            {
-                Rigidbody targetRigidbody = currentCandidateObject.attachedRigidbody;
-
-                // Ignore collisions between each hand collider and the grabbed object
-                grabbedObjectCollider = currentCandidateObject;
-                if (handColliders != null && grabbedObjectCollider != null)
-                {
-                    foreach (Collider handCollider in handColliders)
-                    {
-                        Physics.IgnoreCollision(handCollider, grabbedObjectCollider, true);
-                    }
-                }
-
-                fixedJoint = gameObject.AddComponent<FixedJoint>();
-                fixedJoint.autoConfigureConnectedAnchor = true; // Auto-configure the anchor to maintain the object's original position
-
-                if (targetRigidbody)
-                {
-                    fixedJoint.connectedBody = targetRigidbody;
-                }
-
-                isGrabbing = true;
-                StartCoroutine(IncreaseGrabValue()); // Start gradually increasing GrabValue
-
-                // Destroy the instantiated prefab as we are grabbing the object
-                if (instantiatedPrefab != null)
-                {
-                    Destroy(instantiatedPrefab);
-                    instantiatedPrefab = null;
-                }
-                currentCandidateObject = null;
-            }
-        }
-        else if (!isGrabButtonPressed && isGrabbing)
-        {
-            isGrabbing = false;
-
-            // Restore collisions between the hand and the released object
-            if (handColliders != null && grabbedObjectCollider != null)
-            {
-                foreach (Collider handCollider in handColliders)
-                {
-                    Physics.IgnoreCollision(handCollider, grabbedObjectCollider, false);
-                }
-                grabbedObjectCollider = null; // Reset the reference to the grabbed object
-            }
-
-            if (fixedJoint)
-            {
-                Destroy(fixedJoint);
-            }
-
-            StopAllCoroutines(); // Stop increasing GrabValue
-            ResetGrabValue(); // Reset the value of GrabValue
+            ReleaseGrab();
         }
     }
 
     private void LateUpdate()
     {
-        // Update the position of the instantiated prefab to smoothly follow the candidate object's position
         if (instantiatedPrefab != null && currentCandidateObject != null)
         {
-            // Aumenta la velocità di interpolazione per maggiore reattività
             float step = prefabFollowSpeed * Time.deltaTime;
-
-            // Usa MoveTowards per una maggiore reattività
             instantiatedPrefab.transform.position = Vector3.MoveTowards(
                 instantiatedPrefab.transform.position,
                 currentCandidateObject.transform.position,
-                step);
-
-            // Se preferisci usare Lerp, puoi usare il seguente codice:
-            /*
-            float lerpFactor = 1f - Mathf.Exp(-prefabFollowSpeed * Time.deltaTime);
-            instantiatedPrefab.transform.position = Vector3.Lerp(
-                instantiatedPrefab.transform.position,
-                currentCandidateObject.transform.position,
-                lerpFactor);
-            */
+                step
+            );
         }
     }
 
-    // Coroutine to gradually increase GrabValue at adjustable speed
+    private void UpdateCandidateObject()
+    {
+        if (grabRangeCollider == null)
+        {
+            Debug.LogWarning("Grab Range Collider is not assigned.");
+            return;
+        }
+
+        Collider[] nearbyColliders = Physics.OverlapBox(
+            grabRangeCollider.bounds.center,
+            grabRangeCollider.bounds.extents,
+            grabRangeCollider.transform.rotation,
+            grabLayer,
+            QueryTriggerInteraction.Ignore
+        );
+
+        Collider closestCollider = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Collider collider in nearbyColliders)
+        {
+            if (collider.gameObject == gameObject || handColliders.Contains(collider))
+                continue;
+
+            float distance = Vector3.Distance(referencePoint.position, collider.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestCollider = collider;
+            }
+        }
+
+        if (closestCollider != currentCandidateObject)
+        {
+            currentCandidateObject = closestCollider;
+            DestroyInstantiatedPrefab();
+
+            if (currentCandidateObject != null)
+            {
+                Rigidbody rb = currentCandidateObject.attachedRigidbody;
+                if (rb != null && !rb.isKinematic)
+                {
+                    if (prefabToInstantiate != null)
+                    {
+                        instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.transform.position, Quaternion.identity);
+                        instantiatedPrefab.transform.localScale = prefabScale;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Prefab to instantiate is not assigned.");
+                    }
+                }
+            }
+        }
+
+        if (currentCandidateObject == null && instantiatedPrefab != null)
+        {
+            DestroyInstantiatedPrefab();
+        }
+    }
+
+    private void TryGrabObject()
+    {
+        if (currentCandidateObject == null) return;
+
+        Rigidbody targetRigidbody = currentCandidateObject.attachedRigidbody;
+        if (targetRigidbody == null) return;
+
+        grabbedObjectCollider = currentCandidateObject;
+        foreach (Collider handCollider in handColliders)
+        {
+            Physics.IgnoreCollision(handCollider, grabbedObjectCollider, true);
+        }
+
+        fixedJoint = gameObject.AddComponent<FixedJoint>();
+        fixedJoint.autoConfigureConnectedAnchor = true;
+        fixedJoint.connectedBody = targetRigidbody;
+
+        isGrabbing = true;
+        StartCoroutine(IncreaseGrabValue());
+
+        DestroyInstantiatedPrefab();
+        currentCandidateObject = null;
+    }
+
+    private void ReleaseGrab()
+    {
+        isGrabbing = false;
+
+        if (grabbedObjectCollider != null)
+        {
+            foreach (Collider handCollider in handColliders)
+            {
+                Physics.IgnoreCollision(handCollider, grabbedObjectCollider, false);
+            }
+            grabbedObjectCollider = null;
+        }
+
+        if (fixedJoint != null)
+        {
+            Destroy(fixedJoint);
+        }
+
+        StopAllCoroutines();
+        ResetGrabValue();
+    }
+
+    private void DestroyInstantiatedPrefab()
+    {
+        if (instantiatedPrefab != null)
+        {
+            Destroy(instantiatedPrefab);
+            instantiatedPrefab = null;
+        }
+    }
+
     private IEnumerator IncreaseGrabValue()
     {
         while (grabValue < 1f && !objectTouchedByFingers)
         {
-            grabValue += Time.deltaTime * grabValueSpeed; // Gradually increase GrabValue based on the set speed
-            handAnimator.SetFloat("GrabValue", grabValue); // Update the "GrabValue" parameter in the animator
+            grabValue += Time.deltaTime * grabValueSpeed;
+            handAnimator.SetFloat("GrabValue", grabValue);
 
-            // Check if any of the fingertip colliders are touching the grabbed object
             foreach (Collider fingerTipCollider in fingerTipColliders)
             {
                 if (fingerTipCollider.bounds.Intersects(grabbedObjectCollider.bounds))
@@ -233,7 +208,6 @@ public class GrabPhysics : MonoBehaviour
         }
     }
 
-    // Function to reset GrabValue
     private void ResetGrabValue()
     {
         grabValue = 0f;
@@ -241,15 +215,14 @@ public class GrabPhysics : MonoBehaviour
         handAnimator.SetFloat("GrabValue", grabValue);
     }
 
-    // Optional: Function to draw the collider bounds in the Scene view
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         if (grabRangeCollider == null)
             return;
 
         Gizmos.color = Color.yellow;
-        // Draw the collider bounds
         Gizmos.matrix = grabRangeCollider.transform.localToWorldMatrix;
+
         if (grabRangeCollider is BoxCollider boxCollider)
         {
             Gizmos.DrawWireCube(boxCollider.center, boxCollider.size);
@@ -258,6 +231,5 @@ public class GrabPhysics : MonoBehaviour
         {
             Gizmos.DrawWireSphere(sphereCollider.center, sphereCollider.radius);
         }
-        // Add other collider types as needed
     }
 }

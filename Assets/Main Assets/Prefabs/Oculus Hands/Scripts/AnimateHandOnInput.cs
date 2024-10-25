@@ -1,49 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 public class AnimateHandOnInput : MonoBehaviour
 {
+    [Header("Input Actions")]
     public InputActionProperty pinchAnimationAction;
     public InputActionProperty gripAnimationAction;
-    public InputActionProperty primatyButtonPresenceAnimationAction;
+    public InputActionProperty primaryButtonPresenceAnimationAction;
     public InputActionProperty secondaryButtonPresenceAnimationAction;
     public InputActionProperty stickPresenceAnimationAction;
+
+    [Header("Animator")]
     public Animator handAnimator;
 
-    private float thumbButtonPresence;
-    private float primaryButtonPresence;
-    private float secondaryButtonPresence;
-    private float stickPresence;
-    private float triggerValue;
-    private float gripValue;
-
-    // Update is called once per frame
     void Update()
     {
-        triggerValue = pinchAnimationAction.action.ReadValue<float>();
+        // Update Trigger animation parameter
+        float triggerValue = pinchAnimationAction.action.ReadValue<float>();
         handAnimator.SetFloat("Trigger", triggerValue);
 
-        gripValue = gripAnimationAction.action.ReadValue<float>();
+        // Update Grip animation parameter
+        float gripValue = gripAnimationAction.action.ReadValue<float>();
         handAnimator.SetFloat("Grip", gripValue);
 
-        primaryButtonPresence = primatyButtonPresenceAnimationAction.action.ReadValue<float>();
+        // Read button presence values
+        float primaryButtonPresence = primaryButtonPresenceAnimationAction.action.ReadValue<float>();
+        float secondaryButtonPresence = secondaryButtonPresenceAnimationAction.action.ReadValue<float>();
+        float stickPresence = stickPresenceAnimationAction.action.ReadValue<float>();
 
-        secondaryButtonPresence = secondaryButtonPresenceAnimationAction.action.ReadValue<float>();
+        // Determine thumb button presence
+        float thumbButtonPresence = (primaryButtonPresence == 1f || secondaryButtonPresence == 1f || stickPresence == 1f) ? 1f : 0f;
 
-        stickPresence = stickPresenceAnimationAction.action.ReadValue<float>();
-
-        if (primaryButtonPresence == 1 || secondaryButtonPresence == 1 || stickPresence == 1)
-        {
-            thumbButtonPresence = 1;
-        }
-        else
-        {
-            thumbButtonPresence = 0;
-        }
-
+        // Update ThumbButtonPresence animation parameter
         handAnimator.SetFloat("ThumbButtonPresence", thumbButtonPresence);
     }
 }

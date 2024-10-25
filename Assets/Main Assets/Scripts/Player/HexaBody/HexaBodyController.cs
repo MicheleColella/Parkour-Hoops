@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using Unity.XR.CoreUtils;
@@ -7,41 +5,42 @@ using Unity.XR.CoreUtils;
 public class HexaBodyController : MonoBehaviour
 {
     [Header("XR Toolkit Components")]
-    public XROrigin XROrigin;
-    public GameObject XRCamera;
+    public XROrigin xrOrigin;
+    public GameObject xrCamera;
 
     [Header("Action-Based Controllers")]
-    public ActionBasedController HeadController;
-    public ActionBasedController RightHandController;
-    public ActionBasedController LeftHandController;
+    public ActionBasedController headController;
+    public ActionBasedController rightHandController;
+    public ActionBasedController leftHandController;
 
     [Header("HexaBody Parts")]
-    public GameObject Head;
-    public GameObject Chest;
-    public GameObject Fender;
-    public GameObject Monoball;
+    public GameObject head;
+    public GameObject chest;
+    public GameObject fender;
+    public GameObject monoball;
 
-    public ConfigurableJoint RightHandJoint;
-    public ConfigurableJoint LeftHandJoint;
-    public ConfigurableJoint SpineJoint;
+    [Header("Joints")]
+    public ConfigurableJoint rightHandJoint;
+    public ConfigurableJoint leftHandJoint;
+    public ConfigurableJoint spineJoint;
 
     [Header("Movement Parameters")]
-    public float walkForce;
-    public float angularDragOnMove;
-    public float angularBreakDrag;
+    public float walkForce = 10f;
+    public float angularDragOnMove = 1f;
+    public float angularBreakDrag = 5f;
     public float accelerationMultiplier = 2.0f;
     public float maxVelocityMagnitude = 5.0f;
     public float stoppingForce = 10.0f;
     public float directionChangeForce = 8.0f;
 
     [Header("Crouch Settings")]
-    public float crouchSpeed = 5.0f;  // Adjust as needed
-    public float standUpSpeed = 5.0f;  // Adjust as needed
-    public float minCrouchHeight;
-    public float maxCrouchHeight;
+    public float crouchSpeed = 5.0f;
+    public float standUpSpeed = 5.0f;
+    public float minCrouchHeight = 1.0f;
+    public float maxCrouchHeight = 2.0f;
 
     private Rigidbody monoballRb;
-    private Vector3 lastMoveDirection;
+    private Vector3 lastMoveDirection = Vector3.zero;
     private float additionalHeight;
     private float currentHeight;
 
@@ -50,7 +49,6 @@ public class HexaBodyController : MonoBehaviour
     private Vector3 moveDirection;
     private Vector3 monoballTorque;
 
-    // Variabili per la rotazione delle mani
     private Quaternion rightHandRotation;
     private Quaternion leftHandRotation;
 
@@ -59,9 +57,23 @@ public class HexaBodyController : MonoBehaviour
     void Start()
     {
         inputManager = XRControllerInputManager.Instance;
-        additionalHeight = (0.5f * Monoball.transform.lossyScale.y) + (0.5f * Fender.transform.lossyScale.y) + (Head.transform.position.y - Chest.transform.position.y);
-        monoballRb = Monoball.GetComponent<Rigidbody>();
-        lastMoveDirection = Vector3.zero;
+
+        if (monoball == null)
+        {
+            Debug.LogError("Monoball GameObject is not assigned.");
+            return;
+        }
+
+        monoballRb = monoball.GetComponent<Rigidbody>();
+        if (monoballRb == null)
+        {
+            Debug.LogError("Monoball does not have a Rigidbody component.");
+            return;
+        }
+
+        additionalHeight = (0.5f * monoball.transform.lossyScale.y) +
+                           (0.5f * fender.transform.lossyScale.y) +
+                           (head.transform.position.y - chest.transform.position.y);
 
         currentHeight = maxCrouchHeight - additionalHeight;
     }
@@ -75,51 +87,67 @@ public class HexaBodyController : MonoBehaviour
 
     void FixedUpdate()
     {
-        MovePlayer();
+        HandleMovement();
         RotatePlayerToHeadDirection();
         MoveAndRotateHands();
-
-        // Adjust the spine height (handles both crouching and standing)
         AdjustSpineHeight();
     }
 
-
-
-
     private void ReadControllerInput()
     {
-        RightHandJoint.targetPosition = RightHandController.positionAction.action.ReadValue<Vector3>();
-        LeftHandJoint.targetPosition = LeftHandController.positionAction.action.ReadValue<Vector3>();
+        // Leggi posizioni dei controller
+        Vector3 rightHandPosition = rightHandController.positionAction.action.ReadValue<Vector3>();
+        Vector3 leftHandPosition = leftHandController.positionAction.action.ReadValue<Vector3>();
 
-        // Aggiorna le variabili con la rotazione dei controller
-        rightHandRotation = RightHandController.rotationAction.action.ReadValue<Quaternion>();
-        leftHandRotation = LeftHandController.rotationAction.action.ReadValue<Quaternion>();
+        // Aggiorna le posizioni target dei joint
+        rightHandJoint.targetPosition = rightHandPosition;
+        leftHandJoint.targetPosition = leftHandPosition;
 
+        // Leggi rotazioni dei controller
+        rightHandRotation = rightHandController.rotationAction.action.ReadValue<Quaternion>();
+        leftHandRotation = leftHandController.rotationAction.action.ReadValue<Quaternion>();
+
+        // Leggi input del thumbstick
         leftThumbstickInput = inputManager.GetLeftThumbstickValue();
 
-        headYaw = Quaternion.Euler(0, XROrigin.Camera.transform.eulerAngles.y, 0);
+        // Calcola yaw della testa
+        headYaw = Quaternion.Euler(0, xrOrigin.Camera.transform.eulerAngles.y, 0);
+
+        // Determina direzione di movimento
         moveDirection = headYaw * new Vector3(leftThumbstickInput.x, 0, leftThumbstickInput.y);
         monoballTorque = new Vector3(moveDirection.z, 0, -moveDirection.x);
     }
 
     private void SyncCameraToPlayer()
     {
-        XRCamera.transform.position = Head.transform.position;
+        if (head != null && xrCamera != null)
+        {
+            xrCamera.transform.position = head.transform.position;
+        }
     }
 
     private void SyncXROriginToPlayer()
     {
-        XROrigin.transform.position = new Vector3(Fender.transform.position.x,
-                                                  Fender.transform.position.y - (0.5f * Fender.transform.localScale.y + 0.5f * Monoball.transform.localScale.y),
-                                                  Fender.transform.position.z);
+        if (fender != null && monoball != null && xrOrigin != null)
+        {
+            Vector3 newOriginPosition = new Vector3(
+                fender.transform.position.x,
+                fender.transform.position.y - (0.5f * fender.transform.localScale.y + 0.5f * monoball.transform.localScale.y),
+                fender.transform.position.z
+            );
+            xrOrigin.transform.position = newOriginPosition;
+        }
     }
 
     private void RotatePlayerToHeadDirection()
     {
-        Chest.transform.rotation = headYaw;
+        if (chest != null)
+        {
+            chest.transform.rotation = headYaw;
+        }
     }
 
-    private void MovePlayer()
+    private void HandleMovement()
     {
         if (leftThumbstickInput == Vector2.zero)
         {
@@ -185,20 +213,19 @@ public class HexaBodyController : MonoBehaviour
         lastMoveDirection = Vector3.zero;
     }
 
-
     private void AdjustSpineHeight()
     {
-        float headHeight = HeadController.positionAction.action.ReadValue<Vector3>().y - additionalHeight;
+        if (headController == null) return;
+
+        float headHeight = headController.positionAction.action.ReadValue<Vector3>().y - additionalHeight;
         float desiredHeight;
 
         if (inputManager.GetRightSecondaryButton())
         {
-            // If crouch button is pressed, set desired height to crouch height
             desiredHeight = minCrouchHeight;
         }
         else
         {
-            // If crouch button is not pressed, desired height is based on head position
             desiredHeight = Mathf.Clamp(
                 headHeight,
                 minCrouchHeight,
@@ -206,22 +233,21 @@ public class HexaBodyController : MonoBehaviour
             );
         }
 
-        // Smoothly interpolate currentHeight towards desiredHeight
         currentHeight = Mathf.Lerp(currentHeight, desiredHeight, Time.fixedDeltaTime * standUpSpeed);
-
-        // Update the spine joint's target position
-        SpineJoint.targetPosition = new Vector3(0, currentHeight, 0);
+        spineJoint.targetPosition = new Vector3(0, currentHeight, 0);
     }
-
-
-
 
     private void MoveAndRotateHands()
     {
-        RightHandJoint.targetPosition = RightHandController.positionAction.action.ReadValue<Vector3>() - HeadController.positionAction.action.ReadValue<Vector3>();
-        LeftHandJoint.targetPosition = LeftHandController.positionAction.action.ReadValue<Vector3>() - HeadController.positionAction.action.ReadValue<Vector3>();
+        if (rightHandJoint != null && leftHandJoint != null && headController != null)
+        {
+            Vector3 headPosition = headController.positionAction.action.ReadValue<Vector3>();
 
-        RightHandJoint.targetRotation = rightHandRotation;
-        LeftHandJoint.targetRotation = leftHandRotation;
+            rightHandJoint.targetPosition = rightHandController.positionAction.action.ReadValue<Vector3>() - headPosition;
+            leftHandJoint.targetPosition = leftHandController.positionAction.action.ReadValue<Vector3>() - headPosition;
+
+            rightHandJoint.targetRotation = rightHandRotation;
+            leftHandJoint.targetRotation = leftHandRotation;
+        }
     }
 }

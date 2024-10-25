@@ -1,27 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BillboardGrab : MonoBehaviour
 {
-    public LayerMask targetLayer; // Il Layer del GameObject target
+    [Header("Target Settings")]
+    [Tooltip("Layer mask for target GameObjects to billboard towards.")]
+    public LayerMask targetLayer;
+
+    [Tooltip("Radius within which to search for target GameObjects.")]
+    public float searchRadius = 100f;
 
     void Update()
     {
-        // Trova tutti i GameObject nel layer specificato
-        GameObject[] targets = FindObjectsOfType<GameObject>();
+        // Trova tutti i collider all'interno del raggio di ricerca e nel layer specificato
+        Collider[] targetColliders = Physics.OverlapSphere(transform.position, searchRadius, targetLayer);
 
-        foreach (GameObject target in targets)
+        if (targetColliders.Length > 0)
         {
-            if (((1 << target.layer) & targetLayer) != 0) // Controlla se il GameObject è nel Layer specificato
-            {
-                // Calcola la direzione verso il target
-                Vector3 direction = target.transform.position - transform.position;
+            // Ottieni la posizione del primo target
+            Vector3 targetPosition = targetColliders[0].transform.position;
 
-                // Aggiorna la rotazione in modo che il GameObject punti verso il target
-                transform.rotation = Quaternion.LookRotation(-direction);
-                break; // Ruota verso il primo oggetto trovato nel Layer
-            }
+            // Calcola la direzione dal billboard al target
+            Vector3 direction = targetPosition - transform.position;
+
+            // Ruota il billboard per guardare verso il target
+            transform.rotation = Quaternion.LookRotation(-direction);
         }
+    }
+
+    // Visualizza il raggio di ricerca nell'Editor
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, searchRadius);
     }
 }
