@@ -1,24 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MonoballCollisionHandler : MonoBehaviour
 {
     public JumpController jumpController;  // Riferimento al JumpController
 
+    private int groundContactCount = 0;
+     
+    public bool isGrounded;
+
     private void OnCollisionEnter(Collision collision)
     {
         if (IsTouchingGround(collision))
         {
-            jumpController.SetGrounded(true);  // Notifica al JumpController che è a terra
+            groundContactCount++;
+            jumpController.SetGrounded(true);
         }
     }
 
     private void OnCollisionExit(Collision collision)
-    {
+    { 
         if (IsTouchingGround(collision))
         {
-            jumpController.SetGrounded(false);  // Notifica al JumpController che ha lasciato il terreno
+            groundContactCount--;
+            if (groundContactCount <= 0)
+            {
+                groundContactCount = 0;
+                jumpController.SetGrounded(false);
+            }
         }
     }
 
@@ -30,9 +38,11 @@ public class MonoballCollisionHandler : MonoBehaviour
             // Considera il contatto come suolo se la normale del contatto punta verso l'alto
             if (contact.normal.y > 0.5f)
             {
+                isGrounded = true;
                 return true;
             }
         }
+        isGrounded = false;
         return false;
     }
 }

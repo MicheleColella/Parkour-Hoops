@@ -39,6 +39,23 @@ public class HexaBodyController : MonoBehaviour
     public float minCrouchHeight = 1.0f;
     public float maxCrouchHeight = 2.0f;
 
+    [Header("Scale Settings")]
+    public Vector3 defaultMonoballScale = new Vector3(1, 1, 1);
+    public Vector3 airMonoballScale = new Vector3(1.2f, 1.2f, 1.2f);
+
+    public Vector3 defaultFenderScale = new Vector3(1, 1, 1);
+    public Vector3 airFenderScale = new Vector3(1.1f, 1.1f, 1.1f);
+
+    public Vector3 defaultChestScale = new Vector3(1, 1, 1);
+    public Vector3 airChestScale = new Vector3(1.15f, 1.15f, 1.15f);
+
+    [Header("Scale Adjustment Settings")]
+    [Tooltip("Velocità di interpolazione per il cambio di scala.")]
+    public float scaleChangeSpeed = 5f;
+
+    [Header("References")]
+    public JumpController jumpController; // Riferimento al JumpController
+
     private Rigidbody monoballRb;
     private Vector3 lastMoveDirection = Vector3.zero;
     private float additionalHeight;
@@ -76,6 +93,26 @@ public class HexaBodyController : MonoBehaviour
                            (head.transform.position.y - chest.transform.position.y);
 
         currentHeight = maxCrouchHeight - additionalHeight;
+
+        // Imposta le scale di default
+        if (monoball != null)
+            monoball.transform.localScale = defaultMonoballScale;
+
+        if (fender != null)
+            fender.transform.localScale = defaultFenderScale;
+
+        if (chest != null)
+            chest.transform.localScale = defaultChestScale;
+
+        // Verifica il riferimento a JumpController
+        if (jumpController == null)
+        {
+            jumpController = GetComponent<JumpController>();
+            if (jumpController == null)
+            {
+                Debug.LogError("JumpController non assegnato e non trovato sullo stesso GameObject.");
+            }
+        }
     }
 
     void Update()
@@ -83,6 +120,7 @@ public class HexaBodyController : MonoBehaviour
         SyncCameraToPlayer();
         SyncXROriginToPlayer();
         ReadControllerInput();
+        AdjustScaleBasedOnGrounded();
     }
 
     void FixedUpdate()
@@ -248,6 +286,37 @@ public class HexaBodyController : MonoBehaviour
 
             rightHandJoint.targetRotation = rightHandRotation;
             leftHandJoint.targetRotation = leftHandRotation;
+        }
+    } 
+
+    private void AdjustScaleBasedOnGrounded()
+    {
+        if (jumpController == null)
+            return;
+
+        if (jumpController.IsGrounded)
+        {
+            // Imposta le scale di default
+            if (monoball != null)
+                monoball.transform.localScale = Vector3.Lerp(monoball.transform.localScale, defaultMonoballScale, Time.deltaTime * scaleChangeSpeed);
+
+            if (fender != null)
+                fender.transform.localScale = Vector3.Lerp(fender.transform.localScale, defaultFenderScale, Time.deltaTime * scaleChangeSpeed);
+
+            if (chest != null)
+                chest.transform.localScale = Vector3.Lerp(chest.transform.localScale, defaultChestScale, Time.deltaTime * scaleChangeSpeed);
+        }
+        else
+        {
+            // Imposta le scale in aria
+            if (monoball != null)
+                monoball.transform.localScale = Vector3.Lerp(monoball.transform.localScale, airMonoballScale, Time.deltaTime * scaleChangeSpeed);
+
+            if (fender != null)
+                fender.transform.localScale = Vector3.Lerp(fender.transform.localScale, airFenderScale, Time.deltaTime * scaleChangeSpeed);
+
+            if (chest != null)
+                chest.transform.localScale = Vector3.Lerp(chest.transform.localScale, airChestScale, Time.deltaTime * scaleChangeSpeed);
         }
     }
 }

@@ -31279,6 +31279,14 @@ MonoBehaviour:
   standUpSpeed: 4
   minCrouchHeight: 0
   maxCrouchHeight: 1.8
+  defaultMonoballScale: {x: 0.3, y: 0.3, z: 0.3}
+  airMonoballScale: {x: 0.2, y: 0.2, z: 0.2}
+  defaultFenderScale: {x: 0.35, y: 0.35, z: 0.35}
+  airFenderScale: {x: 0.15, y: 0.15, z: 0.15}
+  defaultChestScale: {x: 0.2, y: 0.3, z: 0.2}
+  airChestScale: {x: 0.15, y: 0.3, z: 0.15}
+  scaleChangeSpeed: 5
+  jumpController: {fileID: 8732607022853558231}
 --- !u!54 &8732607022660418776
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -31923,12 +31931,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbe9d0cd03800ba4bace80fe71a27790, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monoballCollisionHandler: {fileID: 8732607022970061600}
   minJumpForce: 100
   maxJumpForce: 300
   maxChargeTime: 3
-  groundedCheckDelay: 0.2
   targetRigidbody: {fileID: 8732607022704123873}
-  isGrounded: 1
 --- !u!33 &8732607022970061584
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -32011,7 +32018,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8732607022853558230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -32076,7 +32083,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpController: {fileID: 8732607022853558231}
-  groundNormalThreshold: 0.5
+  isGrounded: 0
 --- !u!4 &8732607023095264308
 Transform:
   m_ObjectHideFlags: 0

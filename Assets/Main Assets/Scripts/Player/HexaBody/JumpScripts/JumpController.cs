@@ -1,19 +1,17 @@
-using System.Collections;
 using UnityEngine;
 
 public class JumpController : MonoBehaviour
 {
+    public MonoballCollisionHandler monoballCollisionHandler;
+
     [Header("Jump Settings")]
     public float minJumpForce = 5.0f;
     public float maxJumpForce = 15.0f;
     public float maxChargeTime = 3.0f;
-    public float groundedCheckDelay = 0.2f;
 
     [Header("Rigidbody Settings")]
     public Rigidbody targetRigidbody;
 
-    [SerializeField]
-    private bool isGrounded = true;
 
     private bool isCharging = false;
     private float chargeStartTime;
@@ -21,7 +19,7 @@ public class JumpController : MonoBehaviour
     private XRControllerInputManager inputManager;
 
     void Start()
-    {
+    { 
         inputManager = XRControllerInputManager.Instance;
 
         if (targetRigidbody == null)
@@ -48,7 +46,7 @@ public class JumpController : MonoBehaviour
     {
         bool isRightPrimaryButtonPressed = inputManager.GetRightPrimaryButton();
 
-        if (isGrounded && !isCharging && isRightPrimaryButtonPressed)
+        if (monoballCollisionHandler.isGrounded && !isCharging && isRightPrimaryButtonPressed)
         {
             StartCharging();
         }
@@ -62,6 +60,7 @@ public class JumpController : MonoBehaviour
     {
         isCharging = true;
         chargeStartTime = Time.time;
+        Debug.Log("Inizio carica salto.");
     }
 
     private void PerformJump()
@@ -75,35 +74,21 @@ public class JumpController : MonoBehaviour
 
         targetRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 
-        isGrounded = false;
-        StartCoroutine(GroundedCheckDelayCoroutine());
-    }
-
-    private IEnumerator GroundedCheckDelayCoroutine()
-    {
-        yield return new WaitForSeconds(groundedCheckDelay);
-
-        if (!isGrounded)
-        {
-            isGrounded = false;
-        }
+        monoballCollisionHandler.isGrounded = false;
     }
 
     /// <summary>
-    /// Sets the grounded state, typically called by collision handlers.
+    /// Imposta lo stato di grounded, chiamato da MonoballCollisionHandler.
     /// </summary>
-    /// <param name="grounded">Whether the object is grounded.</param>
+    /// <param name="grounded">Se l'oggetto è a terra.</param>
     public void SetGrounded(bool grounded)
     {
-        isGrounded = grounded;
+        monoballCollisionHandler.isGrounded = grounded;
+    }
 
-        if (grounded)
-        {
-            StopAllCoroutines();
-        }
-        else
-        {
-            StartCoroutine(GroundedCheckDelayCoroutine());
-        }
+    // Proprietà pubblica per accedere allo stato di grounded
+    public bool IsGrounded
+    {
+        get { return monoballCollisionHandler.isGrounded; }
     }
 }
