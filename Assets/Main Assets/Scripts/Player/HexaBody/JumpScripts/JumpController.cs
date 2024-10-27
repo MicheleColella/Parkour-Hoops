@@ -60,13 +60,12 @@ public class JumpController : MonoBehaviour
     {
         isCharging = true;
         chargeStartTime = Time.time;
-        Debug.Log("Inizio carica salto.");
     }
 
     private void PerformJump()
     {
         if (targetRigidbody == null) return;
-
+         
         isCharging = false;
 
         float chargeTime = Mathf.Clamp(Time.time - chargeStartTime, 0f, maxChargeTime);

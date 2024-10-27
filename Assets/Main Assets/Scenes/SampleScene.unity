@@ -32084,6 +32084,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpController: {fileID: 8732607022853558231}
   isGrounded: 0
+  groundDelay: 0.4
 --- !u!4 &8732607023095264308
 Transform:
   m_ObjectHideFlags: 0

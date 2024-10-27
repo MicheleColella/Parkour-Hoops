@@ -1,48 +1,38 @@
 using UnityEngine;
+using System.Collections;
 
 public class MonoballCollisionHandler : MonoBehaviour
 {
     public JumpController jumpController;  // Riferimento al JumpController
-
-    private int groundContactCount = 0;
-     
     public bool isGrounded;
+    public float groundDelay = 0.4f;  // Tempo di ritardo prima di impostare isGrounded a false
 
-    private void OnCollisionEnter(Collision collision)
+    private Coroutine groundCheckCoroutine;
+
+    private void OnCollisionStay(Collision collision)
     {
-        if (IsTouchingGround(collision))
+        isGrounded = true;
+        // Se è presente una coroutine in esecuzione per impostare `isGrounded` a false, la fermiamo
+        if (groundCheckCoroutine != null)
         {
-            groundContactCount++;
-            jumpController.SetGrounded(true);
+            StopCoroutine(groundCheckCoroutine);
+            groundCheckCoroutine = null;
         }
     }
 
     private void OnCollisionExit(Collision collision)
-    { 
-        if (IsTouchingGround(collision))
+    {
+        // Avviamo una coroutine che aspetta il delay prima di impostare `isGrounded` a false
+        if (groundCheckCoroutine == null)
         {
-            groundContactCount--;
-            if (groundContactCount <= 0)
-            {
-                groundContactCount = 0;
-                jumpController.SetGrounded(false);
-            }
+            groundCheckCoroutine = StartCoroutine(GroundCheckDelay());
         }
     }
 
-    // Funzione che verifica se la Monoball è effettivamente a contatto con il suolo
-    private bool IsTouchingGround(Collision collision)
+    private IEnumerator GroundCheckDelay()
     {
-        foreach (ContactPoint contact in collision.contacts)
-        {
-            // Considera il contatto come suolo se la normale del contatto punta verso l'alto
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                return true;
-            }
-        }
+        yield return new WaitForSeconds(groundDelay);
         isGrounded = false;
-        return false;
+        groundCheckCoroutine = null;
     }
 }
