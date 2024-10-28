@@ -3,13 +3,15 @@ using System.Collections;
 
 public class MonoballCollisionHandler : MonoBehaviour
 {
-    public JumpController jumpController;  // Riferimento al JumpController
+    public JumpController jumpController;
     public bool isGrounded;
-    public float groundDelay = 0.4f;  // Tempo di ritardo prima di impostare isGrounded a false
-    public float maxSurfaceAngle = 45f; // Angolo massimo della superficie per non rotolare
-    public float highAngularDrag = 150f; // Valore di drag angolare più alto per superfici meno inclinate
-    public float normalAngularDrag = 5f; // Drag angolare standard per movimento regolare
-    public float objectAngle;
+    public float groundDelay = 0.4f;
+    public float maxSurfaceAngle = 45f;
+    public float highAngularDrag = 150f;
+    public float normalAngularDrag = 5f;
+    public float dynamicDragFactor = 2f; // Fattore per regolare il drag in base all'angolo
+    public float angularStopThreshold = 0.1f;
+    public float antiSlipForce = 10f; // Forza applicata per evitare scivolamenti su pendenze
 
     private Coroutine groundCheckCoroutine;
     private Rigidbody monoballRb;
@@ -25,7 +27,6 @@ public class MonoballCollisionHandler : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        // Calcola l'angolo della superficie usando la normale della collisione
         Vector3 averageNormal = Vector3.zero;
         foreach (ContactPoint contact in collision.contacts)
         {
@@ -37,11 +38,20 @@ public class MonoballCollisionHandler : MonoBehaviour
 
         if (surfaceAngle <= maxSurfaceAngle)
         {
-            // Se l'angolo della superficie è inferiore al massimo, aumenta il drag angolare per limitare la rotazione
             isGrounded = true;
-            monoballRb.angularDrag = highAngularDrag;
 
-            // Se è presente una coroutine in esecuzione per impostare `isGrounded` a false, la fermiamo
+            // Calcola il drag dinamico in base all'angolo della superficie per maggiore controllo in salita
+            float dynamicDrag = Mathf.Lerp(normalAngularDrag, highAngularDrag, surfaceAngle / maxSurfaceAngle);
+            monoballRb.angularDrag = dynamicDrag;
+
+            // Applica forza anti-scivolamento quando la velocità è inferiore alla soglia e su pendenze
+            if (monoballRb.velocity.magnitude < angularStopThreshold && surfaceAngle > 0f)
+            {
+                Vector3 antiSlipDirection = Vector3.ProjectOnPlane(-averageNormal, Vector3.up).normalized;
+                monoballRb.AddForce(antiSlipDirection * antiSlipForce, ForceMode.Acceleration);
+            }
+
+            // Ferma la coroutine se il player è su una superficie stabile
             if (groundCheckCoroutine != null)
             {
                 StopCoroutine(groundCheckCoroutine);
@@ -50,22 +60,20 @@ public class MonoballCollisionHandler : MonoBehaviour
         }
         else
         {
-            // Se la superficie è troppo inclinata, usa il drag angolare normale e permetti la rotazione
-            isGrounded = true;
+            // Usa il drag normale quando la superficie è troppo inclinata
+            isGrounded = false;
             monoballRb.angularDrag = normalAngularDrag;
 
-            // Se è presente una coroutine in esecuzione per impostare `isGrounded` a false, la fermiamo
-            if (groundCheckCoroutine != null)
+            // Avvia la coroutine per ritardare lo stato di "non-grounded"
+            if (groundCheckCoroutine == null)
             {
-                StopCoroutine(groundCheckCoroutine);
-                groundCheckCoroutine = null;
+                groundCheckCoroutine = StartCoroutine(GroundCheckDelay());
             }
         }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        // Avviamo una coroutine che aspetta il delay prima di impostare `isGrounded` a false
         if (groundCheckCoroutine == null)
         {
             groundCheckCoroutine = StartCoroutine(GroundCheckDelay());
