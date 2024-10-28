@@ -25,12 +25,25 @@ public class HexaBodyController : MonoBehaviour
     public ConfigurableJoint spineJoint;
 
     [Header("Movement Parameters")]
-    public float walkForce = 10f;
-    public float angularDragOnMove = 1f;
-    public float angularBreakDrag = 5f;
+    [Tooltip("Forza applicata per il movimento della monoball")]
+    public float walkForce = 700f;
+
+    [Tooltip("Resistenza alla rotazione durante il movimento")]
+    public float angularDragOnMove = 5f;
+
+    [Tooltip("Resistenza alla rotazione quando la monoball è ferma")]
+    public float angularBreakDrag = 10f;
+
+    [Tooltip("Moltiplicatore di accelerazione per avviare il movimento più rapidamente")]
     public float accelerationMultiplier = 2.0f;
+
+    [Tooltip("Velocità massima consentita per la monoball")]
     public float maxVelocityMagnitude = 5.0f;
-    public float stoppingForce = 10.0f;
+
+    [Tooltip("Forza applicata per fermare la monoball")]
+    public float stoppingForce = 2f;
+
+    [Tooltip("Forza applicata per cambiare rapidamente direzione")]
     public float directionChangeForce = 8.0f;
 
     [Header("Crouch Settings")]
@@ -55,6 +68,9 @@ public class HexaBodyController : MonoBehaviour
 
     [Header("References")]
     public JumpController jumpController; // Riferimento al JumpController
+
+    [Tooltip("Velocità attuale della monoball")]
+    public float monoballVelocity;
 
     private Rigidbody monoballRb;
     private Vector3 lastMoveDirection = Vector3.zero;
@@ -121,6 +137,9 @@ public class HexaBodyController : MonoBehaviour
         SyncXROriginToPlayer();
         ReadControllerInput();
         AdjustScaleBasedOnGrounded();
+
+        // Aggiorna la velocità della monoball per il monitoraggio
+        monoballVelocity = monoballRb.velocity.magnitude;
     }
 
     void FixedUpdate()
@@ -214,7 +233,7 @@ public class HexaBodyController : MonoBehaviour
             monoballRb.AddForce(counterForce, ForceMode.Acceleration);
         }
 
-        if (monoballRb.velocity.magnitude < 1f)
+        if (new Vector2(monoballRb.velocity.x, monoballRb.velocity.z).magnitude < 1f)
         {
             adjustedForce *= accelerationMultiplier;
         }
@@ -222,13 +241,17 @@ public class HexaBodyController : MonoBehaviour
         Vector3 torqueForce = monoballTorque.normalized * adjustedForce;
         monoballRb.AddTorque(torqueForce, ForceMode.Acceleration);
 
-        if (monoballRb.velocity.magnitude > maxVelocityMagnitude)
+        // Limita la velocità solo sugli assi x e z
+        Vector3 horizontalVelocity = new Vector3(monoballRb.velocity.x, 0, monoballRb.velocity.z);
+        if (horizontalVelocity.magnitude > maxVelocityMagnitude)
         {
-            monoballRb.velocity = monoballRb.velocity.normalized * maxVelocityMagnitude;
+            horizontalVelocity = horizontalVelocity.normalized * maxVelocityMagnitude;
+            monoballRb.velocity = new Vector3(horizontalVelocity.x, monoballRb.velocity.y, horizontalVelocity.z);
         }
 
         lastMoveDirection = moveDirection;
     }
+
 
     private void StopMonoball()
     {
@@ -287,7 +310,7 @@ public class HexaBodyController : MonoBehaviour
             rightHandJoint.targetRotation = rightHandRotation;
             leftHandJoint.targetRotation = leftHandRotation;
         }
-    } 
+    }
 
     private void AdjustScaleBasedOnGrounded()
     {

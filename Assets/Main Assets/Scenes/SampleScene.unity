@@ -20596,6 +20596,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: primaryButtonPresenceAnimationAction.m_Action.m_Name
+      value: Primary Button Presence Animation
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_Action.m_Name
       value: Primaty Button Presence Animation
       objectReference: {fileID: 0}
@@ -31400,7 +31405,7 @@ MonoBehaviour:
   fingerTipColliders:
   - {fileID: 1482115842}
   grabValueSpeed: 5
-  grabRangeCollider: {fileID: 1929232554}
+  grabRangeCollider: {fileID: 1362496678}
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
   prefabScale: {x: 0.025, y: 0.025, z: 0.025}
@@ -32085,6 +32090,10 @@ MonoBehaviour:
   jumpController: {fileID: 8732607022853558231}
   isGrounded: 0
   groundDelay: 0.4
+  maxSurfaceAngle: 45
+  highAngularDrag: 150
+  normalAngularDrag: 5
+  objectAngle: 0
 --- !u!4 &8732607023095264308
 Transform:
   m_ObjectHideFlags: 0
@@ -32198,7 +32207,7 @@ MonoBehaviour:
   fingerTipColliders:
   - {fileID: 1701318476}
   grabValueSpeed: 5
-  grabRangeCollider: {fileID: 1318181693}
+  grabRangeCollider: {fileID: 2089642876}
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
   prefabScale: {x: 0.025, y: 0.025, z: 0.025}
