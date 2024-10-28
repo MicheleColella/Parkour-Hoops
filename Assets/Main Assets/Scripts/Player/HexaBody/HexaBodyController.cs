@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using Unity.XR.CoreUtils;
@@ -25,25 +27,12 @@ public class HexaBodyController : MonoBehaviour
     public ConfigurableJoint spineJoint;
 
     [Header("Movement Parameters")]
-    [Tooltip("Forza applicata per il movimento della monoball")]
     public float walkForce = 700f;
-
-    [Tooltip("Resistenza alla rotazione durante il movimento")]
     public float angularDragOnMove = 5f;
-
-    [Tooltip("Resistenza alla rotazione quando la monoball è ferma")]
     public float angularBreakDrag = 10f;
-
-    [Tooltip("Moltiplicatore di accelerazione per avviare il movimento più rapidamente")]
     public float accelerationMultiplier = 2.0f;
-
-    [Tooltip("Velocità massima consentita per la monoball")]
     public float maxVelocityMagnitude = 5.0f;
-
-    [Tooltip("Forza applicata per fermare la monoball")]
     public float stoppingForce = 2f;
-
-    [Tooltip("Forza applicata per cambiare rapidamente direzione")]
     public float directionChangeForce = 8.0f;
 
     [Header("Crouch Settings")]
@@ -52,24 +41,23 @@ public class HexaBodyController : MonoBehaviour
     public float minCrouchHeight = 1.0f;
     public float maxCrouchHeight = 2.0f;
 
+    [Tooltip("Tempo in secondi prima che il crouch automatico si attivi in aria")]
+    public float airCrouchDelay = 1.5f;
+
     [Header("Scale Settings")]
     public Vector3 defaultMonoballScale = new Vector3(1, 1, 1);
     public Vector3 airMonoballScale = new Vector3(1.2f, 1.2f, 1.2f);
-
     public Vector3 defaultFenderScale = new Vector3(1, 1, 1);
     public Vector3 airFenderScale = new Vector3(1.1f, 1.1f, 1.1f);
-
     public Vector3 defaultChestScale = new Vector3(1, 1, 1);
     public Vector3 airChestScale = new Vector3(1.15f, 1.15f, 1.15f);
 
     [Header("Scale Adjustment Settings")]
-    [Tooltip("Velocità di interpolazione per il cambio di scala.")]
     public float scaleChangeSpeed = 5f;
 
     [Header("References")]
-    public JumpController jumpController; // Riferimento al JumpController
+    public JumpController jumpController;
 
-    [Tooltip("Velocità attuale della monoball")]
     public float monoballVelocity;
 
     private Rigidbody monoballRb;
@@ -86,6 +74,9 @@ public class HexaBodyController : MonoBehaviour
     private Quaternion leftHandRotation;
 
     private XRControllerInputManager inputManager;
+
+    private float timeInAir = 0f;
+    private bool isCrouchInAirActive = false;
 
     void Start()
     {
@@ -110,7 +101,6 @@ public class HexaBodyController : MonoBehaviour
 
         currentHeight = maxCrouchHeight - additionalHeight;
 
-        // Imposta le scale di default
         if (monoball != null)
             monoball.transform.localScale = defaultMonoballScale;
 
@@ -120,7 +110,6 @@ public class HexaBodyController : MonoBehaviour
         if (chest != null)
             chest.transform.localScale = defaultChestScale;
 
-        // Verifica il riferimento a JumpController
         if (jumpController == null)
         {
             jumpController = GetComponent<JumpController>();
@@ -138,8 +127,8 @@ public class HexaBodyController : MonoBehaviour
         ReadControllerInput();
         AdjustScaleBasedOnGrounded();
 
-        // Aggiorna la velocità della monoball per il monitoraggio
         monoballVelocity = monoballRb.velocity.magnitude;
+        UpdateAirCrouchTimer();
     }
 
     void FixedUpdate()
@@ -152,25 +141,18 @@ public class HexaBodyController : MonoBehaviour
 
     private void ReadControllerInput()
     {
-        // Leggi posizioni dei controller
         Vector3 rightHandPosition = rightHandController.positionAction.action.ReadValue<Vector3>();
         Vector3 leftHandPosition = leftHandController.positionAction.action.ReadValue<Vector3>();
 
-        // Aggiorna le posizioni target dei joint
         rightHandJoint.targetPosition = rightHandPosition;
         leftHandJoint.targetPosition = leftHandPosition;
 
-        // Leggi rotazioni dei controller
         rightHandRotation = rightHandController.rotationAction.action.ReadValue<Quaternion>();
         leftHandRotation = leftHandController.rotationAction.action.ReadValue<Quaternion>();
 
-        // Leggi input del thumbstick
         leftThumbstickInput = inputManager.GetLeftThumbstickValue();
-
-        // Calcola yaw della testa
         headYaw = Quaternion.Euler(0, xrOrigin.Camera.transform.eulerAngles.y, 0);
 
-        // Determina direzione di movimento
         moveDirection = headYaw * new Vector3(leftThumbstickInput.x, 0, leftThumbstickInput.y);
         monoballTorque = new Vector3(moveDirection.z, 0, -moveDirection.x);
     }
@@ -241,7 +223,6 @@ public class HexaBodyController : MonoBehaviour
         Vector3 torqueForce = monoballTorque.normalized * adjustedForce;
         monoballRb.AddTorque(torqueForce, ForceMode.Acceleration);
 
-        // Limita la velocità solo sugli assi x e z
         Vector3 horizontalVelocity = new Vector3(monoballRb.velocity.x, 0, monoballRb.velocity.z);
         if (horizontalVelocity.magnitude > maxVelocityMagnitude)
         {
@@ -251,7 +232,6 @@ public class HexaBodyController : MonoBehaviour
 
         lastMoveDirection = moveDirection;
     }
-
 
     private void StopMonoball()
     {
@@ -274,6 +254,23 @@ public class HexaBodyController : MonoBehaviour
         lastMoveDirection = Vector3.zero;
     }
 
+    private void UpdateAirCrouchTimer()
+    {
+        if (!jumpController.IsGrounded)
+        {
+            timeInAir += Time.deltaTime;
+            if (timeInAir >= airCrouchDelay)
+            {
+                isCrouchInAirActive = true;
+            }
+        }
+        else
+        {
+            timeInAir = 0f;
+            isCrouchInAirActive = false;
+        }
+    }
+
     private void AdjustSpineHeight()
     {
         if (headController == null) return;
@@ -281,17 +278,24 @@ public class HexaBodyController : MonoBehaviour
         float headHeight = headController.positionAction.action.ReadValue<Vector3>().y - additionalHeight;
         float desiredHeight;
 
-        if (inputManager.GetRightSecondaryButton())
+        if (isCrouchInAirActive)
         {
             desiredHeight = minCrouchHeight;
         }
         else
         {
-            desiredHeight = Mathf.Clamp(
-                headHeight,
-                minCrouchHeight,
-                maxCrouchHeight - additionalHeight
-            );
+            if (inputManager.GetRightSecondaryButton())
+            {
+                desiredHeight = minCrouchHeight;
+            }
+            else
+            {
+                desiredHeight = Mathf.Clamp(
+                    headHeight,
+                    minCrouchHeight,
+                    maxCrouchHeight - additionalHeight
+                );
+            }
         }
 
         currentHeight = Mathf.Lerp(currentHeight, desiredHeight, Time.fixedDeltaTime * standUpSpeed);
@@ -319,7 +323,6 @@ public class HexaBodyController : MonoBehaviour
 
         if (jumpController.IsGrounded)
         {
-            // Imposta le scale di default
             if (monoball != null)
                 monoball.transform.localScale = Vector3.Lerp(monoball.transform.localScale, defaultMonoballScale, Time.deltaTime * scaleChangeSpeed);
 
@@ -331,7 +334,6 @@ public class HexaBodyController : MonoBehaviour
         }
         else
         {
-            // Imposta le scale in aria
             if (monoball != null)
                 monoball.transform.localScale = Vector3.Lerp(monoball.transform.localScale, airMonoballScale, Time.deltaTime * scaleChangeSpeed);
 
