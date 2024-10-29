@@ -45941,6 +45941,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1362496677}
   - component: {fileID: 1362496678}
+  - component: {fileID: 1362496679}
   m_Layer: 8
   m_Name: KinematicGrabRangeR
   m_TagString: Untagged
@@ -45982,8 +45983,23 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.15151595, y: 0.7253629, z: 1.1}
-  m_Center: {x: 0.2969684, y: 0.03717035, z: 0}
+  m_Size: {x: 0.2864689, y: 0.7253629, z: 1.1000001}
+  m_Center: {x: 0.22949202, y: 0.03717035, z: -0.0000000010365374}
+--- !u!114 &1362496679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362496676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 858377978ed343743b8c738ce9f73174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grabLayer:
+    serializedVersion: 2
+    m_Bits: 32768
 --- !u!43 &1369162774
 Mesh:
   m_ObjectHideFlags: 0
@@ -68479,6 +68495,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2089642875}
   - component: {fileID: 2089642876}
+  - component: {fileID: 2089642877}
   m_Layer: 8
   m_Name: KinematicGrabRangeL
   m_TagString: Untagged
@@ -68520,8 +68537,23 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.15151595, y: 0.7253629, z: 1.1}
-  m_Center: {x: -0.2969684, y: 0.03717035, z: 0}
+  m_Size: {x: 0.2864689, y: 0.7253629, z: 1.1000001}
+  m_Center: {x: -0.229492, y: 0.03717035, z: -0.0000000010365374}
+--- !u!114 &2089642877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089642874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 858377978ed343743b8c738ce9f73174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grabLayer:
+    serializedVersion: 2
+    m_Bits: 32768
 --- !u!1 &2099993050
 GameObject:
   m_ObjectHideFlags: 0
@@ -71143,12 +71175,12 @@ MonoBehaviour:
   fingerTipColliders:
   - {fileID: 1482115842}
   grabValueSpeed: 5
-  grabRangeCollider: {fileID: 1362496678}
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
   prefabScale: {x: 0.025, y: 0.025, z: 0.025}
   prefabFollowSpeed: 100
   referencePoint: {fileID: 1944091228}
+  grabRangeTrigger: {fileID: 1362496679}
 --- !u!4 &8732607022704123872
 Transform:
   m_ObjectHideFlags: 0
@@ -71954,12 +71986,12 @@ MonoBehaviour:
   fingerTipColliders:
   - {fileID: 1701318476}
   grabValueSpeed: 5
-  grabRangeCollider: {fileID: 2089642876}
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
   prefabScale: {x: 0.025, y: 0.025, z: 0.025}
   prefabFollowSpeed: 100
   referencePoint: {fileID: 422878635}
+  grabRangeTrigger: {fileID: 2089642877}
 --- !u!33 &8732607023210212952
 MeshFilter:
   m_ObjectHideFlags: 0

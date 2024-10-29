@@ -15,9 +15,6 @@ public class GrabPhysics : MonoBehaviour
     public List<Collider> fingerTipColliders;
     public float grabValueSpeed = 1.0f;
 
-    [Header("Grab Range")]
-    public Collider grabRangeCollider;
-
     [Header("Prefab Settings")]
     public GameObject prefabToInstantiate;
     public Vector3 prefabScale = Vector3.one;
@@ -25,6 +22,9 @@ public class GrabPhysics : MonoBehaviour
 
     [Header("Reference Point")]
     public Transform referencePoint;
+
+    [Header("Grab Range Trigger")]
+    public GrabRangeTrigger grabRangeTrigger;
 
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
@@ -74,24 +74,19 @@ public class GrabPhysics : MonoBehaviour
 
     private void UpdateCandidateObject()
     {
-        if (grabRangeCollider == null)
+        if (grabRangeTrigger == null)
         {
-            Debug.LogWarning("Grab Range Collider is not assigned.");
+            Debug.LogWarning("Grab Range Trigger is not assigned.");
             return;
         }
 
-        Collider[] nearbyColliders = Physics.OverlapBox(
-            grabRangeCollider.bounds.center,
-            grabRangeCollider.bounds.extents,
-            grabRangeCollider.transform.rotation,
-            grabLayer,
-            QueryTriggerInteraction.Ignore
-        );
+        // Ottieni la lista degli oggetti candidati dal trigger
+        List<Collider> candidates = grabRangeTrigger.GetCandidateObjects();
 
         Collider closestCollider = null;
         float closestDistance = Mathf.Infinity;
 
-        foreach (Collider collider in nearbyColliders)
+        foreach (Collider collider in candidates)
         {
             if (collider.gameObject == gameObject || handColliders.Contains(collider))
                 continue;
@@ -215,21 +210,27 @@ public class GrabPhysics : MonoBehaviour
         handAnimator.SetFloat("GrabValue", grabValue);
     }
 
+    // Modifica per visualizzare il trigger
     private void OnDrawGizmosSelected()
     {
-        if (grabRangeCollider == null)
+        if (grabRangeTrigger == null)
+            return;
+
+        Collider grabCollider = grabRangeTrigger.GetComponent<Collider>();
+        if (grabCollider == null)
             return;
 
         Gizmos.color = Color.yellow;
-        Gizmos.matrix = grabRangeCollider.transform.localToWorldMatrix;
+        Gizmos.matrix = grabCollider.transform.localToWorldMatrix;
 
-        if (grabRangeCollider is BoxCollider boxCollider)
+        if (grabCollider is BoxCollider boxCollider)
         {
             Gizmos.DrawWireCube(boxCollider.center, boxCollider.size);
         }
-        else if (grabRangeCollider is SphereCollider sphereCollider)
+        else if (grabCollider is SphereCollider sphereCollider)
         {
             Gizmos.DrawWireSphere(sphereCollider.center, sphereCollider.radius);
         }
+        // Aggiungi altri tipi di collider se necessario
     }
 }
