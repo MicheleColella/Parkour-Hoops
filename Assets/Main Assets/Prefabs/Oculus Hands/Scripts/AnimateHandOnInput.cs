@@ -13,15 +13,26 @@ public class AnimateHandOnInput : MonoBehaviour
     [Header("Animator")]
     public Animator handAnimator;
 
+    [Header("Animation Speeds")]
+    public float triggerSpeed = 5f;
+    public float gripSpeed = 5f;
+
+    private float currentTriggerValue = 0f;
+    private float currentGripValue = 0f;
+
     void Update()
     {
-        // Update Trigger animation parameter
-        float triggerValue = pinchAnimationAction.action.ReadValue<float>();
-        handAnimator.SetFloat("Trigger", triggerValue);
+        // Get target values for Trigger and Grip
+        float targetTriggerValue = pinchAnimationAction.action.ReadValue<float>();
+        float targetGripValue = gripAnimationAction.action.ReadValue<float>();
 
-        // Update Grip animation parameter
-        float gripValue = gripAnimationAction.action.ReadValue<float>();
-        handAnimator.SetFloat("Grip", gripValue);
+        // Smoothly interpolate towards the target values using Mathf.Lerp
+        currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
+        currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
+
+        // Update animation parameters
+        handAnimator.SetFloat("Trigger", currentTriggerValue);
+        handAnimator.SetFloat("Grip", currentGripValue);
 
         // Read button presence values
         float primaryButtonPresence = primaryButtonPresenceAnimationAction.action.ReadValue<float>();

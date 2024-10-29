@@ -33636,8 +33636,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -44677,7 +44677,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1318181692
 Transform:
   m_ObjectHideFlags: 0
@@ -45956,8 +45956,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1362496676}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.16427295, y: 0, z: 0, w: 0.98641497}
-  m_LocalPosition: {x: -0.5, y: -0.22999978, z: -0.39}
+  m_LocalRotation: {x: 0.16427295, y: -0, z: -0, w: 0.98641497}
+  m_LocalPosition: {x: -0.5, y: -0.31799972, z: -0.13499998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45982,8 +45982,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.30303186, y: 0.7253629, z: 1}
-  m_Center: {x: 0.14848423, y: 0.03717035, z: 0}
+  m_Size: {x: 0.15151595, y: 0.7253629, z: 1.1}
+  m_Center: {x: 0.2969684, y: 0.03717035, z: 0}
 --- !u!43 &1369162774
 Mesh:
   m_ObjectHideFlags: 0
@@ -49135,6 +49135,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: gripSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: triggerSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: stickPresenceAnimationAction.m_Reference
       value: 
       objectReference: {fileID: -7133167492897962013, guid: c348712bda248c246b8c49b3db54643f,
@@ -49151,6 +49161,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: primaryButtonPresenceAnimationAction.m_Reference
+      value: 
+      objectReference: {fileID: -3104887240681454914, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_Reference
       value: 
       objectReference: {fileID: -3104887240681454914, guid: c348712bda248c246b8c49b3db54643f,
@@ -49161,6 +49177,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -1294669989606002664, guid: c348712bda248c246b8c49b3db54643f,
         type: 3}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: primaryButtonPresenceAnimationAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_UseReference
@@ -56241,9 +56262,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: gripSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: handAnimator
       value: 
       objectReference: {fileID: 1971093317}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: triggerSpeed
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
       propertyPath: gripAnimationAction.m_Reference
@@ -56274,6 +56305,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: primaryButtonPresenceAnimationAction.m_Reference
+      value: 
+      objectReference: {fileID: 7747523001613525806, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_Reference
       value: 
       objectReference: {fileID: 7747523001613525806, guid: c348712bda248c246b8c49b3db54643f,
@@ -56286,8 +56323,18 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
+      propertyPath: primaryButtonPresenceAnimationAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
       propertyPath: primatyButtonPresenceAnimationAction.m_UseReference
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
+        type: 3}
+      propertyPath: primaryButtonPresenceAnimationAction.m_Action.m_Name
+      value: Primary Button Presence Animation
       objectReference: {fileID: 0}
     - target: {fileID: 8617771720240336811, guid: 2b8d54df5ac01924fa883f951aba5679,
         type: 3}
@@ -62823,7 +62870,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1929232554
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -68448,7 +68495,7 @@ Transform:
   m_GameObject: {fileID: 2089642874}
   serializedVersion: 2
   m_LocalRotation: {x: 0.16427295, y: 0, z: 0, w: 0.98641497}
-  m_LocalPosition: {x: 0.5, y: -0.23000002, z: -0.38999996}
+  m_LocalPosition: {x: 0.5, y: -0.318, z: -0.135}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -68473,8 +68520,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.30303186, y: 0.7253629, z: 1}
-  m_Center: {x: -0.1484842, y: 0.03717035, z: 0}
+  m_Size: {x: 0.15151595, y: 0.7253629, z: 1.1}
+  m_Center: {x: -0.2969684, y: 0.03717035, z: 0}
 --- !u!1 &2099993050
 GameObject:
   m_ObjectHideFlags: 0
