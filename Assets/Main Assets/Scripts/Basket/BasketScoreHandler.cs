@@ -1,0 +1,30 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BasketScoreHandler : MonoBehaviour
+{
+    public string targetTag = "BAll";  // Il tag dell'oggetto da rilevare
+    private PointManager pointManager;  // Riferimento al PointManager che gestisce il punteggio
+
+    private void Awake()
+    {
+        // Trova automaticamente l'istanza di PointManager nella scena
+        pointManager = FindObjectOfType<PointManager>();
+
+        // Verifica se è stato trovato
+        if (pointManager == null)
+        {
+            Debug.LogError("PointManager non trovato nella scena! Assicurati che esista un oggetto con lo script PointManager.");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(targetTag))
+        {
+            // Richiama il metodo di aggiornamento del punteggio nel PointManager
+            pointManager?.AddPoints(1);
+        }
+    }
+}
