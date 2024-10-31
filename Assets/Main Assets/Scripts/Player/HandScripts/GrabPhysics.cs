@@ -12,7 +12,11 @@ public class GrabPhysics : MonoBehaviour
     public LayerMask grabLayer;
     public List<Collider> handColliders;
     public Animator handAnimator;
-    public List<Collider> fingerTipColliders;
+    public List<Collider> pinkyTipColliders;
+    public List<Collider> ringTipColliders;
+    public List<Collider> middleTipColliders;
+    public List<Collider> pointerTipColliders;
+    public List<Collider> thumbTipColliders;
     public float grabValueSpeed = 1.0f;
 
     [Header("Prefab Settings")]
@@ -29,8 +33,8 @@ public class GrabPhysics : MonoBehaviour
     private FixedJoint fixedJoint;
     private bool isGrabbing = false;
     private Collider grabbedObjectCollider;
-    private float grabValue = 0f;
-    private bool objectTouchedByFingers = false;
+    private bool pinkyTouched = false, ringTouched = false, middleTouched = false, pointerTouched = false, thumbTouched = false;
+    private float pinkyGrab = 0f, ringGrab = 0f, middleGrab = 0f, pointerGrab = 0f, thumbGrab = 0f;
 
     private Collider currentCandidateObject = null;
     private GameObject instantiatedPrefab = null;
@@ -80,7 +84,6 @@ public class GrabPhysics : MonoBehaviour
             return;
         }
 
-        // Ottieni la lista degli oggetti candidati dal trigger
         List<Collider> candidates = grabRangeTrigger.GetCandidateObjects();
 
         Collider closestCollider = null;
@@ -146,7 +149,13 @@ public class GrabPhysics : MonoBehaviour
         fixedJoint.connectedBody = targetRigidbody;
 
         isGrabbing = true;
-        StartCoroutine(IncreaseGrabValue());
+
+        StartCoroutine(IncreaseFingerGrabValue("Pinky", pinkyTipColliders, pinkyGrab, pinkyTouched));
+        StartCoroutine(IncreaseFingerGrabValue("Ring", ringTipColliders, ringGrab, ringTouched));
+        StartCoroutine(IncreaseFingerGrabValue("Middle", middleTipColliders, middleGrab, middleTouched));
+        StartCoroutine(IncreaseFingerGrabValue("Pointer", pointerTipColliders, pointerGrab, pointerTouched));
+        StartCoroutine(IncreaseFingerGrabValue("Thumb", thumbTipColliders, thumbGrab, thumbTouched));
+
 
         DestroyInstantiatedPrefab();
         currentCandidateObject = null;
@@ -171,7 +180,7 @@ public class GrabPhysics : MonoBehaviour
         }
 
         StopAllCoroutines();
-        ResetGrabValue();
+        ResetFingerGrabValues();
     }
 
     private void DestroyInstantiatedPrefab()
@@ -183,34 +192,70 @@ public class GrabPhysics : MonoBehaviour
         }
     }
 
-    private IEnumerator IncreaseGrabValue()
+    private IEnumerator IncreaseFingerGrabValue(string fingerName, List<Collider> fingerTipColliders, float grabValue, bool fingerTouched)
     {
-        while (grabValue < 1f && !objectTouchedByFingers)
+        while (grabValue < 1f && !fingerTouched)
         {
             grabValue += Time.deltaTime * grabValueSpeed;
-            handAnimator.SetFloat("GrabValue", grabValue);
+            handAnimator.SetFloat($"{fingerName}Grab", grabValue);
 
             foreach (Collider fingerTipCollider in fingerTipColliders)
             {
-                if (fingerTipCollider.bounds.Intersects(grabbedObjectCollider.bounds))
+                if (grabbedObjectCollider != null && fingerTipCollider.bounds.Intersects(grabbedObjectCollider.bounds))
                 {
-                    objectTouchedByFingers = true;
+                    fingerTouched = true;
                     break;
                 }
             }
+
+            // Aggiorna il valore globale del grab per il dito specifico
+            UpdateGlobalGrabValue(fingerName, grabValue, fingerTouched);
 
             yield return null;
         }
     }
 
-    private void ResetGrabValue()
+    // Funzione per aggiornare i valori globali di grab
+    private void UpdateGlobalGrabValue(string fingerName, float grabValue, bool fingerTouched)
     {
-        grabValue = 0f;
-        objectTouchedByFingers = false;
-        handAnimator.SetFloat("GrabValue", grabValue);
+        switch (fingerName)
+        {
+            case "Pinky":
+                pinkyGrab = grabValue;
+                pinkyTouched = fingerTouched;
+                break;
+            case "Ring":
+                ringGrab = grabValue;
+                ringTouched = fingerTouched;
+                break;
+            case "Middle":
+                middleGrab = grabValue;
+                middleTouched = fingerTouched;
+                break;
+            case "Pointer":
+                pointerGrab = grabValue;
+                pointerTouched = fingerTouched;
+                break;
+            case "Thumb":
+                thumbGrab = grabValue;
+                thumbTouched = fingerTouched;
+                break;
+        }
     }
 
-    // Modifica per visualizzare il trigger
+
+    private void ResetFingerGrabValues()
+    {
+        pinkyGrab = ringGrab = middleGrab = pointerGrab = thumbGrab = 0f;
+        pinkyTouched = ringTouched = middleTouched = pointerTouched = thumbTouched = false;
+
+        handAnimator.SetFloat("PinkyGrab", pinkyGrab);
+        handAnimator.SetFloat("RingGrab", ringGrab);
+        handAnimator.SetFloat("MiddleGrab", middleGrab);
+        handAnimator.SetFloat("PointerGrab", pointerGrab);
+        handAnimator.SetFloat("ThumbGrab", thumbGrab);
+    }
+
     private void OnDrawGizmosSelected()
     {
         if (grabRangeTrigger == null)
@@ -231,6 +276,5 @@ public class GrabPhysics : MonoBehaviour
         {
             Gizmos.DrawWireSphere(sphereCollider.center, sphereCollider.radius);
         }
-        // Aggiungi altri tipi di collider se necessario
     }
 }

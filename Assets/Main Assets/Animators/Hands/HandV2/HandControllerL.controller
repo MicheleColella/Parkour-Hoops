@@ -98,6 +98,21 @@ AnimatorStateTransition:
   - m_ConditionMode: 4
     m_ConditionEvent: ThumbButtonPresence
     m_EventTreshold: 1
+  - m_ConditionMode: 4
+    m_ConditionEvent: PinkyGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: RingGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: MiddleGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: PointerGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: ThumbGrab
+    m_EventTreshold: 0.001
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5936045441918600520}
   m_Solo: 0
@@ -204,7 +219,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HandController
+  m_Name: HandControllerL
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: X
@@ -341,10 +356,10 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 7199369801103335833}
-    m_Position: {x: 560, y: 40, z: 0}
+    m_Position: {x: 640, y: 10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3450728697705705145}
-    m_Position: {x: 400, y: -80, z: 0}
+    m_Position: {x: 290, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5936045441918600520}
     m_Position: {x: 290, y: 40, z: 0}
@@ -412,17 +427,32 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 3
+    m_ConditionEvent: PinkyGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: RingGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: MiddleGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: PointerGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: ThumbGrab
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7199369801103335833}
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0.75
-  m_HasExitTime: 1
+  m_ExitTime: 5.0977655e-10
+  m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
@@ -434,17 +464,32 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 3
+    m_ConditionEvent: PinkyGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: RingGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: MiddleGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: PointerGrab
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: ThumbGrab
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7199369801103335833}
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0.75
-  m_HasExitTime: 1
+  m_ExitTime: 0
+  m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
@@ -544,6 +589,21 @@ AnimatorStateTransition:
   - m_ConditionMode: 3
     m_ConditionEvent: ThumbButtonPresence
     m_EventTreshold: 0.9
+  - m_ConditionMode: 4
+    m_ConditionEvent: PinkyGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: RingGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: MiddleGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: PointerGrab
+    m_EventTreshold: 0.001
+  - m_ConditionMode: 4
+    m_ConditionEvent: ThumbGrab
+    m_EventTreshold: 0.001
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3450728697705705145}
   m_Solo: 0
