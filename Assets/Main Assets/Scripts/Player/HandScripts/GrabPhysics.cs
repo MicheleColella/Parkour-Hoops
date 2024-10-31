@@ -256,7 +256,7 @@ public class GrabPhysics : MonoBehaviour
         handAnimator.SetFloat("ThumbGrab", thumbGrab);
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         if (grabRangeTrigger == null)
             return;
