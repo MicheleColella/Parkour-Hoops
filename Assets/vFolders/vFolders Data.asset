@@ -76,6 +76,7 @@ MonoBehaviour:
     - 80235645f0122b04da0c288797115021
     - 514c9c1de6a915e44acf4f1224ff6651
     - 8c2ef34a4ca241d40b4461442d84fd90
+    - f54d1bd14bd3ca042bd867b519fee8cc
     values:
     - guid: 00000000000000001000000000000000
       iColor: 0
@@ -384,6 +385,11 @@ MonoBehaviour:
       autoIconDirty: 0
     - guid: 8c2ef34a4ca241d40b4461442d84fd90
       iColor: 0
+      autoIcon: 
+      customIcon: 
+      autoIconDirty: 0
+    - guid: f54d1bd14bd3ca042bd867b519fee8cc
+      iColor: 10
       autoIcon: 
       customIcon: 
       autoIconDirty: 0
