@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class BasketScoreHandler : MonoBehaviour
 {
-    public string targetTag = "BAll";  // Il tag dell'oggetto da rilevare
+    public string targetTag = "Ball";  // Il tag dell'oggetto da rilevare
+    public GameObject VFXToInstantiate;  // Prefab da instanziare
+    public Transform vfxPosition;  // Posizione, rotazione e scala da usare per l'istanziamento
+    public float destroyDelay = 2f;  // Tempo dopo il quale distruggere l'oggetto
+
     private PointManager pointManager;  // Riferimento al PointManager che gestisce il punteggio
 
     private void Awake()
@@ -25,6 +29,21 @@ public class BasketScoreHandler : MonoBehaviour
         {
             // Richiama il metodo di aggiornamento del punteggio nel PointManager
             pointManager?.AddPoints(1);
+
+            // Instanzia il prefab alla posizione, rotazione e scala dello spawnPoint
+            if (VFXToInstantiate != null && vfxPosition != null)
+            {
+                GameObject instantiatedObject = Instantiate(
+                    VFXToInstantiate,
+                    vfxPosition.position,
+                    vfxPosition.rotation
+                );
+
+                instantiatedObject.transform.localScale = vfxPosition.localScale;
+
+                // Distruggi l'oggetto dopo un certo ritardo
+                Destroy(instantiatedObject, destroyDelay);
+            }
         }
     }
 }
