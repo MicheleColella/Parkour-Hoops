@@ -44985,13 +44985,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1362496676}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1629955, y: 0.12277646, z: -0.020446619, w: 0.97874427}
+  m_LocalRotation: {x: 0.1641109, y: 0.043800753, z: -0.007294373, w: 0.985442}
   m_LocalPosition: {x: -0.43, y: -0.44, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8732607022660418779}
-  m_LocalEulerAnglesHint: {x: 18.91, y: 14.3, z: 0}
+  m_LocalEulerAnglesHint: {x: 18.91, y: 5.09, z: 0}
 --- !u!65 &1362496678
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -45011,8 +45011,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.17194685, y: 0.39724994, z: 0.6395541}
-  m_Center: {x: 0.28675315, y: 0.1263326, z: -0.23022401}
+  m_Size: {x: 0.6479221, y: 0.5492437, z: 0.54977167}
+  m_Center: {x: 0.32207438, y: 0.118261434, z: -0.35872772}
 --- !u!114 &1362496679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63502,7 +63502,7 @@ GameObject:
   - component: {fileID: 2034400841}
   - component: {fileID: 2034400840}
   m_Layer: 8
-  m_Name: KinematicGrabRangeR
+  m_Name: KinematicGrabRangeL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63516,13 +63516,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2034400838}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1629955, y: -0.12277646, z: 0.020446619, w: 0.97874427}
-  m_LocalPosition: {x: 0.411, y: -0.4399997, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.1641109, y: -0.043800753, z: 0.007294373, w: 0.985442}
+  m_LocalPosition: {x: -0.424, y: -0.416, z: -0.069}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8732607023095264308}
-  m_LocalEulerAnglesHint: {x: 18.91, y: -14.3, z: 0}
+  m_LocalEulerAnglesHint: {x: 18.91, y: -5.09, z: 0}
 --- !u!114 &2034400840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63557,8 +63557,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.17194685, y: 0.39724994, z: 0.6395541}
-  m_Center: {x: 0.28675315, y: 0.1263326, z: -0.23022401}
+  m_Size: {x: 0.63259417, y: 0.5492437, z: 0.54977167}
+  m_Center: {x: 0.5170742, y: 0.118262045, z: -0.35872692}
 --- !u!1 &2043900004
 GameObject:
   m_ObjectHideFlags: 0
