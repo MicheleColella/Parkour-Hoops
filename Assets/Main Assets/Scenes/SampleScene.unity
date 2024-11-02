@@ -34434,6 +34434,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
         type: 3}
+      propertyPath: pullTrigger
+      value: 
+      objectReference: {fileID: 93787930}
+    - target: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
+        type: 3}
       propertyPath: triggerSpeed
       value: 20
       objectReference: {fileID: 0}
