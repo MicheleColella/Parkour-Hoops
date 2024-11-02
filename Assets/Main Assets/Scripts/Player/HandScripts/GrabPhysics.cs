@@ -31,13 +31,18 @@ public class GrabPhysics : MonoBehaviour
     public GrabRangeTrigger grabRangeTrigger;
 
     private FixedJoint fixedJoint;
-    private bool isGrabbing = false;
+    public bool isGrabbing = false;
     private Collider grabbedObjectCollider;
+    private GrabbableObject grabbedObjectScript;
+
+    private List<FixedJoint> fixedJoints = new List<FixedJoint>();
+
     private bool pinkyTouched = false, ringTouched = false, middleTouched = false, pointerTouched = false, thumbTouched = false;
     private float pinkyGrab = 0f, ringGrab = 0f, middleGrab = 0f, pointerGrab = 0f, thumbGrab = 0f;
 
     private Collider currentCandidateObject = null;
     private GameObject instantiatedPrefab = null;
+
 
     private void FixedUpdate()
     {
@@ -135,10 +140,17 @@ public class GrabPhysics : MonoBehaviour
     {
         if (currentCandidateObject == null) return;
 
+        // Check if the object has a GrabbableObject component
+        GrabbableObject grabbable = currentCandidateObject.GetComponent<GrabbableObject>();
+        if (grabbable == null) return;
+
         Rigidbody targetRigidbody = currentCandidateObject.attachedRigidbody;
         if (targetRigidbody == null) return;
 
         grabbedObjectCollider = currentCandidateObject;
+        grabbedObjectScript = grabbable;
+        grabbedObjectScript.OnGrabbed(gameObject); // Pass the hand GameObject
+
         foreach (Collider handCollider in handColliders)
         {
             Physics.IgnoreCollision(handCollider, grabbedObjectCollider, true);
@@ -147,6 +159,8 @@ public class GrabPhysics : MonoBehaviour
         fixedJoint = gameObject.AddComponent<FixedJoint>();
         fixedJoint.autoConfigureConnectedAnchor = true;
         fixedJoint.connectedBody = targetRigidbody;
+
+        fixedJoints.Add(fixedJoint);
 
         isGrabbing = true;
 
@@ -171,12 +185,22 @@ public class GrabPhysics : MonoBehaviour
             {
                 Physics.IgnoreCollision(handCollider, grabbedObjectCollider, false);
             }
+
+            if (grabbedObjectScript != null)
+            {
+                grabbedObjectScript.OnReleased(gameObject); // Pass the hand GameObject
+                grabbedObjectScript = null;
+            }
+
             grabbedObjectCollider = null;
         }
 
+        // Destroy the specific fixed joint associated with this hand
         if (fixedJoint != null)
         {
+            fixedJoints.Remove(fixedJoint);
             Destroy(fixedJoint);
+            fixedJoint = null;
         }
 
         StopAllCoroutines();

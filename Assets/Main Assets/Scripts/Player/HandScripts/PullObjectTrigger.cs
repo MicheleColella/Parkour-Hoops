@@ -1,42 +1,87 @@
-using System.Collections.Generic;
+// PullObjectTrigger.cs
 using UnityEngine;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class PullObjectTrigger : MonoBehaviour
 {
+    [Header("Pull Settings")]
     public float attractionSpeed = 5f;
     public LayerMask targetLayer;
     public Transform handOrigin;
-    public bool isAttracting;
-    public bool attractOBJ;
 
-    private Rigidbody attractedObject;
+    [Header("Input Action")]
+    public InputActionProperty pullInputAction;
+
+    [Header("Hand Grabbing Reference")]
+    public GrabPhysics grabPhysics; // Reference to the hand's GrabPhysics script
+
+    [Header("Debug")]
+    public bool isAttracting = false;
+
+    public Rigidbody attractedObject;
     private List<Rigidbody> objectsInTrigger = new List<Rigidbody>();
+
+    void OnEnable()
+    {
+        pullInputAction.action.Enable();
+    }
+
+    void OnDisable()
+    {
+        pullInputAction.action.Disable();
+    }
 
     void Update()
     {
-        if (attractOBJ && objectsInTrigger.Count > 0 && !isAttracting)
+        // Check if the hand is currently grabbing an object
+        if (grabPhysics != null && grabPhysics.isGrabbing)
         {
-            // Trova l'oggetto più vicino all'HandOrigin
-            attractedObject = GetClosestObject();
-            if (attractedObject != null)
+            // The hand is grabbing an object, so do not attract other objects
+            if (isAttracting)
             {
-                // Controlla se il Rigidbody non è kinematic
-                if (!attractedObject.isKinematic)
-                {
-                    isAttracting = true;
-                    attractedObject.useGravity = false;
+                StopAttracting();
+            }
+            return;
+        }
 
-                    Debug.Log("Inizio ad attirare l'oggetto: " + attractedObject.name);
-                }
-                else
+        bool pullButtonHeld = pullInputAction.action.ReadValue<float>() > 0.1f;
+
+        if (pullButtonHeld)
+        {
+            if (objectsInTrigger.Count > 0 && !isAttracting)
+            {
+                // Find the closest object to the handOrigin
+                attractedObject = GetClosestObject();
+                if (attractedObject != null)
                 {
-                    Debug.Log("L'oggetto " + attractedObject.name + " è kinematic, non può essere attirato.");
-                    attractedObject = null;
+                    // Check if the object is not kinematic and not already grabbed
+                    GrabbableObject grabbable = attractedObject.GetComponent<GrabbableObject>();
+                    if (!attractedObject.isKinematic && (grabbable == null || !grabbable.isGrabbed))
+                    {
+                        isAttracting = true;
+                        attractedObject.useGravity = false;
+
+                        Debug.Log("Started attracting object: " + attractedObject.name);
+                    }
+                    else
+                    {
+                        Debug.Log("Cannot attract object: " + attractedObject.name);
+                        attractedObject = null;
+                    }
                 }
             }
         }
+        else
+        {
+            // If the pull button is not held, stop attracting
+            if (isAttracting)
+            {
+                StopAttracting();
+            }
+        }
 
-        // Debug visivo
+        // Debug visual
         if (isAttracting && attractedObject != null)
         {
             Debug.DrawLine(attractedObject.position, handOrigin.position, Color.red);
@@ -47,27 +92,41 @@ public class PullObjectTrigger : MonoBehaviour
     {
         if (isAttracting && attractedObject != null)
         {
-            // Calcola la direzione verso l'HandOrigin
-            Vector3 direction = (handOrigin.position - attractedObject.position).normalized;
-
-            // Imposta la velocità del Rigidbody per muoverlo
-            attractedObject.velocity = direction * attractionSpeed;
-
-            // Se l'oggetto è molto vicino all'HandOrigin, ferma l'attrazione
-            if (Vector3.Distance(attractedObject.position, handOrigin.position) < 0.1f)
+            // Check if the object is grabbed during attraction
+            GrabbableObject grabbable = attractedObject.GetComponent<GrabbableObject>();
+            if (grabbable != null && grabbable.isGrabbed)
             {
-                isAttracting = false;
-                attractedObject.useGravity = true;
-                attractedObject.velocity = Vector3.zero; // Ferma il movimento
+                StopAttracting();
+                return;
+            }
 
-                Debug.Log("L'oggetto " + attractedObject.name + " è arrivato all'HandOrigin.");
-                attractedObject = null;
+            // Move the object towards the handOrigin
+            Vector3 direction = (handOrigin.position - attractedObject.position);
+            attractedObject.velocity = direction.normalized * attractionSpeed;
+
+            // If the object is close enough, stop attracting
+            if (direction.magnitude < 0.1f)
+            {
+                StopAttracting();
+                Debug.Log("Object reached handOrigin: " + attractedObject.name);
             }
         }
         else if (attractedObject != null)
         {
-            // Se non stiamo più attirando, assicuriamoci che la velocità sia zero
+            // Ensure the object stops moving if not attracting
             attractedObject.velocity = Vector3.zero;
+        }
+    }
+
+    public void StopAttracting()
+    {
+        if (attractedObject != null)
+        {
+            isAttracting = false;
+            attractedObject.useGravity = true;
+            attractedObject.velocity = Vector3.zero;
+            attractedObject = null;
+            Debug.Log("Stopped attracting object.");
         }
     }
 
@@ -78,6 +137,13 @@ public class PullObjectTrigger : MonoBehaviour
 
         foreach (Rigidbody obj in objectsInTrigger)
         {
+            // Check if the object is grabbed
+            GrabbableObject grabbable = obj.GetComponent<GrabbableObject>();
+            if (grabbable != null && grabbable.isGrabbed)
+            {
+                continue; // Skip objects that are already grabbed
+            }
+
             float distance = Vector3.Distance(obj.position, handOrigin.position);
             if (distance < minDistance)
             {
@@ -89,16 +155,30 @@ public class PullObjectTrigger : MonoBehaviour
         return closest;
     }
 
+    public bool HasObjectsInTrigger()
+    {
+        // Return true if there is at least one object in the trigger that is not grabbed
+        foreach (Rigidbody obj in objectsInTrigger)
+        {
+            GrabbableObject grabbable = obj.GetComponent<GrabbableObject>();
+            if (grabbable == null || !grabbable.isGrabbed)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        // Controlla se l'oggetto è nel layer target
+        // Check if the object is in the target layer
         if (((1 << other.gameObject.layer) & targetLayer) != 0)
         {
             Rigidbody rb = other.GetComponent<Rigidbody>();
             if (rb != null)
             {
                 objectsInTrigger.Add(rb);
-                Debug.Log("Oggetto entrato nel trigger: " + other.name);
+                Debug.Log("Object entered trigger: " + other.name);
             }
         }
     }
@@ -108,18 +188,15 @@ public class PullObjectTrigger : MonoBehaviour
         Rigidbody rb = other.GetComponent<Rigidbody>();
         if (rb != null && objectsInTrigger.Contains(rb))
         {
-            objectsInTrigger.Remove(rb);
-            Debug.Log("Oggetto uscito dal trigger: " + other.name);
-
-            // Se l'oggetto che stiamo attirando esce dal trigger, fermiamo l'attrazione
+            // If the object we are attracting exits the trigger, stop attracting
             if (rb == attractedObject)
             {
-                isAttracting = false;
-                attractedObject.useGravity = true;
-                attractedObject.velocity = Vector3.zero; // Ferma il movimento
-                attractedObject = null;
-                Debug.Log("L'oggetto attirato è uscito dal trigger.");
+                StopAttracting();
+                Debug.Log("Attracted object exited trigger.");
             }
+
+            objectsInTrigger.Remove(rb);
+            Debug.Log("Object exited trigger: " + other.name);
         }
     }
 }

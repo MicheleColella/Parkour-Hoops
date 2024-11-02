@@ -17,8 +17,12 @@ public class AnimateHandOnInput : MonoBehaviour
     public float triggerSpeed = 5f;
     public float gripSpeed = 5f;
 
+    [Header("Pull Trigger Reference")]
+    public PullObjectTrigger pullTrigger;
+
     private float currentTriggerValue = 0f;
     private float currentGripValue = 0f;
+    private float currentThumbValue = 0f;
 
     void Update()
     {
@@ -26,23 +30,38 @@ public class AnimateHandOnInput : MonoBehaviour
         float targetTriggerValue = pinchAnimationAction.action.ReadValue<float>();
         float targetGripValue = gripAnimationAction.action.ReadValue<float>();
 
-        // Smoothly interpolate towards the target values using Mathf.Lerp
-        currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
-        currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
+        // Read button presence values
+        float primaryButtonValue = primaryButtonPresenceAnimationAction.action.ReadValue<float>();
+        float secondaryButtonValue = secondaryButtonPresenceAnimationAction.action.ReadValue<float>();
+        float stickButtonValue = stickPresenceAnimationAction.action.ReadValue<float>();
+
+        // Determine thumb button presence
+        bool thumbButtonPressed = primaryButtonValue > 0.5f || secondaryButtonValue > 0.5f || stickButtonValue > 0.5f;
+        float targetThumbValue = thumbButtonPressed ? 1f : 0f;
+
+        // Check if there is an object in the pull trigger
+        bool objectInPullTrigger = pullTrigger != null && pullTrigger.HasObjectsInTrigger();
+
+        if (objectInPullTrigger)
+        {
+            // Smoothly interpolate towards 0
+            currentTriggerValue = Mathf.Lerp(currentTriggerValue, 0f, triggerSpeed * Time.deltaTime);
+            currentGripValue = Mathf.Lerp(currentGripValue, 0f, gripSpeed * Time.deltaTime);
+            currentThumbValue = Mathf.Lerp(currentThumbValue, 0f, triggerSpeed * Time.deltaTime);
+        }
+        else
+        {
+            // Smoothly interpolate towards the target values
+            currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
+            currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
+
+            // Update thumb value without Lerp to prevent fluctuation
+            currentThumbValue = targetThumbValue;
+        }
 
         // Update animation parameters
         handAnimator.SetFloat("Trigger", currentTriggerValue);
         handAnimator.SetFloat("Grip", currentGripValue);
-
-        // Read button presence values
-        float primaryButtonPresence = primaryButtonPresenceAnimationAction.action.ReadValue<float>();
-        float secondaryButtonPresence = secondaryButtonPresenceAnimationAction.action.ReadValue<float>();
-        float stickPresence = stickPresenceAnimationAction.action.ReadValue<float>();
-
-        // Determine thumb button presence
-        float thumbButtonPresence = (primaryButtonPresence == 1f || secondaryButtonPresence == 1f || stickPresence == 1f) ? 1f : 0f;
-
-        // Update ThumbButtonPresence animation parameter
-        handAnimator.SetFloat("ThumbButtonPresence", thumbButtonPresence);
+        handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
     }
 }
