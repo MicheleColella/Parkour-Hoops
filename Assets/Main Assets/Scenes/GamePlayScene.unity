@@ -33430,6 +33430,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
         type: 3}
+      propertyPath: grabPhysics
+      value: 
+      objectReference: {fileID: 8732607022660418780}
+    - target: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
+        type: 3}
       propertyPath: pullTrigger
       value: 
       objectReference: {fileID: 143624124}
@@ -61642,6 +61647,11 @@ PrefabInstance:
       propertyPath: thumbSpeed
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
+        type: 3}
+      propertyPath: grabPhysics
+      value: 
+      objectReference: {fileID: 8732607023095264312}
     - target: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
         type: 3}
       propertyPath: pullTrigger

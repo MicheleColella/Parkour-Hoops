@@ -158,6 +158,7 @@ public class GrabPhysics : MonoBehaviour
         ResetFingerGrabValues();
     }
 
+    // Inside your IncreaseFingerGrabValue coroutine
     private IEnumerator IncreaseFingerGrabValue(string fingerName, List<Collider> fingerTipColliders, float grabValue, bool fingerTouched)
     {
         while (grabValue < 1f && !fingerTouched)
@@ -174,12 +175,13 @@ public class GrabPhysics : MonoBehaviour
                 }
             }
 
-            // Aggiorna il valore globale del grab per il dito specifico
+            // Update the global grab value for the specific finger
             UpdateGlobalGrabValue(fingerName, grabValue, fingerTouched);
 
             yield return null;
         }
     }
+
 
     // Funzione per aggiornare i valori globali di grab
     private void UpdateGlobalGrabValue(string fingerName, float grabValue, bool fingerTouched)

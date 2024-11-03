@@ -20,6 +20,9 @@ public class AnimateHandOnInput : MonoBehaviour
     [Header("Pull Trigger Reference")]
     public PullObjectTrigger pullTrigger;
 
+    [Header("Grab Physics Reference")]
+    public GrabPhysics grabPhysics; // Reference to the GrabPhysics script
+
     private float currentTriggerValue = 0f;
     private float currentGripValue = 0f;
     private float currentThumbValue = 0f;
@@ -42,26 +45,36 @@ public class AnimateHandOnInput : MonoBehaviour
         // Check if there is an object in the pull trigger
         bool objectInPullTrigger = pullTrigger != null && pullTrigger.HasObjectsInTrigger();
 
-        if (objectInPullTrigger)
+        if (grabPhysics != null && grabPhysics.isGrabbing)
         {
-            // Smoothly interpolate towards 0
-            currentTriggerValue = Mathf.Lerp(currentTriggerValue, 0f, triggerSpeed * Time.deltaTime);
-            currentGripValue = Mathf.Lerp(currentGripValue, 0f, gripSpeed * Time.deltaTime);
-            currentThumbValue = Mathf.Lerp(currentThumbValue, 0f, triggerSpeed * Time.deltaTime);
+            // Hand is grabbing, do not update finger animations
+            // Set ThumbButtonPresence to 0 to prevent interference
+            currentThumbValue = 0f;
+            handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
         }
         else
         {
-            // Smoothly interpolate towards the target values
-            currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
-            currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
+            if (objectInPullTrigger)
+            {
+                // Smoothly interpolate towards 0
+                currentTriggerValue = Mathf.Lerp(currentTriggerValue, 0f, triggerSpeed * Time.deltaTime);
+                currentGripValue = Mathf.Lerp(currentGripValue, 0f, gripSpeed * Time.deltaTime);
+                currentThumbValue = Mathf.Lerp(currentThumbValue, 0f, triggerSpeed * Time.deltaTime);
+            }
+            else
+            {
+                // Smoothly interpolate towards the target values
+                currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
+                currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
 
-            // Update thumb value without Lerp to prevent fluctuation
-            currentThumbValue = targetThumbValue;
+                // Update thumb value without Lerp to prevent fluctuation
+                currentThumbValue = targetThumbValue;
+            }
+
+            // Update animation parameters
+            handAnimator.SetFloat("Trigger", currentTriggerValue);
+            handAnimator.SetFloat("Grip", currentGripValue);
+            handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
         }
-
-        // Update animation parameters
-        handAnimator.SetFloat("Trigger", currentTriggerValue);
-        handAnimator.SetFloat("Grip", currentGripValue);
-        handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
     }
 }
