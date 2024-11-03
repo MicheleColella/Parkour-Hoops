@@ -1,4 +1,3 @@
-// PullObjectTrigger.cs
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
@@ -16,9 +15,14 @@ public class PullObjectTrigger : MonoBehaviour
     [Header("Hand Grabbing Reference")]
     public GrabPhysics grabPhysics; // Reference to the hand's GrabPhysics script
 
+    [Header("Pull Restrictions")]
+    [Tooltip("Maximum mass of objects that can be pulled.")]
+    public float maxPullableMass = 10f; // Imposta il valore desiderato
+
     [Header("Debug")]
     public bool isAttracting = false;
 
+    [HideInInspector]
     public Rigidbody attractedObject;
     private List<Rigidbody> objectsInTrigger = new List<Rigidbody>();
 
@@ -55,9 +59,9 @@ public class PullObjectTrigger : MonoBehaviour
                 attractedObject = GetClosestObject();
                 if (attractedObject != null)
                 {
-                    // Check if the object is not kinematic and not already grabbed
-                    GrabbableObject grabbable = attractedObject.GetComponent<GrabbableObject>();
-                    if (!attractedObject.isKinematic && (grabbable == null || !grabbable.isGrabbed))
+                    // Check if the object meets the criteria to be pulled
+                    GrabbableObject grabbable = attractedObject.GetComponentInParent<GrabbableObject>();
+                    if (grabbable != null && grabbable.canBePulled && !grabbable.isGrabbed && attractedObject.mass <= maxPullableMass && !attractedObject.isKinematic)
                     {
                         isAttracting = true;
                         attractedObject.useGravity = false;
@@ -93,7 +97,7 @@ public class PullObjectTrigger : MonoBehaviour
         if (isAttracting && attractedObject != null)
         {
             // Check if the object is grabbed during attraction
-            GrabbableObject grabbable = attractedObject.GetComponent<GrabbableObject>();
+            GrabbableObject grabbable = attractedObject.GetComponentInParent<GrabbableObject>();
             if (grabbable != null && grabbable.isGrabbed)
             {
                 StopAttracting();
@@ -107,8 +111,8 @@ public class PullObjectTrigger : MonoBehaviour
             // If the object is close enough, stop attracting
             if (direction.magnitude < 0.1f)
             {
-                StopAttracting();
                 Debug.Log("Object reached handOrigin: " + attractedObject.name);
+                StopAttracting();
             }
         }
         else if (attractedObject != null)
@@ -137,11 +141,10 @@ public class PullObjectTrigger : MonoBehaviour
 
         foreach (Rigidbody obj in objectsInTrigger)
         {
-            // Check if the object is grabbed
-            GrabbableObject grabbable = obj.GetComponent<GrabbableObject>();
-            if (grabbable != null && grabbable.isGrabbed)
+            GrabbableObject grabbable = obj.GetComponentInParent<GrabbableObject>();
+            if (grabbable == null || !grabbable.canBePulled || grabbable.isGrabbed || obj.mass > maxPullableMass)
             {
-                continue; // Skip objects that are already grabbed
+                continue; // Skip objects that cannot be pulled or are already grabbed
             }
 
             float distance = Vector3.Distance(obj.position, handOrigin.position);
@@ -157,11 +160,11 @@ public class PullObjectTrigger : MonoBehaviour
 
     public bool HasObjectsInTrigger()
     {
-        // Return true if there is at least one object in the trigger that is not grabbed
+        // Return true if there is at least one object in the trigger that meets the criteria
         foreach (Rigidbody obj in objectsInTrigger)
         {
-            GrabbableObject grabbable = obj.GetComponent<GrabbableObject>();
-            if (grabbable == null || !grabbable.isGrabbed)
+            GrabbableObject grabbable = obj.GetComponentInParent<GrabbableObject>();
+            if (grabbable != null && grabbable.canBePulled && !grabbable.isGrabbed && obj.mass <= maxPullableMass)
             {
                 return true;
             }
@@ -174,8 +177,8 @@ public class PullObjectTrigger : MonoBehaviour
         // Check if the object is in the target layer
         if (((1 << other.gameObject.layer) & targetLayer) != 0)
         {
-            Rigidbody rb = other.GetComponent<Rigidbody>();
-            if (rb != null)
+            Rigidbody rb = other.attachedRigidbody; // Utilizza attachedRigidbody per ottenere il Rigidbody associato al Collider
+            if (rb != null && !objectsInTrigger.Contains(rb))
             {
                 objectsInTrigger.Add(rb);
                 Debug.Log("Object entered trigger: " + other.name);
@@ -185,7 +188,7 @@ public class PullObjectTrigger : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        Rigidbody rb = other.GetComponent<Rigidbody>();
+        Rigidbody rb = other.attachedRigidbody;
         if (rb != null && objectsInTrigger.Contains(rb))
         {
             // If the object we are attracting exits the trigger, stop attracting

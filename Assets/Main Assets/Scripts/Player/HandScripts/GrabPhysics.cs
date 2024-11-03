@@ -43,7 +43,6 @@ public class GrabPhysics : MonoBehaviour
     private Collider currentCandidateObject = null;
     private GameObject instantiatedPrefab = null;
 
-
     private void FixedUpdate()
     {
         bool isGrabButtonPressed = grabInputSource.action.ReadValue<float>() > 0.1f;
@@ -140,8 +139,8 @@ public class GrabPhysics : MonoBehaviour
     {
         if (currentCandidateObject == null) return;
 
-        // Check if the object has a GrabbableObject component
-        GrabbableObject grabbable = currentCandidateObject.GetComponent<GrabbableObject>();
+        // Usa GetComponentInParent per trovare GrabbableObject
+        GrabbableObject grabbable = currentCandidateObject.GetComponentInParent<GrabbableObject>();
         if (grabbable == null) return;
 
         Rigidbody targetRigidbody = currentCandidateObject.attachedRigidbody;
@@ -169,7 +168,6 @@ public class GrabPhysics : MonoBehaviour
         StartCoroutine(IncreaseFingerGrabValue("Middle", middleTipColliders, middleGrab, middleTouched));
         StartCoroutine(IncreaseFingerGrabValue("Pointer", pointerTipColliders, pointerGrab, pointerTouched));
         StartCoroutine(IncreaseFingerGrabValue("Thumb", thumbTipColliders, thumbGrab, thumbTouched));
-
 
         DestroyInstantiatedPrefab();
         currentCandidateObject = null;
@@ -266,7 +264,6 @@ public class GrabPhysics : MonoBehaviour
                 break;
         }
     }
-
 
     private void ResetFingerGrabValues()
     {

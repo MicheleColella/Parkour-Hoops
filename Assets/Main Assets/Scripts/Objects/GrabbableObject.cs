@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 public class GrabbableObject : MonoBehaviour
 {
-    
     [Tooltip("Indicates if the object is currently being grabbed.")]
     public bool isGrabbed
     {
@@ -13,19 +12,23 @@ public class GrabbableObject : MonoBehaviour
     [Tooltip("References to the hands that are grabbing this object.")]
     public List<GameObject> grabbedBy = new List<GameObject>();
 
-    // Add any other useful parameters here
     [Header("Additional Settings")]
     [Tooltip("Enable or disable gravity when the object is grabbed.")]
-    public bool disableGravityOnGrab = true;
+    public bool disableGravityOnGrab = false; // Impostato su false di default
+
+    [Header("Pull Settings")]
+    [Tooltip("Indicates if the object can be pulled by the PullObjectTrigger.")]
+    public bool canBePulled = true;
 
     private Rigidbody rb;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        // Cerca il Rigidbody nel GameObject corrente o nei suoi genitori
+        rb = GetComponentInParent<Rigidbody>();
         if (rb == null)
         {
-            Debug.LogWarning("GrabbableObject requires a Rigidbody component.");
+            Debug.LogWarning("GrabbableObject requires a Rigidbody component in parent or self.");
         }
     }
 
@@ -39,11 +42,13 @@ public class GrabbableObject : MonoBehaviour
         {
             grabbedBy.Add(hand);
 
+            /*
             // If this is the first hand grabbing the object, disable gravity
             if (grabbedBy.Count == 1 && disableGravityOnGrab && rb != null)
             {
                 rb.useGravity = false;
             }
+            */
 
             // If the object is being pulled, stop pulling
             PullObjectTrigger[] pullTriggers = FindObjectsOfType<PullObjectTrigger>();
