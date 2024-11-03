@@ -22,7 +22,10 @@ public class PullObjectTrigger : MonoBehaviour
     [Header("Prefab Settings")]
     public GameObject prefabToInstantiate;
     public Vector3 prefabScale = Vector3.one;
-    public float prefabFollowSpeed = 100f;
+
+    [Header("Prefab Movement")]
+    [Tooltip("Regola la reattività del movimento del prefab. Valori più bassi rendono il movimento più reattivo.")]
+    public float prefabSmoothTime = 0.05f; // Ora regolabile dall'Inspector
 
     [Header("Debug")]
     public bool isAttracting = false;
@@ -33,6 +36,8 @@ public class PullObjectTrigger : MonoBehaviour
 
     private Rigidbody currentCandidateObject = null;
     private GameObject instantiatedPrefab = null;
+
+    private Vector3 prefabVelocity = Vector3.zero; // Necessario per SmoothDamp
 
     void OnEnable()
     {
@@ -88,15 +93,18 @@ public class PullObjectTrigger : MonoBehaviour
                 StopAttracting();
             }
         }
+    }
 
+    void LateUpdate()
+    {
         // Aggiorna la posizione del prefab per seguire l'oggetto candidato
         if (instantiatedPrefab != null && currentCandidateObject != null)
         {
-            float step = prefabFollowSpeed * Time.deltaTime;
-            instantiatedPrefab.transform.position = Vector3.MoveTowards(
+            instantiatedPrefab.transform.position = Vector3.SmoothDamp(
                 instantiatedPrefab.transform.position,
                 currentCandidateObject.position,
-                step
+                ref prefabVelocity,
+                prefabSmoothTime
             );
         }
     }
@@ -205,6 +213,7 @@ public class PullObjectTrigger : MonoBehaviour
         {
             Destroy(instantiatedPrefab);
             instantiatedPrefab = null;
+            prefabVelocity = Vector3.zero; // Resetta la velocità per SmoothDamp
         }
     }
 

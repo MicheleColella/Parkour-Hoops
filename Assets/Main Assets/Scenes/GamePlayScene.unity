@@ -5273,7 +5273,7 @@ MonoBehaviour:
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
   prefabScale: {x: 0.025, y: 0.025, z: 0.025}
-  prefabFollowSpeed: 100
+  prefabSmoothTime: 0.04
   isAttracting: 0
   attractedObject: {fileID: 0}
 --- !u!1001 &93863397
@@ -9339,7 +9339,7 @@ MonoBehaviour:
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
   prefabScale: {x: 0.025, y: 0.025, z: 0.025}
-  prefabFollowSpeed: 100
+  prefabSmoothTime: 0.04
   isAttracting: 0
   attractedObject: {fileID: 0}
 --- !u!65 &143624125
@@ -27360,7 +27360,7 @@ MonoBehaviour:
   maxPullableMass: 10
   prefabToInstantiate: {fileID: 0}
   prefabScale: {x: 1, y: 1, z: 1}
-  prefabFollowSpeed: 100
+  prefabSmoothTime: 0.05
   isAttracting: 0
   attractedObject: {fileID: 0}
 --- !u!65 &336481128

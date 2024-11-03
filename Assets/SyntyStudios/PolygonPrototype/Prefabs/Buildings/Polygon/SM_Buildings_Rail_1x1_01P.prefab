@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 64380068696646788}
   - component: {fileID: 6326593215455795858}
   - component: {fileID: -7870868253212230929}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SM_Buildings_Rail_1x1_01P
   m_TagString: Untagged
   m_Icon: {fileID: 0}
