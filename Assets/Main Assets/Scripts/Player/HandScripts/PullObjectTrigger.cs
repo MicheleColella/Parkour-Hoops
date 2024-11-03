@@ -13,11 +13,16 @@ public class PullObjectTrigger : MonoBehaviour
     public InputActionProperty pullInputAction;
 
     [Header("Hand Grabbing Reference")]
-    public GrabPhysics grabPhysics; // Reference to the hand's GrabPhysics script
+    public GrabPhysics grabPhysics; // Riferimento allo script GrabPhysics della mano
 
     [Header("Pull Restrictions")]
-    [Tooltip("Maximum mass of objects that can be pulled.")]
+    [Tooltip("Massa massima degli oggetti che possono essere tirati.")]
     public float maxPullableMass = 10f; // Imposta il valore desiderato
+
+    [Header("Prefab Settings")]
+    public GameObject prefabToInstantiate;
+    public Vector3 prefabScale = Vector3.one;
+    public float prefabFollowSpeed = 100f;
 
     [Header("Debug")]
     public bool isAttracting = false;
@@ -25,6 +30,9 @@ public class PullObjectTrigger : MonoBehaviour
     [HideInInspector]
     public Rigidbody attractedObject;
     private List<Rigidbody> objectsInTrigger = new List<Rigidbody>();
+
+    private Rigidbody currentCandidateObject = null;
+    private GameObject instantiatedPrefab = null;
 
     void OnEnable()
     {
@@ -38,57 +46,58 @@ public class PullObjectTrigger : MonoBehaviour
 
     void Update()
     {
-        // Check if the hand is currently grabbing an object
+        // Controlla se la mano sta attualmente afferrando un oggetto
         if (grabPhysics != null && grabPhysics.isGrabbing)
         {
-            // The hand is grabbing an object, so do not attract other objects
+            // La mano sta afferrando un oggetto, quindi non attirare altri oggetti
             if (isAttracting)
             {
                 StopAttracting();
             }
+            DestroyInstantiatedPrefab();
             return;
         }
 
         bool pullButtonHeld = pullInputAction.action.ReadValue<float>() > 0.1f;
 
+        // Aggiorna l'oggetto candidato attuale
+        UpdateCurrentCandidateObject();
+
         if (pullButtonHeld)
         {
-            if (objectsInTrigger.Count > 0 && !isAttracting)
+            if (currentCandidateObject != null && !isAttracting)
             {
-                // Find the closest object to the handOrigin
-                attractedObject = GetClosestObject();
-                if (attractedObject != null)
-                {
-                    // Check if the object meets the criteria to be pulled
-                    GrabbableObject grabbable = attractedObject.GetComponentInParent<GrabbableObject>();
-                    if (grabbable != null && grabbable.canBePulled && !grabbable.isGrabbed && attractedObject.mass <= maxPullableMass && !attractedObject.isKinematic)
-                    {
-                        isAttracting = true;
-                        attractedObject.useGravity = false;
+                // Inizia ad attirare l'oggetto candidato
+                attractedObject = currentCandidateObject;
+                isAttracting = true;
 
-                        Debug.Log("Started attracting object: " + attractedObject.name);
-                    }
-                    else
-                    {
-                        Debug.Log("Cannot attract object: " + attractedObject.name);
-                        attractedObject = null;
-                    }
-                }
+                // Disabilita la gravità
+                attractedObject.useGravity = false;
+
+                // Distruggi il prefab poiché stiamo ora tirando l'oggetto
+                DestroyInstantiatedPrefab();
+
+                Debug.Log("Iniziato ad attirare l'oggetto: " + attractedObject.name);
             }
         }
         else
         {
-            // If the pull button is not held, stop attracting
+            // Se il pulsante di tiro non è premuto, smetti di attirare
             if (isAttracting)
             {
                 StopAttracting();
             }
         }
 
-        // Debug visual
-        if (isAttracting && attractedObject != null)
+        // Aggiorna la posizione del prefab per seguire l'oggetto candidato
+        if (instantiatedPrefab != null && currentCandidateObject != null)
         {
-            Debug.DrawLine(attractedObject.position, handOrigin.position, Color.red);
+            float step = prefabFollowSpeed * Time.deltaTime;
+            instantiatedPrefab.transform.position = Vector3.MoveTowards(
+                instantiatedPrefab.transform.position,
+                currentCandidateObject.position,
+                step
+            );
         }
     }
 
@@ -96,7 +105,7 @@ public class PullObjectTrigger : MonoBehaviour
     {
         if (isAttracting && attractedObject != null)
         {
-            // Check if the object is grabbed during attraction
+            // Controlla se l'oggetto viene afferrato durante l'attrazione
             GrabbableObject grabbable = attractedObject.GetComponentInParent<GrabbableObject>();
             if (grabbable != null && grabbable.isGrabbed)
             {
@@ -104,37 +113,55 @@ public class PullObjectTrigger : MonoBehaviour
                 return;
             }
 
-            // Move the object towards the handOrigin
+            // Muovi l'oggetto verso l'origine della mano
             Vector3 direction = (handOrigin.position - attractedObject.position);
             attractedObject.velocity = direction.normalized * attractionSpeed;
 
-            // If the object is close enough, stop attracting
+            // Se l'oggetto è abbastanza vicino, smetti di attirare
             if (direction.magnitude < 0.1f)
             {
-                Debug.Log("Object reached handOrigin: " + attractedObject.name);
+                Debug.Log("Oggetto raggiunto l'origine della mano: " + attractedObject.name);
                 StopAttracting();
             }
         }
         else if (attractedObject != null)
         {
-            // Ensure the object stops moving if not attracting
+            // Assicurati che l'oggetto smetta di muoversi se non viene attirato
             attractedObject.velocity = Vector3.zero;
         }
     }
 
-    public void StopAttracting()
+    private void UpdateCurrentCandidateObject()
     {
-        if (attractedObject != null)
+        Rigidbody closestObject = GetClosestCandidateObject();
+
+        if (closestObject != currentCandidateObject)
         {
-            isAttracting = false;
-            attractedObject.useGravity = true;
-            attractedObject.velocity = Vector3.zero;
-            attractedObject = null;
-            Debug.Log("Stopped attracting object.");
+            // L'oggetto candidato è cambiato
+            DestroyInstantiatedPrefab();
+
+            currentCandidateObject = closestObject;
+
+            if (currentCandidateObject != null)
+            {
+                // Instanzia il prefab alla posizione dell'oggetto candidato
+                InstantiatePrefabAtCandidateObject();
+            }
+        }
+        else if (currentCandidateObject != null)
+        {
+            // Verifica se l'oggetto candidato è ancora valido
+            GrabbableObject grabbable = currentCandidateObject.GetComponentInParent<GrabbableObject>();
+            if (grabbable == null || !grabbable.canBePulled || grabbable.isGrabbed || currentCandidateObject.mass > maxPullableMass)
+            {
+                // L'oggetto candidato non è più valido
+                DestroyInstantiatedPrefab();
+                currentCandidateObject = null;
+            }
         }
     }
 
-    private Rigidbody GetClosestObject()
+    private Rigidbody GetClosestCandidateObject()
     {
         Rigidbody closest = null;
         float minDistance = Mathf.Infinity;
@@ -144,7 +171,12 @@ public class PullObjectTrigger : MonoBehaviour
             GrabbableObject grabbable = obj.GetComponentInParent<GrabbableObject>();
             if (grabbable == null || !grabbable.canBePulled || grabbable.isGrabbed || obj.mass > maxPullableMass)
             {
-                continue; // Skip objects that cannot be pulled or are already grabbed
+                continue; // Salta gli oggetti che non possono essere tirati o sono già afferrati
+            }
+
+            if (isAttracting && obj == attractedObject)
+            {
+                continue; // Salta l'oggetto attualmente in attrazione
             }
 
             float distance = Vector3.Distance(obj.position, handOrigin.position);
@@ -158,9 +190,39 @@ public class PullObjectTrigger : MonoBehaviour
         return closest;
     }
 
+    private void InstantiatePrefabAtCandidateObject()
+    {
+        if (prefabToInstantiate != null && currentCandidateObject != null)
+        {
+            instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.position, Quaternion.identity);
+            instantiatedPrefab.transform.localScale = prefabScale;
+        }
+    }
+
+    private void DestroyInstantiatedPrefab()
+    {
+        if (instantiatedPrefab != null)
+        {
+            Destroy(instantiatedPrefab);
+            instantiatedPrefab = null;
+        }
+    }
+
+    public void StopAttracting()
+    {
+        if (attractedObject != null)
+        {
+            isAttracting = false;
+            attractedObject.useGravity = true;
+            attractedObject.velocity = Vector3.zero;
+            attractedObject = null;
+            Debug.Log("Smetti di attirare l'oggetto.");
+        }
+    }
+
     public bool HasObjectsInTrigger()
     {
-        // Return true if there is at least one object in the trigger that meets the criteria
+        // Ritorna true se c'è almeno un oggetto nel trigger che soddisfa i criteri
         foreach (Rigidbody obj in objectsInTrigger)
         {
             GrabbableObject grabbable = obj.GetComponentInParent<GrabbableObject>();
@@ -174,14 +236,14 @@ public class PullObjectTrigger : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // Check if the object is in the target layer
+        // Controlla se l'oggetto è nel layer target
         if (((1 << other.gameObject.layer) & targetLayer) != 0)
         {
-            Rigidbody rb = other.attachedRigidbody; // Utilizza attachedRigidbody per ottenere il Rigidbody associato al Collider
+            Rigidbody rb = other.attachedRigidbody; // Usa attachedRigidbody per ottenere il Rigidbody associato al Collider
             if (rb != null && !objectsInTrigger.Contains(rb))
             {
                 objectsInTrigger.Add(rb);
-                Debug.Log("Object entered trigger: " + other.name);
+                Debug.Log("Oggetto entrato nel trigger: " + other.name);
             }
         }
     }
@@ -191,15 +253,22 @@ public class PullObjectTrigger : MonoBehaviour
         Rigidbody rb = other.attachedRigidbody;
         if (rb != null && objectsInTrigger.Contains(rb))
         {
-            // If the object we are attracting exits the trigger, stop attracting
+            // Se l'oggetto che stiamo attirando esce dal trigger, smetti di attirare
             if (rb == attractedObject)
             {
                 StopAttracting();
-                Debug.Log("Attracted object exited trigger.");
+                Debug.Log("Oggetto attirato uscito dal trigger.");
+            }
+
+            // Se l'oggetto è il candidato attuale, resettalo e distruggi il prefab
+            if (rb == currentCandidateObject)
+            {
+                DestroyInstantiatedPrefab();
+                currentCandidateObject = null;
             }
 
             objectsInTrigger.Remove(rb);
-            Debug.Log("Object exited trigger: " + other.name);
+            Debug.Log("Oggetto uscito dal trigger: " + other.name);
         }
     }
 }

@@ -19,11 +19,6 @@ public class GrabPhysics : MonoBehaviour
     public List<Collider> thumbTipColliders;
     public float grabValueSpeed = 1.0f;
 
-    [Header("Prefab Settings")]
-    public GameObject prefabToInstantiate;
-    public Vector3 prefabScale = Vector3.one;
-    public float prefabFollowSpeed = 100f;
-
     [Header("Reference Point")]
     public Transform referencePoint;
 
@@ -41,7 +36,6 @@ public class GrabPhysics : MonoBehaviour
     private float pinkyGrab = 0f, ringGrab = 0f, middleGrab = 0f, pointerGrab = 0f, thumbGrab = 0f;
 
     private Collider currentCandidateObject = null;
-    private GameObject instantiatedPrefab = null;
 
     private void FixedUpdate()
     {
@@ -56,27 +50,10 @@ public class GrabPhysics : MonoBehaviour
                 TryGrabObject();
             }
         }
-        else
-        {
-            DestroyInstantiatedPrefab();
-        }
 
         if (!isGrabButtonPressed && isGrabbing)
         {
             ReleaseGrab();
-        }
-    }
-
-    private void LateUpdate()
-    {
-        if (instantiatedPrefab != null && currentCandidateObject != null)
-        {
-            float step = prefabFollowSpeed * Time.deltaTime;
-            instantiatedPrefab.transform.position = Vector3.MoveTowards(
-                instantiatedPrefab.transform.position,
-                currentCandidateObject.transform.position,
-                step
-            );
         }
     }
 
@@ -109,29 +86,6 @@ public class GrabPhysics : MonoBehaviour
         if (closestCollider != currentCandidateObject)
         {
             currentCandidateObject = closestCollider;
-            DestroyInstantiatedPrefab();
-
-            if (currentCandidateObject != null)
-            {
-                Rigidbody rb = currentCandidateObject.attachedRigidbody;
-                if (rb != null && !rb.isKinematic)
-                {
-                    if (prefabToInstantiate != null)
-                    {
-                        instantiatedPrefab = Instantiate(prefabToInstantiate, currentCandidateObject.transform.position, Quaternion.identity);
-                        instantiatedPrefab.transform.localScale = prefabScale;
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Prefab to instantiate is not assigned.");
-                    }
-                }
-            }
-        }
-
-        if (currentCandidateObject == null && instantiatedPrefab != null)
-        {
-            DestroyInstantiatedPrefab();
         }
     }
 
@@ -169,7 +123,6 @@ public class GrabPhysics : MonoBehaviour
         StartCoroutine(IncreaseFingerGrabValue("Pointer", pointerTipColliders, pointerGrab, pointerTouched));
         StartCoroutine(IncreaseFingerGrabValue("Thumb", thumbTipColliders, thumbGrab, thumbTouched));
 
-        DestroyInstantiatedPrefab();
         currentCandidateObject = null;
     }
 
@@ -203,15 +156,6 @@ public class GrabPhysics : MonoBehaviour
 
         StopAllCoroutines();
         ResetFingerGrabValues();
-    }
-
-    private void DestroyInstantiatedPrefab()
-    {
-        if (instantiatedPrefab != null)
-        {
-            Destroy(instantiatedPrefab);
-            instantiatedPrefab = null;
-        }
     }
 
     private IEnumerator IncreaseFingerGrabValue(string fingerName, List<Collider> fingerTipColliders, float grabValue, bool fingerTouched)
