@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,11 +22,17 @@ public class AnimateHandOnInput : MonoBehaviour
     public PullObjectTrigger pullTrigger;
 
     [Header("Grab Physics Reference")]
-    public GrabPhysics grabPhysics; // Reference to the GrabPhysics script
+    public GrabPhysics grabPhysics;
+
+    [Header("Suono di Attivazione")]
+    public AudioSource activationSound;
+    public float fadeOutSpeed = 1f;
 
     private float currentTriggerValue = 0f;
     private float currentGripValue = 0f;
     private float currentThumbValue = 0f;
+    private bool isSoundPlaying = false;
+    private Coroutine fadeOutCoroutine;
 
     void Update()
     {
@@ -47,8 +54,7 @@ public class AnimateHandOnInput : MonoBehaviour
 
         if (grabPhysics != null && grabPhysics.isGrabbing)
         {
-            // Hand is grabbing, do not update finger animations
-            // Set ThumbButtonPresence to 0 to prevent interference
+            // If grabbing, do not update finger animations
             currentThumbValue = 0f;
             handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
         }
@@ -56,7 +62,7 @@ public class AnimateHandOnInput : MonoBehaviour
         {
             if (objectInPullTrigger)
             {
-                // Smoothly interpolate towards 0
+                // Smoothly interpolate towards 0 if in pull trigger
                 currentTriggerValue = Mathf.Lerp(currentTriggerValue, 0f, triggerSpeed * Time.deltaTime);
                 currentGripValue = Mathf.Lerp(currentGripValue, 0f, gripSpeed * Time.deltaTime);
                 currentThumbValue = Mathf.Lerp(currentThumbValue, 0f, triggerSpeed * Time.deltaTime);
@@ -66,8 +72,6 @@ public class AnimateHandOnInput : MonoBehaviour
                 // Smoothly interpolate towards the target values
                 currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
                 currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
-
-                // Update thumb value without Lerp to prevent fluctuation
                 currentThumbValue = targetThumbValue;
             }
 
@@ -75,6 +79,50 @@ public class AnimateHandOnInput : MonoBehaviour
             handAnimator.SetFloat("Trigger", currentTriggerValue);
             handAnimator.SetFloat("Grip", currentGripValue);
             handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
+
+            // Check if all values are at maximum (1)
+            if (currentTriggerValue >= 0.8f && currentGripValue >= 0.8f && currentThumbValue >= 0.8f)
+            {
+                if (!isSoundPlaying)
+                {
+                    // Start the sound if all values are 1 and it's not already playing
+                    if (fadeOutCoroutine != null)
+                    {
+                        StopCoroutine(fadeOutCoroutine); // Stop any fade-out in progress
+                        activationSound.volume = 1f;     // Ensure volume is reset
+                    }
+                    activationSound.Play();
+                    isSoundPlaying = true;
+                }
+            }
+            else
+            {
+                // Start fade out if the values are no longer all 1
+                if (isSoundPlaying)
+                {
+                    fadeOutCoroutine = StartCoroutine(FadeOutSound());
+                    isSoundPlaying = false;
+                }
+            }
         }
+    }
+
+    private IEnumerator FadeOutSound()
+    {
+        while (activationSound.volume > 0)
+        {
+            activationSound.volume -= fadeOutSpeed * Time.deltaTime;
+            yield return null;
+
+            // Stop fade-out immediately if sound needs to restart
+            if (isSoundPlaying)
+            {
+                activationSound.volume = 1f; // Reset volume
+                yield break;                 // Exit the coroutine
+            }
+        }
+
+        activationSound.Stop();
+        activationSound.volume = 1f; // Reset volume for next play
     }
 }

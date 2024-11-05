@@ -60,7 +60,8 @@ public class HexaBodyController : MonoBehaviour
 
     public float monoballVelocity;
 
-    private Rigidbody monoballRb;
+    [HideInInspector]
+    public Rigidbody monoballRb;
     private Vector3 lastMoveDirection = Vector3.zero;
     private float additionalHeight;
     private float currentHeight;

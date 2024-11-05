@@ -252,7 +252,7 @@ public class PullObjectTrigger : MonoBehaviour
             if (rb != null && !objectsInTrigger.Contains(rb))
             {
                 objectsInTrigger.Add(rb);
-                Debug.Log("Oggetto entrato nel trigger: " + other.name);
+                //Debug.Log("Oggetto entrato nel trigger: " + other.name);
             }
         }
     }

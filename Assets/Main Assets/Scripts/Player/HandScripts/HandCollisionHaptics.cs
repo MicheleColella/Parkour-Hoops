@@ -7,29 +7,32 @@ public class HandCollisionHaptics : MonoBehaviour
 {
     private Rigidbody handRigidbody;
 
-    // Nodo XR per identificare la mano (LeftHand o RightHand)
     public XRNode handNode = XRNode.LeftHand;
-
-    // Dispositivo di input per il feedback aptico
     private InputDevice targetDevice;
 
-    // Soglia minima di velocità per attivare l'aptica
+    [Header("Parametri Aptici")]
     public float minimumCollisionSpeed = 0.1f;
-
-    // Velocità massima considerata per l'aptica
     public float maximumCollisionSpeed = 5.0f;
-
-    // Intensità massima dell'aptica (da 0.0 a 1.0)
     public float maximumHapticIntensity = 1.0f;
-
-    // Durata dell'impulso aptico
     public float hapticDuration = 0.1f;
+
+    [Header("Parametri Suono di Collisione")]
+    [Tooltip("Lista di AudioClip per la collisione, dal suono più leggero al più intenso")]
+    public List<AudioClip> collisionSounds;  // Lista di suoni di collisione, ordinati dal più leggero al più forte
+    public AudioSource collisionSoundSource;
+    public float collisionSoundThreshold = 0.5f;    // Tempo minimo tra i suoni in secondi
+
+    [Header("Range del Pitch Casuale")]
+    [Tooltip("Valore minimo per il pitch casuale")]
+    public float minPitchValue = 0.8f;
+    [Tooltip("Valore massimo per il pitch casuale")]
+    public float maxPitchValue = 1.2f;
+
+    private float lastCollisionSoundTime;
 
     void Start()
     {
         handRigidbody = GetComponent<Rigidbody>();
-
-        // Inizializza il dispositivo di input
         TryInitialize();
     }
 
@@ -40,7 +43,6 @@ public class HandCollisionHaptics : MonoBehaviour
 
     void Update()
     {
-        // Se il dispositivo non è valido, tenta di inizializzarlo nuovamente
         if (!targetDevice.isValid)
         {
             TryInitialize();
@@ -49,29 +51,50 @@ public class HandCollisionHaptics : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Ignora le collisioni con le proprie parti del corpo
         if (collision.gameObject == gameObject)
             return;
 
-        // Calcola la velocità della collisione
         float collisionSpeed = collision.relativeVelocity.magnitude;
-
-        // Se la velocità è sotto la soglia minima, non attivare l'aptica
         if (collisionSpeed < minimumCollisionSpeed)
             return;
 
-        // Mappa la velocità della collisione all'intensità aptica
+        // Calcola l'intensità per la vibrazione aptica
         float intensity = Mathf.Clamp01(collisionSpeed / maximumCollisionSpeed) * maximumHapticIntensity;
 
-        // Invia l'impulso aptico
         if (targetDevice.isValid)
         {
             HapticCapabilities capabilities;
             if (targetDevice.TryGetHapticCapabilities(out capabilities) && capabilities.supportsImpulse)
             {
-                uint channel = 0;
-                targetDevice.SendHapticImpulse(channel, intensity, hapticDuration);
+                targetDevice.SendHapticImpulse(0, intensity, hapticDuration);
             }
+        }
+
+        // Selezione e riproduzione del suono di collisione con il controllo del tempo di ripetizione
+        if (collisionSounds.Count >= 3 && collisionSoundSource != null && Time.time - lastCollisionSoundTime >= collisionSoundThreshold)
+        {
+            // Determina l'indice del suono in base all'intensità
+            int soundIndex;
+            if (intensity <= 0.33f)
+                soundIndex = 0;  // Suono più leggero
+            else if (intensity <= 0.66f)
+                soundIndex = 1;  // Suono intermedio
+            else
+                soundIndex = 2;  // Suono più intenso
+
+            // Imposta il clip selezionato nell'AudioSource
+            collisionSoundSource.clip = collisionSounds[soundIndex];
+
+            // Imposta il volume proporzionalmente all'intensità
+            float collisionVolume = intensity;
+            collisionSoundSource.volume = collisionVolume;
+
+            // Applica un valore di pitch casuale entro il range specificato
+            collisionSoundSource.pitch = Random.Range(minPitchValue, maxPitchValue);
+
+            // Riproduce il suono di collisione
+            collisionSoundSource.Play();
+            lastCollisionSoundTime = Time.time;
         }
     }
 }
