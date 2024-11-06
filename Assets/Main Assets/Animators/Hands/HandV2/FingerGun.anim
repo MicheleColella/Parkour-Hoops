@@ -51,7 +51,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -3.552, y: -22.084, z: 0.95}
+        value: {x: -2.275, y: -58.911, z: 2.889}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -67,7 +67,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -3.976, y: -85.061, z: 0.651}
+        value: {x: -3.858, y: -92.511, z: 1.161}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -115,7 +115,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -3.618, y: -78.877, z: -0.801}
+        value: {x: -3.704, y: -93.013, z: 0.106}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -1118,7 +1118,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -3.552
+        value: -2.275
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1139,7 +1139,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -22.084
+        value: -58.911
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1160,7 +1160,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.95
+        value: 2.889
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1244,7 +1244,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -3.976
+        value: -3.858
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1265,7 +1265,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -85.061
+        value: -92.511
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1286,7 +1286,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.651
+        value: 1.161
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1622,7 +1622,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -3.618
+        value: -3.704
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1643,7 +1643,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -78.877
+        value: -93.013
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1664,7 +1664,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -0.801
+        value: 0.106
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -2696,7 +2696,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase
+    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase/BoneMiddleMid/BoneMiddleBaseEnd
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -2708,7 +2708,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase
+    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase/BoneMiddleMid/BoneMiddleBaseEnd
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -2720,43 +2720,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid
+    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase/BoneMiddleMid/BoneMiddleBaseEnd
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -2804,78 +2768,6 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase/BoneMiddleMid/BoneMiddleBaseEnd
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase/BoneMiddleMid/BoneMiddleBaseEnd
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase/BoneMiddleMid/BoneMiddleBaseEnd
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid/BonePinkyEnd
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid/BonePinkyEnd
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid/BonePinkyEnd
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
     path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase/BoneRingMiddle/BoneRingEnd
     classID: 4
     script: {fileID: 0}
@@ -2899,7 +2791,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
+    attribute: m_LocalEulerAngles.x
     path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase/BoneRingMiddle/BoneRingEnd
     classID: 4
     script: {fileID: 0}
@@ -2948,7 +2840,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase
+    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -2960,7 +2852,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase
+    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -2972,31 +2864,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase/BoneRingMiddle
-    classID: 4
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase/BoneRingMiddle
+    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -3009,6 +2877,138 @@ AnimationClip:
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
     path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase/BoneRingMiddle
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase/BoneRingMiddle
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase/BoneRingMiddle
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: BoneArm/BoneWristRoll/BoneHand/BoneMiddleBase
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: BoneArm/BoneWristRoll/BoneHand/BoneIndexBase/BoneIndexMid/BoneIndexEnd
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: BoneArm/BoneWristRoll/BoneHand/BoneIndexBase/BoneIndexMid/BoneIndexEnd
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: BoneArm/BoneWristRoll/BoneHand/BoneIndexBase/BoneIndexMid/BoneIndexEnd
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: BoneArm/BoneWristRoll/BoneHand/BoneRingBase
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -3200,7 +3200,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: BoneArm/BoneWristRoll/BoneHand/BoneIndexBase/BoneIndexMid/BoneIndexEnd
+    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid/BonePinkyEnd
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -3212,7 +3212,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: BoneArm/BoneWristRoll/BoneHand/BoneIndexBase/BoneIndexMid/BoneIndexEnd
+    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid/BonePinkyEnd
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -3224,7 +3224,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: BoneArm/BoneWristRoll/BoneHand/BoneIndexBase/BoneIndexMid/BoneIndexEnd
+    path: BoneArm/BoneWristRoll/BoneHand/BonePinkyBase/BonePinkyMid/BonePinkyEnd
     classID: 4
     script: {fileID: 0}
     flags: 0

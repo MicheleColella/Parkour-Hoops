@@ -137380,7 +137380,7 @@ MonoBehaviour:
   - {fileID: 1695080661}
   thumbTipColliders:
   - {fileID: 459430064}
-  grabValueSpeed: 10
+  grabValueSpeed: 5
   referencePoint: {fileID: 1944091228}
   grabRangeTrigger: {fileID: 1362496679}
   isGrabbing: 0
@@ -138368,7 +138368,7 @@ MonoBehaviour:
   - {fileID: 941612568}
   thumbTipColliders:
   - {fileID: 941612567}
-  grabValueSpeed: 10
+  grabValueSpeed: 5
   referencePoint: {fileID: 422878635}
   grabRangeTrigger: {fileID: 2034400840}
   isGrabbing: 0
