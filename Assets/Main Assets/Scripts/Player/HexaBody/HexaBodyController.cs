@@ -195,7 +195,14 @@ public class HexaBodyController : MonoBehaviour
         }
         else
         {
-            MoveMonoball(walkForce);
+            // Calculate the magnitude of the thumbstick input (0 to 1)
+            float inputMagnitude = leftThumbstickInput.magnitude;
+
+            // Scale the walkForce based on the input magnitude
+            float scaledForce = walkForce * inputMagnitude;
+
+            // Pass the scaled force to MoveMonoball
+            MoveMonoball(scaledForce);
         }
     }
 

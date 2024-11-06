@@ -266,7 +266,7 @@ public class PullObjectTrigger : MonoBehaviour
             if (rb == attractedObject)
             {
                 StopAttracting();
-                Debug.Log("Oggetto attirato uscito dal trigger.");
+                //Debug.Log("Oggetto attirato uscito dal trigger.");
             }
 
             // Se l'oggetto è il candidato attuale, resettalo e distruggi il prefab
@@ -277,7 +277,7 @@ public class PullObjectTrigger : MonoBehaviour
             }
 
             objectsInTrigger.Remove(rb);
-            Debug.Log("Oggetto uscito dal trigger: " + other.name);
+            //Debug.Log("Oggetto uscito dal trigger: " + other.name);
         }
     }
 }
