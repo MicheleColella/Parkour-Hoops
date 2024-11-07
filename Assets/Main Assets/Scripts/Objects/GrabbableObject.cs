@@ -12,15 +12,12 @@ public class GrabbableObject : MonoBehaviour
     [Tooltip("References to the hands that are grabbing this object.")]
     public List<GameObject> grabbedBy = new List<GameObject>();
 
-    [Header("Additional Settings")]
-    [Tooltip("Enable or disable gravity when the object is grabbed.")]
-    public bool disableGravityOnGrab = false; // Impostato su false di default
-
     [Header("Pull Settings")]
     [Tooltip("Indicates if the object can be pulled by the PullObjectTrigger.")]
     public bool canBePulled = true;
 
     private Rigidbody rb;
+    private TrailRenderer trailRenderer;
 
     void Awake()
     {
@@ -30,6 +27,9 @@ public class GrabbableObject : MonoBehaviour
         {
             Debug.LogWarning("GrabbableObject requires a Rigidbody component in parent or self.");
         }
+
+        // Cerca il TrailRenderer nel GameObject corrente
+        trailRenderer = GetComponent<TrailRenderer>();
     }
 
     /// <summary>
@@ -42,13 +42,11 @@ public class GrabbableObject : MonoBehaviour
         {
             grabbedBy.Add(hand);
 
-            /*
-            // If this is the first hand grabbing the object, disable gravity
-            if (grabbedBy.Count == 1 && disableGravityOnGrab && rb != null)
+            // Disattiva il TrailRenderer se è presente
+            if (trailRenderer != null)
             {
-                rb.useGravity = false;
+                trailRenderer.enabled = false;
             }
-            */
 
             // If the object is being pulled, stop pulling
             PullObjectTrigger[] pullTriggers = FindObjectsOfType<PullObjectTrigger>();
@@ -72,10 +70,10 @@ public class GrabbableObject : MonoBehaviour
         {
             grabbedBy.Remove(hand);
 
-            // If no hands are grabbing the object anymore, re-enable gravity
-            if (grabbedBy.Count == 0 && disableGravityOnGrab && rb != null)
+            // Riattiva il TrailRenderer se è presente e se non è più afferrato
+            if (grabbedBy.Count == 0 && trailRenderer != null)
             {
-                rb.useGravity = true;
+                trailRenderer.enabled = true;
             }
         }
     }

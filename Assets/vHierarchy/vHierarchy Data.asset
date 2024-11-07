@@ -15,6 +15,7 @@ MonoBehaviour:
   sceneDatasByGuid:
     keys:
     - 99c9720ab356a0642a771bea13969a05
+    - 
     values:
     - goDatasByGlobalId:
         keys:
@@ -23,6 +24,10 @@ MonoBehaviour:
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1639362554-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-644270214-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1763765639-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1815636284-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-8732607022853558225-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-705319106-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-410087039-0
         values:
         - iColor: 1
           icon: PreMatQuad
@@ -34,8 +39,16 @@ MonoBehaviour:
           icon: Terrain Icon
         - iColor: 8
           icon: Favorite
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Camera Icon
+        - iColor: 0
+          icon: Light Icon
       goDatasByInstanceId:
-        keys: 607100002c7300008e750000e0720000bc750000
+        keys: 988300004c8d0000629900004e8c0000d49a0000689b000034a00000168d0000f8880000
         values:
         - iColor: 1
           icon: PreMatQuad
@@ -47,3 +60,17 @@ MonoBehaviour:
           icon: Terrain Icon
         - iColor: 8
           icon: Favorite
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Camera Icon
+        - iColor: 0
+          icon: Light Icon
+    - goDatasByGlobalId:
+        keys: []
+        values: []
+      goDatasByInstanceId:
+        keys: 
+        values: []

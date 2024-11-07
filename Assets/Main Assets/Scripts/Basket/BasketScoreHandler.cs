@@ -8,6 +8,7 @@ public class BasketScoreHandler : MonoBehaviour
     public GameObject VFXToInstantiate;  // Prefab da instanziare
     public Transform vfxPosition;  // Posizione, rotazione e scala da usare per l'istanziamento
     public float destroyDelay = 2f;  // Tempo dopo il quale distruggere l'oggetto
+    public AudioSource audioSource;  // AudioSource per il suono da riprodurre
 
     private PointManager pointManager;  // Riferimento al PointManager che gestisce il punteggio
 
@@ -29,6 +30,12 @@ public class BasketScoreHandler : MonoBehaviour
         {
             // Richiama il metodo di aggiornamento del punteggio nel PointManager
             pointManager?.AddPoints(1);
+
+            // Riproduce il suono dall'AudioSource
+            if (audioSource != null)
+            {
+                audioSource.Play();
+            }
 
             // Instanzia il prefab alla posizione, rotazione e scala dello spawnPoint
             if (VFXToInstantiate != null && vfxPosition != null)

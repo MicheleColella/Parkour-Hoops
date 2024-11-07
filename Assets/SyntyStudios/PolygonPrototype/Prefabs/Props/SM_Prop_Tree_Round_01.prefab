@@ -121,8 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grabbedBy: []
-  disableGravityOnGrab: 0
-  canBePulled: 1
+  canBePulled: 0
 --- !u!54 &4973473391897769182
 Rigidbody:
   m_ObjectHideFlags: 0
