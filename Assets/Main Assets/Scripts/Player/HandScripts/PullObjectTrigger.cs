@@ -10,7 +10,8 @@ public class PullObjectTrigger : MonoBehaviour
     public Transform handOrigin;
 
     [Header("Input Action")]
-    public InputActionProperty pullInputAction;
+    public InputActionProperty pullInputAction1;
+    public InputActionProperty pullInputAction2;
 
     [Header("Hand Grabbing Reference")]
     public GrabPhysics grabPhysics;
@@ -40,12 +41,14 @@ public class PullObjectTrigger : MonoBehaviour
 
     void OnEnable()
     {
-        pullInputAction.action.Enable();
+        pullInputAction1.action.Enable();
+        pullInputAction2.action.Enable();
     }
 
     void OnDisable()
     {
-        pullInputAction.action.Disable();
+        pullInputAction1.action.Disable();
+        pullInputAction2.action.Disable();
     }
 
     void Update()
@@ -60,11 +63,12 @@ public class PullObjectTrigger : MonoBehaviour
             return;
         }
 
-        bool pullButtonHeld = pullInputAction.action.ReadValue<float>() > 0.1f;
+        bool pullButtonHeld1 = pullInputAction1.action.ReadValue<float>() > 0.1f;
+        bool pullButtonHeld2 = pullInputAction2.action.ReadValue<float>() > 0.1f;
 
         UpdateCurrentCandidateObject();
 
-        if (pullButtonHeld)
+        if (pullButtonHeld1 && pullButtonHeld2)
         {
             if (currentCandidateObject != null && !isAttracting)
             {
