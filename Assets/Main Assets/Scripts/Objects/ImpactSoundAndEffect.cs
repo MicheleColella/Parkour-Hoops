@@ -4,14 +4,20 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class ImpactSoundAndEffect : MonoBehaviour
 {
-    public List<AudioClip> impactSounds;       // Lista di suoni da usare per gli impatti
-    public GameObject impactFXPrefab;          // Prefab dell'effetto di impatto (opzionale)
-    public float impactThreshold = 1.0f;       // Soglia minima per attivare l'effetto visivo
-    public float effectLifetime = 2.0f;        // Durata dell'effetto visivo
-    public float impactFXSize = 1.0f;          // Dimensione massima dell'effetto di impatto
+    public List<AudioClip> impactSounds;
+    public GameObject impactFXPrefab;
+    public float impactThreshold = 1.0f;
+    public float effectLifetime = 2.0f;
+    public float impactFXSize = 1.0f;
 
     private Rigidbody rb;
     private AudioSource audioSource;
+
+    public bool isAttracting = false;
+
+    // Variabile per gestire il cooldown
+    private float lastImpactTime = 0.0f;
+    public float impactCooldown = 0.2f;  // Tempo minimo tra un impatto e l'altro in secondi
 
     void Start()
     {
@@ -25,17 +31,23 @@ public class ImpactSoundAndEffect : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Calcola la velocità relativa al momento dell'impatto
+        // Salta l'esecuzione se l'oggetto è in stato di attrazione
+        if (isAttracting) return;
+
+        // Verifica se è trascorso abbastanza tempo dall'ultimo impatto
+        if (Time.time - lastImpactTime < impactCooldown) return;
+
         float impactVelocity = collision.relativeVelocity.magnitude;
 
-        // Riproduce il suono in base all'intensità dell'impatto
-        PlayImpactSound(impactVelocity);
+        // Riproduce il suono e l’effetto visivo solo se la velocità supera la soglia
+        if (impactVelocity >= impactThreshold)
+        {
+            PlayImpactSound(impactVelocity);
+            InstantiateImpactFX(collision.contacts[0].point, impactVelocity);
+        }
 
-        // Se la velocità di impatto è minore della soglia, non fare nulla
-        if (impactVelocity < impactThreshold) return;
-
-        // Instanzia l'effetto di impatto in base alla velocità
-        InstantiateImpactFX(collision.contacts[0].point, impactVelocity);
+        // Aggiorna il tempo dell'ultimo impatto
+        lastImpactTime = Time.time;
     }
 
     private void PlayImpactSound(float impactVelocity)
@@ -43,14 +55,10 @@ public class ImpactSoundAndEffect : MonoBehaviour
         if (audioSource == null || impactSounds.Count == 0)
             return;
 
-        // Calcola l'indice del suono in base alla velocità di impatto
         int soundIndex = Mathf.Clamp((int)(impactVelocity / impactThreshold * impactSounds.Count), 0, impactSounds.Count - 1);
         AudioClip selectedClip = impactSounds[soundIndex];
-
-        // Calcola il volume in base alla velocità e al numero di suoni nella lista
         float volume = Mathf.Clamp01(impactVelocity / impactThreshold) / impactSounds.Count;
 
-        // Riproduce il suono selezionato con il volume calcolato
         audioSource.PlayOneShot(selectedClip, volume);
     }
 
@@ -59,14 +67,10 @@ public class ImpactSoundAndEffect : MonoBehaviour
         if (impactFXPrefab == null)
             return;
 
-        // Calcola la scala dell'effetto basata sull'intensità dell'impatto
         float scale = Mathf.Clamp(impactVelocity / impactThreshold, 0.1f, 1.0f) * impactFXSize;
-
-        // Instanzia l'effetto visivo all'impatto e imposta la scala calcolata
         GameObject impactEffect = Instantiate(impactFXPrefab, position, Quaternion.identity);
         impactEffect.transform.localScale = Vector3.one * scale;
 
-        // Distrugge l'effetto visivo dopo un tempo definito
         Destroy(impactEffect, effectLifetime);
     }
 }

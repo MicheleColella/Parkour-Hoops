@@ -129,9 +129,9 @@ ConfigurableJoint:
   m_ConnectedAnchor: {x: -0.0017406794, y: 0.22008824, z: -2.3283064e-10}
   serializedVersion: 3
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
-  m_XMotion: 2
+  m_XMotion: 0
   m_YMotion: 0
-  m_ZMotion: 0
+  m_ZMotion: 2
   m_AngularXMotion: 0
   m_AngularYMotion: 0
   m_AngularZMotion: 0
