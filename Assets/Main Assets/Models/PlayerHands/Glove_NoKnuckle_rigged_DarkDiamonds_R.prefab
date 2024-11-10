@@ -142,7 +142,8 @@ Transform:
   m_LocalPosition: {x: -0.02578399, y: -0.0000000024547981, z: 0.0000000014854592}
   m_LocalScale: {x: 0.9999998, y: 0.9999998, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2162834185022838882}
   m_Father: {fileID: 4516720800167516}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &8177322255984562214
@@ -648,6 +649,10 @@ MonoBehaviour:
   handAnimator: {fileID: 95256870990832610}
   triggerSpeed: 10
   gripSpeed: 10
+  pullTrigger: {fileID: 0}
+  grabPhysics: {fileID: 0}
+  activationSound: {fileID: 0}
+  fadeOutSpeed: 1
 --- !u!1 &1456107309201626
 GameObject:
   m_ObjectHideFlags: 0
@@ -1306,3 +1311,34 @@ CapsuleCollider:
   m_Height: 0.034571383
   m_Direction: 0
   m_Center: {x: -0.0067477943, y: 4.2000564e-10, z: -0.0029074177}
+--- !u!1 &5427475428191765159
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2162834185022838882}
+  m_Layer: 0
+  m_Name: IndexPoke
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2162834185022838882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5427475428191765159}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.02065, y: -0, z: 0.00076}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4698432662054980}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

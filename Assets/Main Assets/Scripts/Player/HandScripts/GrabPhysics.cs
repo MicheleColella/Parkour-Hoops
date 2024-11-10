@@ -37,6 +37,9 @@ public class GrabPhysics : MonoBehaviour
 
     private Collider currentCandidateObject = null;
 
+    // Coroutines for each finger
+    private Coroutine pinkyCoroutine, ringCoroutine, middleCoroutine, pointerCoroutine, thumbCoroutine;
+
     private void FixedUpdate()
     {
         bool isGrabButtonPressed = grabInputSource.action.ReadValue<float>() > 0.1f;
@@ -93,7 +96,6 @@ public class GrabPhysics : MonoBehaviour
     {
         if (currentCandidateObject == null) return;
 
-        // Usa GetComponentInParent per trovare GrabbableObject
         GrabbableObject grabbable = currentCandidateObject.GetComponentInParent<GrabbableObject>();
         if (grabbable == null) return;
 
@@ -102,8 +104,9 @@ public class GrabPhysics : MonoBehaviour
 
         grabbedObjectCollider = currentCandidateObject;
         grabbedObjectScript = grabbable;
-        grabbedObjectScript.OnGrabbed(gameObject); // Pass the hand GameObject
+        grabbedObjectScript.OnGrabbed(gameObject);
 
+        // Ignore collisions between this hand's colliders and the grabbed object
         foreach (Collider handCollider in handColliders)
         {
             Physics.IgnoreCollision(handCollider, grabbedObjectCollider, true);
@@ -117,11 +120,11 @@ public class GrabPhysics : MonoBehaviour
 
         isGrabbing = true;
 
-        StartCoroutine(IncreaseFingerGrabValue("Pinky", pinkyTipColliders, pinkyGrab, pinkyTouched));
-        StartCoroutine(IncreaseFingerGrabValue("Ring", ringTipColliders, ringGrab, ringTouched));
-        StartCoroutine(IncreaseFingerGrabValue("Middle", middleTipColliders, middleGrab, middleTouched));
-        StartCoroutine(IncreaseFingerGrabValue("Pointer", pointerTipColliders, pointerGrab, pointerTouched));
-        StartCoroutine(IncreaseFingerGrabValue("Thumb", thumbTipColliders, thumbGrab, thumbTouched));
+        pinkyCoroutine = StartCoroutine(IncreaseFingerGrabValue("Pinky", pinkyTipColliders));
+        ringCoroutine = StartCoroutine(IncreaseFingerGrabValue("Ring", ringTipColliders));
+        middleCoroutine = StartCoroutine(IncreaseFingerGrabValue("Middle", middleTipColliders));
+        pointerCoroutine = StartCoroutine(IncreaseFingerGrabValue("Pointer", pointerTipColliders));
+        thumbCoroutine = StartCoroutine(IncreaseFingerGrabValue("Thumb", thumbTipColliders));
 
         currentCandidateObject = null;
     }
@@ -132,6 +135,7 @@ public class GrabPhysics : MonoBehaviour
 
         if (grabbedObjectCollider != null)
         {
+            // Re-enable collisions between this hand's colliders and the grabbed object
             foreach (Collider handCollider in handColliders)
             {
                 Physics.IgnoreCollision(handCollider, grabbedObjectCollider, false);
@@ -139,14 +143,13 @@ public class GrabPhysics : MonoBehaviour
 
             if (grabbedObjectScript != null)
             {
-                grabbedObjectScript.OnReleased(gameObject); // Pass the hand GameObject
+                grabbedObjectScript.OnReleased(gameObject);
                 grabbedObjectScript = null;
             }
 
             grabbedObjectCollider = null;
         }
 
-        // Destroy the specific fixed joint associated with this hand
         if (fixedJoint != null)
         {
             fixedJoints.Remove(fixedJoint);
@@ -154,60 +157,89 @@ public class GrabPhysics : MonoBehaviour
             fixedJoint = null;
         }
 
-        StopAllCoroutines();
+        if (pinkyCoroutine != null) StopCoroutine(pinkyCoroutine);
+        if (ringCoroutine != null) StopCoroutine(ringCoroutine);
+        if (middleCoroutine != null) StopCoroutine(middleCoroutine);
+        if (pointerCoroutine != null) StopCoroutine(pointerCoroutine);
+        if (thumbCoroutine != null) StopCoroutine(thumbCoroutine);
+
+        pinkyCoroutine = ringCoroutine = middleCoroutine = pointerCoroutine = thumbCoroutine = null;
+
         ResetFingerGrabValues();
     }
 
-    // Inside your IncreaseFingerGrabValue coroutine
-    private IEnumerator IncreaseFingerGrabValue(string fingerName, List<Collider> fingerTipColliders, float grabValue, bool fingerTouched)
+    private IEnumerator IncreaseFingerGrabValue(string fingerName, List<Collider> fingerTipColliders)
     {
-        while (grabValue < 1f && !fingerTouched)
+        while (GetFingerGrabValue(fingerName) < 1f && !GetFingerTouched(fingerName))
         {
-            grabValue += Time.deltaTime * grabValueSpeed;
+            float grabValue = GetFingerGrabValue(fingerName) + Time.deltaTime * grabValueSpeed;
+            SetFingerGrabValue(fingerName, grabValue);
             handAnimator.SetFloat($"{fingerName}Grab", grabValue);
 
             foreach (Collider fingerTipCollider in fingerTipColliders)
             {
-                if (grabbedObjectCollider != null && fingerTipCollider.bounds.Intersects(grabbedObjectCollider.bounds))
+                if (grabbedObjectCollider != null)
                 {
-                    fingerTouched = true;
-                    break;
+                    // Only check for intersection with the grabbed object's colliders
+                    if (fingerTipCollider.bounds.Intersects(grabbedObjectCollider.bounds))
+                    {
+                        SetFingerTouched(fingerName, true);
+                        break;
+                    }
                 }
             }
-
-            // Update the global grab value for the specific finger
-            UpdateGlobalGrabValue(fingerName, grabValue, fingerTouched);
 
             yield return null;
         }
     }
 
-
-    // Funzione per aggiornare i valori globali di grab
-    private void UpdateGlobalGrabValue(string fingerName, float grabValue, bool fingerTouched)
+    private float GetFingerGrabValue(string fingerName)
     {
         switch (fingerName)
         {
-            case "Pinky":
-                pinkyGrab = grabValue;
-                pinkyTouched = fingerTouched;
-                break;
-            case "Ring":
-                ringGrab = grabValue;
-                ringTouched = fingerTouched;
-                break;
-            case "Middle":
-                middleGrab = grabValue;
-                middleTouched = fingerTouched;
-                break;
-            case "Pointer":
-                pointerGrab = grabValue;
-                pointerTouched = fingerTouched;
-                break;
-            case "Thumb":
-                thumbGrab = grabValue;
-                thumbTouched = fingerTouched;
-                break;
+            case "Pinky": return pinkyGrab;
+            case "Ring": return ringGrab;
+            case "Middle": return middleGrab;
+            case "Pointer": return pointerGrab;
+            case "Thumb": return thumbGrab;
+            default: return 0f;
+        }
+    }
+
+    private void SetFingerGrabValue(string fingerName, float value)
+    {
+        switch (fingerName)
+        {
+            case "Pinky": pinkyGrab = value; break;
+            case "Ring": ringGrab = value; break;
+            case "Middle": middleGrab = value; break;
+            case "Pointer": pointerGrab = value; break;
+            case "Thumb": thumbGrab = value; break;
+        }
+    }
+
+    private bool GetFingerTouched(string fingerName)
+    {
+        switch (fingerName)
+        {
+            case "Pinky": return pinkyTouched;
+            case "Ring": return ringTouched;
+            case "Middle": return middleTouched;
+            case "Pointer": return pointerTouched;
+            case "Thumb": return thumbTouched;
+            default: return false;
+        }
+    }
+
+    private void SetFingerTouched(string fingerName, bool value)
+    {
+        switch (fingerName)
+        {
+            case "Pinky": pinkyTouched = value; break;
+            case "Ring": ringTouched = value; break;
+            case "Middle": middleTouched = value; break;
+            case "Pointer": pointerTouched = value; break;
+            case "Thumb": thumbTouched = value; break;
         }
     }
 

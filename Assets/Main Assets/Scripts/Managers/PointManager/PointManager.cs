@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class PointManager : MonoBehaviour
 {
     public int score = 0;
-    public List<TextMeshPro> pointTexts;  // Lista di TextMeshPro per visualizzare il punteggio
+    public List<TextMeshProUGUI> pointTexts;  // Lista di TextMeshPro per visualizzare il punteggio
 
     private void Awake()
     {
