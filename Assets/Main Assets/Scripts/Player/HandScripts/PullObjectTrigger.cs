@@ -84,7 +84,7 @@ public class PullObjectTrigger : MonoBehaviour
 
                 DestroyInstantiatedPrefab();
 
-                Debug.Log("Iniziato ad attirare l'oggetto: " + attractedObject.name);
+               // Debug.Log("Iniziato ad attirare l'oggetto: " + attractedObject.name);
             }
         }
         else
@@ -125,7 +125,7 @@ public class PullObjectTrigger : MonoBehaviour
 
             if (direction.magnitude < 0.1f)
             {
-                Debug.Log("Oggetto raggiunto l'origine della mano: " + attractedObject.name);
+                //Debug.Log("Oggetto raggiunto l'origine della mano: " + attractedObject.name);
                 StopAttracting();
             }
         }
@@ -223,7 +223,7 @@ public class PullObjectTrigger : MonoBehaviour
             }
 
             attractedObject = null;
-            Debug.Log("Smetti di attirare l'oggetto.");
+            //Debug.Log("Smetti di attirare l'oggetto.");
         }
     }
 
