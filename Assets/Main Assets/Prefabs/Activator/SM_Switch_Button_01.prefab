@@ -143,7 +143,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -297,7 +297,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 122
-  m_CollisionDetection: 2
+  m_CollisionDetection: 0
 --- !u!65 &2670285059125991099
 BoxCollider:
   m_ObjectHideFlags: 0

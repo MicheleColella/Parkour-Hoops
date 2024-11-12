@@ -16,6 +16,15 @@ public class UIVisibilityController : MonoBehaviour
     private Coroutine fadeCoroutine;
     private bool isVisible = false; // Stato corrente della visibilità della UI
 
+    void Start()
+    {
+        // Configura lo stato iniziale della UI come invisibile
+        uiCanvasGroup.alpha = 0;
+        uiCanvasGroup.interactable = false;
+        uiCanvasGroup.blocksRaycasts = false;
+        isVisible = false; // Assicura che la UI parta come invisibile
+    }
+
     void Update()
     {
         // Disegna il raycast nel Scene View per il debug
@@ -31,7 +40,7 @@ public class UIVisibilityController : MonoBehaviour
             foreach (RaycastHit hit in hits)
             {
                 // Debug per vedere tutti gli oggetti colpiti
-                //Debug.Log("Raycast ha colpito: " + hit.transform.name);
+                // Debug.Log("Raycast ha colpito: " + hit.transform.name);
 
                 // Verifica se uno degli oggetti colpiti è la mano
                 if (hit.transform == hand)
