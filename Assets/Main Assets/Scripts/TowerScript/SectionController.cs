@@ -4,27 +4,27 @@ using System.Security.Cryptography;
 
 public class SectionController : MonoBehaviour
 {
-    // Lista delle categorie di elementi interattivi
+    // List of interactive element categories
     public List<ElementCategory> categories;
 
-    // Probabilità di evitare la ripetizione immediata degli stessi elementi nella stessa sezione
+    // Probability to avoid immediate repetition of the same elements in the same section
     [Range(0f, 1f)]
-    public float nonRepetitionProbability = 1f; // 1 significa evitare sempre la ripetizione immediata
+    public float nonRepetitionProbability = 1f; // 1 means always avoid immediate repetition
 
-    // Lista degli ID degli elementi attivati in questa sezione
+    // List of IDs of elements activated in this section
     private List<string> activatedElementIDs = new List<string>();
 
     void Awake()
     {
-        // Disattiva tutti gli elementi all'inizio
+        // Deactivate all elements at the start
         DeactivateAllElements();
     }
 
     public void ActivateRandomElements(List<string> previousActivatedElementIDs, string sectionType)
     {
-        activatedElementIDs.Clear(); // Inizializza la lista per questa sezione
+        activatedElementIDs.Clear(); // Initialize the list for this section
 
-        // Attiva un numero casuale di elementi in ciascuna categoria
+        // Activate a random number of elements in each category
         foreach (var category in categories)
         {
             ActivateElementsInCategory(category, previousActivatedElementIDs);
@@ -35,37 +35,40 @@ public class SectionController : MonoBehaviour
     {
         List<GameObject> elements = category.elements;
 
-        // Verifica se la categoria deve essere attivata in base alla frequenza di attivazione
+        // Check if the category should be activated based on activation frequency
         if (Random.value > category.activationFrequency)
         {
-            Debug.Log("Categoria " + category.categoryName + " non attivata a causa della frequenza di apparizione.");
+            //Debug.Log("Category " + category.categoryName + " not activated due to appearance frequency.");
             return;
         }
 
-        // Verifica che ci siano elementi nella categoria
+        // Check that there are elements in the category
         if (elements.Count == 0)
         {
-            Debug.LogWarning("Nessun elemento disponibile nella categoria " + category.categoryName);
+            Debug.LogWarning("No elements available in category " + category.categoryName);
             return;
         }
 
-        // Numero massimo di elementi che possiamo attivare (non più del numero di elementi disponibili)
+        // Maximum number of elements we can activate (no more than the number of available elements)
         int maxAllowed = Mathf.Min(category.maxToActivate, elements.Count);
 
-        // Numero casuale di elementi da attivare, tra minToActivate e maxAllowed
+        // Random number of elements to activate, between minToActivate and maxAllowed
         int elementsToActivate = GetRandomInt(category.minToActivate, maxAllowed + 1);
 
-        // Creiamo una lista degli indici disponibili
+        // Create a list of available indices
         List<int> availableIndices = new List<int>();
         for (int i = 0; i < elements.Count; i++)
         {
             availableIndices.Add(i);
         }
 
-        // Rimuovi gli elementi che sono stati attivati l'ultima volta in questa stessa sezione in base a nonRepetitionProbability
+        // List to hold indices to potentially remove
+        List<int> indicesToRemove = new List<int>();
+
+        // Identify indices to remove based on nonRepetitionProbability
         if (previousActivatedElementIDs != null && previousActivatedElementIDs.Count > 0)
         {
-            for (int i = availableIndices.Count - 1; i >= 0; i--)
+            for (int i = 0; i < availableIndices.Count; i++)
             {
                 GameObject element = elements[availableIndices[i]];
                 ElementIdentifier identifier = element.GetComponent<ElementIdentifier>();
@@ -74,24 +77,50 @@ public class SectionController : MonoBehaviour
                     float chance = Random.value;
                     if (chance < nonRepetitionProbability)
                     {
-                        // Rimuovi questo indice per evitare la ripetizione immediata
-                        availableIndices.RemoveAt(i);
+                        indicesToRemove.Add(i); // Index in availableIndices list
                     }
                 }
             }
+
+            // Calculate potential available count after removal
+            int potentialAvailableCount = availableIndices.Count - indicesToRemove.Count;
+
+            if (potentialAvailableCount >= category.minToActivate)
+            {
+                // Remove all indices safely
+                RemoveIndicesFromAvailable(indicesToRemove, availableIndices);
+            }
+            else
+            {
+                // Remove only as many indices as possible while keeping at least minToActivate elements
+                int indicesWeCanRemove = availableIndices.Count - category.minToActivate;
+
+                if (indicesWeCanRemove > 0)
+                {
+                    // Shuffle indicesToRemove
+                    Shuffle(indicesToRemove);
+
+                    // Keep only the allowed number of indices to remove
+                    indicesToRemove = indicesToRemove.GetRange(0, indicesWeCanRemove);
+
+                    // Remove selected indices
+                    RemoveIndicesFromAvailable(indicesToRemove, availableIndices);
+                }
+                // Else, we cannot remove any indices
+            }
         }
 
-        // Aggiorna elementsToActivate nel caso abbiamo meno indici disponibili
-        elementsToActivate = Mathf.Min(elementsToActivate, availableIndices.Count);
+        // Update elementsToActivate to be within minToActivate and availableIndices.Count
+        elementsToActivate = Mathf.Clamp(elementsToActivate, category.minToActivate, availableIndices.Count);
 
-        // Attiva il numero desiderato di elementi, scegliendo indici casuali dalla lista degli indici disponibili
+        // Activate the desired number of elements
         for (int i = 0; i < elementsToActivate; i++)
         {
             int randomIndex = GetRandomInt(0, availableIndices.Count);
             int elementIndex = availableIndices[randomIndex];
             elements[elementIndex].SetActive(true);
 
-            // Registra l'elemento attivato
+            // Register the activated element
             ElementIdentifier identifier = elements[elementIndex].GetComponent<ElementIdentifier>();
             if (identifier != null)
             {
@@ -99,20 +128,43 @@ public class SectionController : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("ElementIdentifier non trovato su " + elements[elementIndex].name);
+                Debug.LogWarning("ElementIdentifier not found on " + elements[elementIndex].name);
             }
 
-            // Rimuovi l'indice selezionato per evitare duplicazioni
+            // Remove the selected index to avoid duplication
             availableIndices.RemoveAt(randomIndex);
         }
     }
 
-    // Metodo per ottenere un intero casuale utilizzando RandomNumberGenerator
+    // Helper method to remove indices from availableIndices
+    void RemoveIndicesFromAvailable(List<int> indicesToRemove, List<int> availableIndices)
+    {
+        // Sort indices in descending order to avoid shifting issues
+        indicesToRemove.Sort((a, b) => b.CompareTo(a));
+        foreach (int idx in indicesToRemove)
+        {
+            availableIndices.RemoveAt(idx);
+        }
+    }
+
+    // Helper method to shuffle a list
+    void Shuffle<T>(List<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = GetRandomInt(0, i + 1);
+            T temp = list[i];
+            list[i] = list[j];
+            list[j] = temp;
+        }
+    }
+
+    // Method to get a random integer using RandomNumberGenerator
     int GetRandomInt(int minValue, int maxValue)
     {
         if (minValue >= maxValue)
         {
-            throw new System.ArgumentOutOfRangeException("minValue deve essere minore di maxValue");
+            throw new System.ArgumentOutOfRangeException("minValue must be less than maxValue");
         }
 
         long diff = (long)maxValue - minValue;
@@ -147,7 +199,7 @@ public class SectionController : MonoBehaviour
         }
     }
 
-    // Metodo per ottenere gli ID degli elementi attivati in questa sezione
+    // Method to get the IDs of elements activated in this section
     public List<string> GetActivatedElementIDs()
     {
         return activatedElementIDs;
@@ -162,7 +214,7 @@ public class ElementCategory
     public int minToActivate = 1;
     public int maxToActivate = 1;
 
-    // Nuovo parametro per controllare la frequenza di apparizione della categoria
+    // Parameter to control the appearance frequency of the category
     [Range(0f, 1f)]
-    public float activationFrequency = 1f; // 1 significa che la categoria apparirà sempre, 0 mai
+    public float activationFrequency = 1f; // 1 means the category will always appear, 0 never
 }

@@ -8,8 +8,14 @@ public class TowerManager : MonoBehaviour
     public float generationThreshold = 0.75f;
     public float sectionHeight = 10f; // Altezza di una singola sezione
 
+    [Header("Rotazione Random")]
+    public bool enableRandomRotation = false;
+    public List<float> rotationAngles = new List<float> { 0f, 90f, 180f, 270f, 360f };
+
     private List<GameObject> activeSections = new List<GameObject>();
     private Transform player;
+
+    private float lastRotationAngle = -1f; // Traccia l'ultimo angolo di rotazione usato
 
     // Tiene traccia dei dati degli elementi attivati per tipo di sezione
     private SectionActivationData sectionActivationData = new SectionActivationData();
@@ -53,8 +59,16 @@ public class TowerManager : MonoBehaviour
         GameObject selectedPrefab = sectionPrefabs[randomIndex];
         string sectionType = selectedPrefab.name;
 
+        // Istanzia il prefab senza rotazione iniziale
         GameObject newSection = Instantiate(selectedPrefab, newPosition, Quaternion.identity);
         activeSections.Add(newSection);
+
+        // Determina la rotazione e la applica al GameObject stesso
+        if (enableRandomRotation && rotationAngles.Count > 0)
+        {
+            float randomAngle = GetUniqueRandomAngle();
+            newSection.transform.Rotate(0, randomAngle, 0, Space.Self);
+        }
 
         // Attiva elementi casuali nella nuova sezione, passando i dati di attivazione per quel tipo di sezione
         SectionController sectionController = newSection.GetComponent<SectionController>();
@@ -71,6 +85,18 @@ public class TowerManager : MonoBehaviour
         }
 
         //Debug.Log("Sezione generata in posizione: " + newPosition);
+    }
+
+    float GetUniqueRandomAngle()
+    {
+        float newAngle;
+        do
+        {
+            newAngle = rotationAngles[Random.Range(0, rotationAngles.Count)];
+        } while (newAngle == lastRotationAngle && rotationAngles.Count > 1); // Rigenera finché è uguale all'ultimo
+
+        lastRotationAngle = newAngle; // Aggiorna l'ultimo angolo usato
+        return newAngle;
     }
 
     void RemoveOldestSection()
