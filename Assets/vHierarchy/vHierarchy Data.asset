@@ -31,6 +31,7 @@ MonoBehaviour:
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-721695639-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-670547633-0
         - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-913363356-0
+        - GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1298533574-0
         values:
         - iColor: 1
           icon: PreMatQuad
@@ -56,8 +57,10 @@ MonoBehaviour:
           icon: Favorite
         - iColor: 3
           icon: Favorite
+        - iColor: 0
+          icon: 
       goDatasByInstanceId:
-        keys: c4830000de8d00002e9b0000d08c0000c29c0000589d0000a2a20000a88d00005a890000e28d00001c8d0000369485ff
+        keys: c4830000de8d00002e9b0000d08c0000c29c0000589d0000a2a20000a88d00005a890000e28d00001c8d0000369485ff9ea97fff
         values:
         - iColor: 1
           icon: PreMatQuad
@@ -83,6 +86,8 @@ MonoBehaviour:
           icon: Favorite
         - iColor: 3
           icon: Favorite
+        - iColor: 0
+          icon: 
     - goDatasByGlobalId:
         keys: []
         values: []
