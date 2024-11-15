@@ -33089,9 +33089,9 @@ MonoBehaviour:
     - {fileID: 6115301686379301589}
     - {fileID: 6484087773186846685}
     - {fileID: 6619538450485977081}
-    minToActivate: 4
-    maxToActivate: 10
-    activationFrequency: 0.851
+    minToActivate: 1
+    maxToActivate: 6
+    activationFrequency: 0.772
   nonRepetitionProbability: 1
 --- !u!1 &5093655632695594668
 GameObject:
