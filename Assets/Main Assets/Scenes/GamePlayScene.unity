@@ -106993,7 +106993,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 3
-  outlineColor: {r: 1, g: 0.8126906, b: 0, a: 1}
+  outlineColor: {r: 1, g: 0.44705883, b: 0.3372549, a: 1}
   outlineWidth: 2
   precomputeOutline: 0
   bakeKeys: []
@@ -154596,7 +154596,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monoballCollisionHandler: {fileID: 8732607022970061600}
   minJumpForce: 100
-  maxJumpForce: 200
+  maxJumpForce: 300
   maxChargeTime: 2
   targetRigidbody: {fileID: 8732607022704123873}
   targetRenderer: {fileID: 154479283}

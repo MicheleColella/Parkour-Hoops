@@ -18,6 +18,7 @@ public class GrabbableObject : MonoBehaviour
 
     private Rigidbody rb;
     private TrailRenderer trailRenderer;
+    private Outline outline;
 
     void Awake()
     {
@@ -30,6 +31,9 @@ public class GrabbableObject : MonoBehaviour
 
         // Cerca il TrailRenderer nel GameObject corrente
         trailRenderer = GetComponent<TrailRenderer>();
+
+        // Cerca il componente Outline nel GameObject corrente
+        outline = GetComponent<Outline>();
     }
 
     /// <summary>
@@ -46,6 +50,12 @@ public class GrabbableObject : MonoBehaviour
             if (trailRenderer != null)
             {
                 trailRenderer.enabled = false;
+            }
+
+            // Disattiva il componente Outline se è presente
+            if (outline != null)
+            {
+                outline.enabled = false;
             }
 
             // If the object is being pulled, stop pulling
@@ -74,6 +84,12 @@ public class GrabbableObject : MonoBehaviour
             if (grabbedBy.Count == 0 && trailRenderer != null)
             {
                 trailRenderer.enabled = true;
+            }
+
+            // Riattiva il componente Outline se è presente e se non è più afferrato
+            if (grabbedBy.Count == 0 && outline != null)
+            {
+                outline.enabled = true;
             }
         }
     }
