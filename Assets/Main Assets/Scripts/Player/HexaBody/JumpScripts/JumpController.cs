@@ -21,9 +21,12 @@ public class JumpController : MonoBehaviour
     public float shaderChangeDuration = 1.0f;
     public float shaderResetDuration = 1.0f;
 
-    private bool isCharging = false;
+    [ReadOnly] public bool isCharging = false;
+    [ReadOnly] public float currentChargeTime = 0f; // Tempo attuale di carica
+    [ReadOnly] public float currentShaderSize = 0f; // Dimensione attuale dello shader
+    [ReadOnly] public bool reachedMaxCharge = false;
+
     private float chargeStartTime;
-    private bool reachedMaxCharge = false;
 
     private XRControllerInputManager inputManager;
 
@@ -49,6 +52,7 @@ public class JumpController : MonoBehaviour
             if (targetRenderer != null)
             {
                 targetRenderer.material.SetFloat(sizePropertyName, shaderMinSize);
+                currentShaderSize = shaderMinSize; // Inizializza la dimensione dello shader
             }
         }
     }
@@ -81,13 +85,17 @@ public class JumpController : MonoBehaviour
     {
         if (isCharging)
         {
-            float chargeTime = Time.time - chargeStartTime;
+            currentChargeTime = Time.time - chargeStartTime;
 
-            if (chargeTime >= maxChargeTime && !reachedMaxCharge)
+            if (currentChargeTime >= maxChargeTime && !reachedMaxCharge)
             {
                 reachedMaxCharge = true;
-                TriggerShaderIncrease();
+                TriggerShaderIncrease(); // Attiva lo shader solo quando si raggiunge la carica massima
             }
+        }
+        else
+        {
+            currentChargeTime = 0f;
         }
     }
 
@@ -96,6 +104,13 @@ public class JumpController : MonoBehaviour
         isCharging = true;
         reachedMaxCharge = false;
         chargeStartTime = Time.time;
+
+        // Assicurarsi che lo shader parta dal valore minimo solo al reset
+        if (shaderDecreaseCoroutine != null)
+        {
+            StopCoroutine(shaderDecreaseCoroutine);
+            shaderDecreaseCoroutine = null;
+        }
     }
 
     private void CancelCharging()
@@ -175,11 +190,12 @@ public class JumpController : MonoBehaviour
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float newSize = Mathf.Lerp(startSize, endSize, elapsed / duration);
-            mat.SetFloat(sizePropertyName, newSize);
+            currentShaderSize = Mathf.Lerp(startSize, endSize, elapsed / duration); // Aggiorna la dimensione attuale
+            mat.SetFloat(sizePropertyName, currentShaderSize);
             yield return null;
         }
 
+        currentShaderSize = endSize; // Assicurarsi che sia impostato sul valore finale
         mat.SetFloat(sizePropertyName, endSize);
     }
 }
