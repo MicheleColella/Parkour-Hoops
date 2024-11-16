@@ -8,6 +8,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Main Assets/Scenes/GamePlayScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Main Assets/Scenes/MainMenu.unity
+    guid: f700f20f9b0cf8d49914c3b24d6a93a0
+  - enabled: 1
+    path: Assets/Main Assets/Scenes/TowerGame.unity
+    guid: ca5f4fb1a0389ea48a4c66e48119238d
+  - enabled: 1
+    path: Assets/Main Assets/Scenes/BasketGame.unity
+    guid: bdc9b8685054183478bcb9e3d1a5adc1
+  - enabled: 1
+    path: Assets/Main Assets/Scenes/SandBoxGame.unity
+    guid: 9c5168bea3959ec4bbdc8c2fb8d16a8c
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 44897fa0aa45b264d80a776582a757ca,
       type: 2}

@@ -16,6 +16,10 @@ MonoBehaviour:
     keys:
     - 99c9720ab356a0642a771bea13969a05
     - 
+    - f700f20f9b0cf8d49914c3b24d6a93a0
+    - 9c5168bea3959ec4bbdc8c2fb8d16a8c
+    - bdc9b8685054183478bcb9e3d1a5adc1
+    - ca5f4fb1a0389ea48a4c66e48119238d
     values:
     - goDatasByGlobalId:
         keys:
@@ -60,8 +64,138 @@ MonoBehaviour:
         - iColor: 0
           icon: 
       goDatasByInstanceId:
-        keys: c4830000de8d00002e9b0000d08c0000c29c0000589d0000a2a20000a88d00005a890000e28d00001c8d0000369485ff9ea97fff
+        keys: d4830000368e0000f69b00001c8d00009c9d0000369e0000b2a30000008e0000968900003a8e0000688d000000910000ca96000074150100d61f0100942d0100bc1e0100382f0100d22f01004e350100a01f0100361b0100da1f0100081f01009e220100682801003c8101009e8b01005c990100848a0100009b01009a9b010016a10100688b0100fe860100a28b0100d08a0100668e01003094010026a6010088b0010046be01006eaf0100eabf010084c0010000c6010052b00100e8ab01008cb00100baaf010050b301001ab901008c560200ee600200ac6e0200d45f020050700200ea70020066760200b86002004e5c0200f260020020600200b663020080690200a4640700066f0700c47c0700ec6d0700687e0700027f07007e840700d06e0700666a07000a6f0700386e0700ce71070098770700
         values:
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 8
+          icon: Favorite
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Camera Icon
+        - iColor: 0
+          icon: Light Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 9
+          icon: Favorite
+        - iColor: 3
+          icon: Favorite
+        - iColor: 0
+          icon: 
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 8
+          icon: Favorite
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Camera Icon
+        - iColor: 0
+          icon: Light Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 9
+          icon: Favorite
+        - iColor: 3
+          icon: Favorite
+        - iColor: 0
+          icon: 
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 8
+          icon: Favorite
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Camera Icon
+        - iColor: 0
+          icon: Light Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 9
+          icon: Favorite
+        - iColor: 3
+          icon: Favorite
+        - iColor: 0
+          icon: 
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 8
+          icon: Favorite
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Camera Icon
+        - iColor: 0
+          icon: Light Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 9
+          icon: Favorite
+        - iColor: 3
+          icon: Favorite
+        - iColor: 0
+          icon: 
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 1
+          icon: PreMatQuad
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 8
+          icon: Favorite
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 4
+          icon: AvatarMask On Icon
+        - iColor: 4
+          icon: Camera Icon
+        - iColor: 0
+          icon: Light Icon
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 9
+          icon: Favorite
+        - iColor: 3
+          icon: Favorite
+        - iColor: 0
+          icon: 
         - iColor: 1
           icon: PreMatQuad
         - iColor: 1
@@ -94,3 +228,320 @@ MonoBehaviour:
       goDatasByInstanceId:
         keys: 
         values: []
+    - goDatasByGlobalId:
+        keys:
+        - GlobalObjectId_V1-2-f700f20f9b0cf8d49914c3b24d6a93a0-718044299-0
+        - GlobalObjectId_V1-2-f700f20f9b0cf8d49914c3b24d6a93a0-9883848-0
+        - GlobalObjectId_V1-2-f700f20f9b0cf8d49914c3b24d6a93a0-1763765639-0
+        - GlobalObjectId_V1-2-f700f20f9b0cf8d49914c3b24d6a93a0-721695639-0
+        - GlobalObjectId_V1-2-f700f20f9b0cf8d49914c3b24d6a93a0-1924113827-0
+        - GlobalObjectId_V1-2-f700f20f9b0cf8d49914c3b24d6a93a0-705319106-0
+        - GlobalObjectId_V1-2-f700f20f9b0cf8d49914c3b24d6a93a0-1821888350-0
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+      goDatasByInstanceId:
+        keys: 1c400100ba3501007e4f01002040010072a20100aca1010024a3010076a2010008c7010042c60100bac701000cc70100cac70100fcc601006e50fbffa0770200a876020080780200a4770200a07802009477020092780200ceda0200d6d90200aedb0200d2da0200cedb0200c2da0200c0db0200b8240300c023030098250300bc240300b8250300ac240300aa25030040d3030048d2030020d4030044d3030040d4030034d3030032d40300be2804009a270400f6290400c22804002a2a0400b228040032ae060036ad06001aaf060036ae06003aaf060026ae06002caf0600be280800c2270800a6290800c2280800c6290800b2280800b8290800e6540800ea530800ce550800ea540800ee550800da540800e0550800586c08005c6b0800406d08005c6c0800606d08004c6c0800526d08009086080094850800788708009486080098870800848608008a87080036cc08003acb08001ecd08003acc08003ecd08002acc080030cd08007a1009007e0f0900621109007e100900821109006e10090074110900481809004c170900301909004c180900501909003c18090042190900
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 7
+          icon: Favorite
+        - iColor: 2
+          icon: AvatarMask On Icon
+        - iColor: 5
+          icon: Terrain Icon
+        - iColor: 0
+          icon: Camera Icon
+        - iColor: 6
+          icon: Favorite
+    - goDatasByGlobalId:
+        keys:
+        - GlobalObjectId_V1-2-9c5168bea3959ec4bbdc8c2fb8d16a8c-718044299-0
+        - GlobalObjectId_V1-2-9c5168bea3959ec4bbdc8c2fb8d16a8c-9883848-0
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+      goDatasByInstanceId:
+        keys: 5a530900f6480900
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+    - goDatasByGlobalId:
+        keys:
+        - GlobalObjectId_V1-2-bdc9b8685054183478bcb9e3d1a5adc1-718044299-0
+        - GlobalObjectId_V1-2-bdc9b8685054183478bcb9e3d1a5adc1-9883848-0
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+      goDatasByInstanceId:
+        keys: 202e0700b4230700168b0700c8840700223108008e2a08004a5d0800b656080082770800ee700800bcec080028e60800
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+    - goDatasByGlobalId:
+        keys:
+        - GlobalObjectId_V1-2-ca5f4fb1a0389ea48a4c66e48119238d-718044299-0
+        - GlobalObjectId_V1-2-ca5f4fb1a0389ea48a4c66e48119238d-9883848-0
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+      goDatasByInstanceId:
+        keys: cc920800608808003613090042120900524209005e410900d8440900e4430900
+        values:
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 
+        - iColor: 8
+          icon: 

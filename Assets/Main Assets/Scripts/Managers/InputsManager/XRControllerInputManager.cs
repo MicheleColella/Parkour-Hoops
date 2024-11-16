@@ -54,7 +54,6 @@ public class XRControllerInputManager : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
     }
 
