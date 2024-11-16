@@ -12,6 +12,7 @@ public class UIVisibilityController : MonoBehaviour
     public float rotationZMax; // Rotazione massima per attivare la UI sull'asse Z
     public float maxRaycastDistance = 5.0f; // Massima distanza del raycast
     public float fadeDuration = 0.5f; // Durata del fade
+    public bool enableUI = true; // Flag per abilitare o disabilitare la logica della UI
 
     private Coroutine fadeCoroutine;
     private bool isVisible = false; // Stato corrente della visibilità della UI
@@ -27,6 +28,13 @@ public class UIVisibilityController : MonoBehaviour
 
     void Update()
     {
+        // Verifica se la UI è abilitata
+        if (!enableUI)
+        {
+            SetUIVisibility(false);
+            return;
+        }
+
         // Disegna il raycast nel Scene View per il debug
         Debug.DrawRay(head.position, head.forward * maxRaycastDistance, Color.red);
 
