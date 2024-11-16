@@ -12,6 +12,8 @@ public class VRUIManager : MonoBehaviour
     [Header("Input Settings")]
     [Tooltip("Input Action per attivare/disattivare la UI.")]
     public InputActionProperty toggleUIInput;
+    [Tooltip("Abilita o disabilita l'uso dell'input per attivare/disattivare la UI.")]
+    public bool enableUIWithInput = true; // Di base impostato su true
 
     [Header("Movement Settings")]
     [Tooltip("Velocità con cui la UI segue il target.")]
@@ -44,7 +46,7 @@ public class VRUIManager : MonoBehaviour
         // Associa l'azione di input
         if (toggleUIInput != null)
         {
-            toggleUIInput.action.performed += ToggleUI;
+            toggleUIInput.action.performed += HandleToggleUIInput;
         }
     }
 
@@ -53,7 +55,7 @@ public class VRUIManager : MonoBehaviour
         // Rimuovi il listener per l'input quando lo script viene distrutto
         if (toggleUIInput != null)
         {
-            toggleUIInput.action.performed -= ToggleUI;
+            toggleUIInput.action.performed -= HandleToggleUIInput;
         }
     }
 
@@ -74,7 +76,15 @@ public class VRUIManager : MonoBehaviour
         }
     }
 
-    private void ToggleUI(InputAction.CallbackContext context)
+    private void HandleToggleUIInput(InputAction.CallbackContext context)
+    {
+        if (enableUIWithInput)
+        {
+            ToggleUI();
+        }
+    }
+
+    private void ToggleUI()
     {
         if (uiCanvas != null)
         {
