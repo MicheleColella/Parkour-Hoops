@@ -826,6 +826,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Menu Press",
+                    "type": "Button",
+                    "id": "ee84b8f7-e8a9-48bf-9e25-b2b697bea6e5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1046,6 +1055,17 @@
                     "processors": "",
                     "groups": "Generic XR Controller",
                     "action": "LeftStickPresence",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0fa39295-b954-4d71-81b6-e410fdb62305",
+                    "path": "<XRController>{LeftHand}/{MenuButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Menu Press",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
