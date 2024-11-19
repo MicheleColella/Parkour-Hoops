@@ -10533,6 +10533,7 @@ MonoBehaviour:
     m_Reference: {fileID: 7904272356298805229, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   grabPhysics: {fileID: 3247147364037245109}
+  animateHandOnInput: {fileID: 1022600490684827183}
   maxPullableMass: 70
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
@@ -10759,6 +10760,7 @@ MonoBehaviour:
   grabValueSpeed: 5
   referencePoint: {fileID: 4808059782562347926}
   grabRangeTrigger: {fileID: 4225917481420735008}
+  animateHandOnInput: {fileID: 1022600490684827183}
   isGrabbing: 0
 --- !u!114 &7012913052993204938
 MonoBehaviour:
@@ -13056,6 +13058,7 @@ MonoBehaviour:
     m_Reference: {fileID: -4289430672226363583, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   grabPhysics: {fileID: 4463841566568088520}
+  animateHandOnInput: {fileID: 6092636015282706546}
   maxPullableMass: 70
   prefabToInstantiate: {fileID: 768471150666666240, guid: c6a41fe430f3d6d4ea93bad04a165d1b,
     type: 3}
@@ -13381,6 +13384,7 @@ MonoBehaviour:
   grabValueSpeed: 5
   referencePoint: {fileID: 434902601549478856}
   grabRangeTrigger: {fileID: 1161813147493027579}
+  animateHandOnInput: {fileID: 6092636015282706546}
   isGrabbing: 0
 --- !u!114 &4700008559634770853
 MonoBehaviour:
@@ -14621,6 +14625,18 @@ CapsuleCollider:
     type: 3}
   m_PrefabInstance: {fileID: 1659724879988388013}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6092636015282706546 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
+    type: 3}
+  m_PrefabInstance: {fileID: 1659724879988388013}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661145434756999647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a82ed36db4d497b4ead79ca35d261021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &6337455332034390710 stripped
 CapsuleCollider:
   m_CorrespondingSourceObject: {fileID: 4682526384596539931, guid: dac408f04a2d9d547bd1aa4dca08d76c,
@@ -14856,6 +14872,18 @@ CapsuleCollider:
     type: 3}
   m_PrefabInstance: {fileID: 5599350283656261360}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1022600490684827183 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4865544359253682399, guid: dac408f04a2d9d547bd1aa4dca08d76c,
+    type: 3}
+  m_PrefabInstance: {fileID: 5599350283656261360}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5598527864828229506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a82ed36db4d497b4ead79ca35d261021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &1419727657317851110 stripped
 CapsuleCollider:
   m_CorrespondingSourceObject: {fileID: 6775385963228705046, guid: dac408f04a2d9d547bd1aa4dca08d76c,

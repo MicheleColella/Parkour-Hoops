@@ -24,9 +24,21 @@ public class AnimateHandOnInput : MonoBehaviour
     [Header("Grab Physics Reference")]
     public GrabPhysics grabPhysics;
 
-    [Header("Suono di Attivazione")]
+    [Header("Activation Sound")]
     public AudioSource activationSound;
     public float fadeOutSpeed = 1f;
+
+    [Header("Debug Variables")]
+    [ReadOnly]
+    public bool isGrabbingDisabled;
+    [ReadOnly]
+    public float targetTriggerValue;
+    [ReadOnly]
+    public float targetGripValue;
+    [ReadOnly]
+    public float targetThumbValue;
+    [ReadOnly]
+    public float GrabtargetThumbValue;
 
     private float currentTriggerValue = 0f;
     private float currentGripValue = 0f;
@@ -37,8 +49,8 @@ public class AnimateHandOnInput : MonoBehaviour
     void Update()
     {
         // Get target values for Trigger and Grip
-        float targetTriggerValue = pinchAnimationAction.action.ReadValue<float>();
-        float targetGripValue = gripAnimationAction.action.ReadValue<float>();
+        targetTriggerValue = pinchAnimationAction.action.ReadValue<float>();
+        targetGripValue = gripAnimationAction.action.ReadValue<float>();
 
         // Read button presence values
         float primaryButtonValue = primaryButtonPresenceAnimationAction.action.ReadValue<float>();
@@ -47,10 +59,20 @@ public class AnimateHandOnInput : MonoBehaviour
 
         // Determine thumb button presence
         bool thumbButtonPressed = primaryButtonValue > 0.5f || secondaryButtonValue > 0.5f || stickButtonValue > 0.5f;
-        float targetThumbValue = thumbButtonPressed ? 1f : 0f;
+        targetThumbValue = thumbButtonPressed ? 1f : 0f;
+        
+        bool GrabthumbButtonPressed = primaryButtonValue > 0.5f || secondaryButtonValue > 0.5f;
+        GrabtargetThumbValue = GrabthumbButtonPressed ? 1f : 0f;
 
         // Check if there is an object in the pull trigger
         bool objectInPullTrigger = pullTrigger != null && pullTrigger.HasObjectsInTrigger();
+
+        // Determine if grabbing is disabled
+        isGrabbingDisabled = (targetTriggerValue >= 0.99f) && (targetGripValue >= 0.99f) && (GrabtargetThumbValue >= 0.99f) && (grabPhysics != null && !grabPhysics.isGrabbing);
+
+        // Debug logs
+        Debug.Log($"[AnimateHandOnInput] isGrabbingDisabled: {isGrabbingDisabled}");
+        Debug.Log($"[AnimateHandOnInput] primaryButtonValue: {primaryButtonValue}, secondaryButtonValue: {secondaryButtonValue}, stickButtonValue: {stickButtonValue}, targetThumbValue: {targetThumbValue}");
 
         if (grabPhysics != null && grabPhysics.isGrabbing)
         {
@@ -58,51 +80,55 @@ public class AnimateHandOnInput : MonoBehaviour
             currentThumbValue = 0f;
             handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
         }
+        else if (isGrabbingDisabled)
+        {
+            // Smoothly interpolate towards the target values
+            currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
+            currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
+            currentThumbValue = targetThumbValue;
+        }
+        else if (objectInPullTrigger)
+        {
+            // Smoothly interpolate towards 0 if in pull trigger
+            currentTriggerValue = Mathf.Lerp(currentTriggerValue, 0f, triggerSpeed * Time.deltaTime);
+            currentGripValue = Mathf.Lerp(currentGripValue, 0f, gripSpeed * Time.deltaTime);
+            currentThumbValue = Mathf.Lerp(currentThumbValue, 0f, triggerSpeed * Time.deltaTime);
+        }
         else
         {
-            if (objectInPullTrigger)
-            {
-                // Smoothly interpolate towards 0 if in pull trigger
-                currentTriggerValue = Mathf.Lerp(currentTriggerValue, 0f, triggerSpeed * Time.deltaTime);
-                currentGripValue = Mathf.Lerp(currentGripValue, 0f, gripSpeed * Time.deltaTime);
-                currentThumbValue = Mathf.Lerp(currentThumbValue, 0f, triggerSpeed * Time.deltaTime);
-            }
-            else
-            {
-                // Smoothly interpolate towards the target values
-                currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
-                currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
-                currentThumbValue = targetThumbValue;
-            }
+            // Smoothly interpolate towards the target values
+            currentTriggerValue = Mathf.Lerp(currentTriggerValue, targetTriggerValue, triggerSpeed * Time.deltaTime);
+            currentGripValue = Mathf.Lerp(currentGripValue, targetGripValue, gripSpeed * Time.deltaTime);
+            currentThumbValue = targetThumbValue;
+        }
 
-            // Update animation parameters
-            handAnimator.SetFloat("Trigger", currentTriggerValue);
-            handAnimator.SetFloat("Grip", currentGripValue);
-            handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
+        // Update animation parameters
+        handAnimator.SetFloat("Trigger", currentTriggerValue);
+        handAnimator.SetFloat("Grip", currentGripValue);
+        handAnimator.SetFloat("ThumbButtonPresence", currentThumbValue);
 
-            // Check if all values are at maximum (1)
-            if (currentTriggerValue >= 0.8f && currentGripValue >= 0.8f && currentThumbValue >= 0.8f)
+        // Check if all values are at maximum (>= 0.99)
+        if (currentTriggerValue >= 0.99f && currentGripValue >= 0.99f && currentThumbValue >= 0.99f)
+        {
+            if (!isSoundPlaying)
             {
-                if (!isSoundPlaying)
+                // Start the sound if all values are high and it's not already playing
+                if (fadeOutCoroutine != null)
                 {
-                    // Start the sound if all values are 1 and it's not already playing
-                    if (fadeOutCoroutine != null)
-                    {
-                        StopCoroutine(fadeOutCoroutine); // Stop any fade-out in progress
-                        activationSound.volume = 1f;     // Ensure volume is reset
-                    }
-                    activationSound.Play();
-                    isSoundPlaying = true;
+                    StopCoroutine(fadeOutCoroutine); // Stop any fade-out in progress
+                    activationSound.volume = 1f;     // Ensure volume is reset
                 }
+                activationSound.Play();
+                isSoundPlaying = true;
             }
-            else
+        }
+        else
+        {
+            // Start fade out if the values are no longer all high
+            if (isSoundPlaying)
             {
-                // Start fade out if the values are no longer all 1
-                if (isSoundPlaying)
-                {
-                    fadeOutCoroutine = StartCoroutine(FadeOutSound());
-                    isSoundPlaying = false;
-                }
+                fadeOutCoroutine = StartCoroutine(FadeOutSound());
+                isSoundPlaying = false;
             }
         }
     }

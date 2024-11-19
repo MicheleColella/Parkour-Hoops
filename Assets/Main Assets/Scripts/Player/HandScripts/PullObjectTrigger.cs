@@ -16,8 +16,14 @@ public class PullObjectTrigger : MonoBehaviour
     [Header("Hand Grabbing Reference")]
     public GrabPhysics grabPhysics;
 
+    [Header("Animate Hand On Input Reference")]
+    public AnimateHandOnInput animateHandOnInput; // Added reference
+
     [Header("Pull Restrictions")]
     public float maxPullableMass = 10f;
+
+    [Header("Attraction Time")]
+    public float maxAttractionTime = 2f; // Maximum time for attraction, configurable in Inspector
 
     [Header("Prefab Settings")]
     public GameObject prefabToInstantiate;
@@ -38,6 +44,9 @@ public class PullObjectTrigger : MonoBehaviour
     private GameObject instantiatedPrefab = null;
 
     private Vector3 prefabVelocity = Vector3.zero;
+
+    private float attractionDuration = 0f;
+    private bool hasAttractionTimedOut = false;
 
     void OnEnable()
     {
@@ -66,25 +75,41 @@ public class PullObjectTrigger : MonoBehaviour
         bool pullButtonHeld1 = pullInputAction1.action.ReadValue<float>() > 0.1f;
         bool pullButtonHeld2 = pullInputAction2.action.ReadValue<float>() > 0.1f;
 
+        // Reset the timeout flag if input is released
+        if (!pullButtonHeld1 || !pullButtonHeld2)
+        {
+            hasAttractionTimedOut = false;
+            if (isAttracting)
+            {
+                StopAttracting();
+            }
+        }
+
         UpdateCurrentCandidateObject();
 
-        if (pullButtonHeld1 && pullButtonHeld2)
+        if (pullButtonHeld1 && pullButtonHeld2 && !hasAttractionTimedOut)
         {
+            // Check if pulling is disabled
+            if (animateHandOnInput != null && animateHandOnInput.isGrabbingDisabled)
+            {
+                Debug.Log("[PullObjectTrigger] Pulling is disabled due to input values.");
+                return;
+            }
+
             if (currentCandidateObject != null && !isAttracting)
             {
                 attractedObject = currentCandidateObject;
                 isAttracting = true;
+                attractionDuration = 0f; // Reset attraction timer
                 attractedObject.useGravity = false;
 
                 ImpactSoundAndEffect impactScript = attractedObject.GetComponent<ImpactSoundAndEffect>();
                 if (impactScript != null)
                 {
-                    impactScript.isAttracting = true;  // Imposta isAttracting a true per disabilitare l'impatto
+                    impactScript.isAttracting = true;  // Disable impact
                 }
 
                 DestroyInstantiatedPrefab();
-
-               // Debug.Log("Iniziato ad attirare l'oggetto: " + attractedObject.name);
             }
         }
         else
@@ -113,6 +138,8 @@ public class PullObjectTrigger : MonoBehaviour
     {
         if (isAttracting && attractedObject != null)
         {
+            attractionDuration += Time.fixedDeltaTime; // Increment the attraction duration
+
             GrabbableObject grabbable = attractedObject.GetComponentInParent<GrabbableObject>();
             if (grabbable != null && grabbable.isGrabbed)
             {
@@ -125,13 +152,17 @@ public class PullObjectTrigger : MonoBehaviour
 
             if (direction.magnitude < 0.1f)
             {
-                //Debug.Log("Oggetto raggiunto l'origine della mano: " + attractedObject.name);
                 StopAttracting();
+                return;
             }
-        }
-        else if (attractedObject != null)
-        {
-            attractedObject.velocity = Vector3.zero;
+
+            // Stop attracting if duration exceeds the configured maxAttractionTime
+            if (attractionDuration > maxAttractionTime)
+            {
+                StopAttracting();
+                hasAttractionTimedOut = true; // Prevent re-attraction until input is released
+                return;
+            }
         }
     }
 
@@ -139,7 +170,7 @@ public class PullObjectTrigger : MonoBehaviour
     {
         Rigidbody closestObject = GetClosestCandidateObject();
 
-        if (closestObject != currentCandidateObject)
+        if (closestObject != currentCandidateObject && (animateHandOnInput == null || !animateHandOnInput.isGrabbingDisabled))
         {
             DestroyInstantiatedPrefab();
             currentCandidateObject = closestObject;
@@ -214,16 +245,16 @@ public class PullObjectTrigger : MonoBehaviour
         {
             isAttracting = false;
             attractedObject.useGravity = true;
-            attractedObject.velocity = Vector3.zero;
+            attractedObject.velocity = Vector3.zero; // Ensure velocity is zero
 
             ImpactSoundAndEffect impactScript = attractedObject.GetComponent<ImpactSoundAndEffect>();
             if (impactScript != null)
             {
-                impactScript.isAttracting = false;  // Reimposta isAttracting a false
+                impactScript.isAttracting = false;  // Reset isAttracting
             }
 
             attractedObject = null;
-            //Debug.Log("Smetti di attirare l'oggetto.");
+            attractionDuration = 0f; // Reset the timer
         }
     }
 

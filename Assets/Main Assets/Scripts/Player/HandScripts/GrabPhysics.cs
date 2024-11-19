@@ -25,6 +25,9 @@ public class GrabPhysics : MonoBehaviour
     [Header("Grab Range Trigger")]
     public GrabRangeTrigger grabRangeTrigger;
 
+    [Header("Animate Hand On Input Reference")]
+    public AnimateHandOnInput animateHandOnInput; // Added reference
+
     private FixedJoint fixedJoint;
     public bool isGrabbing = false;
     private Collider grabbedObjectCollider;
@@ -50,6 +53,13 @@ public class GrabPhysics : MonoBehaviour
 
             if (isGrabButtonPressed && !isGrabbing)
             {
+                // Check if grabbing is disabled
+                if (animateHandOnInput != null && animateHandOnInput.isGrabbingDisabled)
+                {
+                    Debug.Log("[GrabPhysics] Grabbing is disabled due to input values.");
+                    return;
+                }
+
                 TryGrabObject();
             }
         }
