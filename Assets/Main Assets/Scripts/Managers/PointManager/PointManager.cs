@@ -4,12 +4,25 @@ using System.Collections.Generic;
 
 public class PointManager : MonoBehaviour
 {
+    [Header("Score Settings")]
+    [Tooltip("Current score.")]
+    [ReadOnly]
     public int score = 0;
-    public List<TextMeshProUGUI> pointTexts;  // Lista di TextMeshPro per visualizzare il punteggio
+
+    [Tooltip("Current combo multiplier.")]
+    [ReadOnly]
+    public int comboMultiplier = 1;
+
+    [Tooltip("List of TextMeshProUGUI to display the score.")]
+    public List<TextMeshProUGUI> pointTexts;  // List of TextMeshPro to display the score
+
+    [Tooltip("TextMeshProUGUI to display the combo.")]
+    public TextMeshProUGUI comboText; // TextMeshProUGUI to display the combo
 
     private void Awake()
     {
         UpdateScoreDisplay();
+        UpdateComboDisplay();
     }
 
     public void AddPoints(int points)
@@ -18,11 +31,43 @@ public class PointManager : MonoBehaviour
         UpdateScoreDisplay();
     }
 
+    public void IncreaseCombo()
+    {
+        comboMultiplier++;
+        UpdateComboDisplay();
+    }
+
+    public void ResetCombo()
+    {
+        comboMultiplier = 1;
+        UpdateComboDisplay();
+    }
+
+    public int GetComboMultiplier()
+    {
+        return comboMultiplier;
+    }
+
     private void UpdateScoreDisplay()
     {
         foreach (var pointText in pointTexts)
         {
             pointText.text = "Score: " + score.ToString();
+        }
+    }
+
+    private void UpdateComboDisplay()
+    {
+        if (comboText != null)
+        {
+            if (comboMultiplier > 1)
+            {
+                comboText.text = "x" + comboMultiplier.ToString();
+            }
+            else
+            {
+                comboText.text = "";
+            }
         }
     }
 }

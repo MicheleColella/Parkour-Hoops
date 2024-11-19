@@ -5,56 +5,80 @@ using UnityEngine;
 public class BasketScoreHandler : MonoBehaviour
 {
     [Header("Trigger Settings")]
-    [Tooltip("Il tag dell'oggetto che può attivare il trigger.")]
+    [Tooltip("The tag of the object that can activate the trigger.")]
     public string targetTag = "Ball";
 
-    [Tooltip("Tempo di cooldown in secondi durante il quale il trigger è inattivo.")]
+    [Tooltip("Cooldown time in seconds during which the trigger is inactive.")]
     public float triggerCooldown = 2f;
 
-    private bool isTriggerOnCooldown = false; // Indica se il trigger è in cooldown
+    private bool isTriggerOnCooldown = false; // Indicates if the trigger is on cooldown
 
     [Header("Visual Effects")]
-    [Tooltip("Prefab da istanziare all'attivazione del trigger.")]
+    [Tooltip("Prefab to instantiate when the trigger is activated.")]
     public GameObject VFXToInstantiate;
-    [Tooltip("Posizione e trasformazioni del VFX da istanziare.")]
+
+    [Tooltip("Position and transformations of the VFX to instantiate.")]
     public Transform vfxPosition;
-    [Tooltip("Tempo dopo il quale il VFX verrà distrutto.")]
+
+    [Tooltip("Time after which the VFX will be destroyed.")]
     public float destroyDelay = 2f;
 
     [Header("Audio Settings")]
-    [Tooltip("AudioSource per il suono da riprodurre quando il trigger viene attivato.")]
+    [Tooltip("AudioSource for the sound to play when the trigger is activated.")]
     public AudioSource audioSource;
 
     [Space]
-    [Tooltip("AudioSource per il fischio riprodotto all'inizio.")]
+    [Tooltip("AudioSource for the whistle played at the start.")]
     public AudioSource whistleAudioSource;
-    [Tooltip("Se true, riproduce un fischio quando l'oggetto viene attivato.")]
+
+    [Tooltip("If true, plays a whistle when the object is activated.")]
     public bool playWhistleOnStart = false;
 
     [Header("References")]
-    [Tooltip("Gestisce il punteggio della scena.")]
-    private PointManager pointManager; // Riferimento al PointManager che gestisce il punteggio
-    [Tooltip("Riferimento al BasketSectionManager, se presente.")]
-    private BasketSectionManager sectionManager; // Riferimento opzionale al BasketSectionManager
+    [Tooltip("Manages the score in the scene.")]
+    private PointManager pointManager; // Reference to the PointManager that manages the score
+
+    [Tooltip("Reference to the BasketSectionManager.")]
+    private BasketSectionManager sectionManager; // Reference to the BasketSectionManager
+
+    [Header("Scoring Settings")]
+    [Tooltip("Score awarded if the basket is made within the first time interval.")]
+    public int firstIntervalScore = 10;
+
+    [Tooltip("Time limit for the first scoring interval (in seconds).")]
+    public float firstIntervalTimeLimit = 5f;
+
+    [Tooltip("Score awarded if the basket is made within the second time interval.")]
+    public int secondIntervalScore = 5;
+
+    [Tooltip("Time limit for the second scoring interval (in seconds).")]
+    public float secondIntervalTimeLimit = 15f;
+
+    [Tooltip("Score awarded if the basket is made within the third time interval.")]
+    public int thirdIntervalScore = 3;
+
+    [Tooltip("Time limit for the third scoring interval (in seconds).")]
+    public float thirdIntervalTimeLimit = 30f;
+
+    [ReadOnly]
+    [Tooltip("Activation time of the basket prefab.")]
+    public float activationTime; // Activation time of the prefab
 
     private void Awake()
     {
-        // Trova automaticamente l'istanza di PointManager nella scena
+        // Automatically find the PointManager instance in the scene
         pointManager = FindObjectOfType<PointManager>();
 
-        // Trova il BasketSectionManager nella scena, se esiste
-        sectionManager = FindObjectOfType<BasketSectionManager>();
-
-        // Verifica se sono stati trovati
+        // Check if found
         if (pointManager == null)
         {
-            Debug.LogError("PointManager non trovato nella scena! Assicurati che esista un oggetto con lo script PointManager.");
+            Debug.LogError("PointManager not found in the scene! Make sure there is an object with the PointManager script.");
         }
     }
 
     private void OnEnable()
     {
-        // Riproduce il fischio se il bool è true e l'audio source è assegnato
+        // Play the whistle if the bool is true and the audio source is assigned
         if (playWhistleOnStart && whistleAudioSource != null)
         {
             whistleAudioSource.Play();
@@ -63,30 +87,48 @@ public class BasketScoreHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isTriggerOnCooldown) return; // Blocca l'attivazione se in cooldown
+        if (isTriggerOnCooldown) return; // Block activation if on cooldown
+
+        if (sectionManager != null && !sectionManager.isGameRunning) return; // Do not proceed if the game has ended
 
         if (other.CompareTag(targetTag))
         {
-            // Avvia le azioni del trigger e inizia il cooldown
+            // Start trigger actions and begin cooldown
             StartCoroutine(HandleTriggerCooldown());
         }
     }
 
     private IEnumerator HandleTriggerCooldown()
     {
-        // Attiva il cooldown
+        // Activate the cooldown
         isTriggerOnCooldown = true;
 
-        // Aggiorna il punteggio
-        pointManager?.AddPoints(1);
+        // Calculate the score based on time
+        int basePoints = CalculateBaseScore(out bool shouldIncreaseCombo);
 
-        // Riproduce il suono dall'AudioSource
+        // Update the combo
+        if (shouldIncreaseCombo)
+        {
+            pointManager?.IncreaseCombo();
+        }
+        else
+        {
+            pointManager?.ResetCombo();
+        }
+
+        // Calculate the total score with combo
+        int totalPoints = basePoints * pointManager.GetComboMultiplier();
+
+        // Update the score
+        pointManager?.AddPoints(totalPoints);
+
+        // Play the sound from the AudioSource
         if (audioSource != null)
         {
             audioSource.Play();
         }
 
-        // Instanzia il prefab alla posizione, rotazione e scala dello spawnPoint
+        // Instantiate the prefab at the position, rotation, and scale of the spawnPoint
         if (VFXToInstantiate != null && vfxPosition != null)
         {
             GameObject instantiatedObject = Instantiate(
@@ -97,17 +139,57 @@ public class BasketScoreHandler : MonoBehaviour
 
             instantiatedObject.transform.localScale = vfxPosition.localScale;
 
-            // Distruggi l'oggetto dopo un certo ritardo
+            // Destroy the object after a certain delay
             Destroy(instantiatedObject, destroyDelay);
         }
 
-        // Notifica il BasketSectionManager solo se esiste
+        // Notify the BasketSectionManager
         sectionManager?.OnPrefabTriggerActivated();
 
-        // Aspetta il tempo di cooldown
+        // Wait for the cooldown time
         yield return new WaitForSeconds(triggerCooldown);
 
-        // Disattiva il cooldown
+        // Deactivate the cooldown
         isTriggerOnCooldown = false;
+    }
+
+    private int CalculateBaseScore(out bool increaseCombo)
+    {
+        float timeSinceActivation = Time.time - activationTime;
+        int baseScore = 0;
+        increaseCombo = false;
+
+        if (timeSinceActivation <= firstIntervalTimeLimit)
+        {
+            baseScore = firstIntervalScore;
+            increaseCombo = true;
+        }
+        else if (timeSinceActivation <= secondIntervalTimeLimit)
+        {
+            baseScore = secondIntervalScore;
+            increaseCombo = true;
+        }
+        else if (timeSinceActivation <= thirdIntervalTimeLimit)
+        {
+            baseScore = thirdIntervalScore;
+            increaseCombo = false;
+        }
+        else
+        {
+            baseScore = 0;
+            increaseCombo = false;
+        }
+
+        return baseScore;
+    }
+
+    public void SetActivationTime(float time)
+    {
+        activationTime = time;
+    }
+
+    public void SetSectionManager(BasketSectionManager manager)
+    {
+        sectionManager = manager;
     }
 }

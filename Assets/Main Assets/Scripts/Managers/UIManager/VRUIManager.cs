@@ -1,32 +1,52 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI; // For UI components
+using UnityEngine.XR.Interaction.Toolkit.UI; // For TrackedDeviceGraphicRaycaster
+using System.Collections.Generic;
 
 public class VRUIManager : MonoBehaviour
 {
     [Header("References")]
-    [Tooltip("Il target della UI nel mondo.")]
+    [Tooltip("The target of the UI in the world.")]
     public Transform uiTarget;
-    [Tooltip("Il GameObject della UI (es. Canvas).")]
+
+    [Tooltip("The GameObject of the UI (e.g., Canvas) used for positioning.")]
     public GameObject uiCanvas;
 
+    [Tooltip("The GameObject to activate/deactivate (e.g., the menu window).")]
+    public GameObject menuWindow;
+
     [Header("Input Settings")]
-    [Tooltip("Input Action per attivare/disattivare la UI.")]
+    [Tooltip("Input Action to toggle the UI.")]
     public InputActionProperty toggleUIInput;
-    [Tooltip("Abilita o disabilita l'uso dell'input per attivare/disattivare la UI.")]
-    public bool enableUIWithInput = true; // Di base impostato su true
+
+    [Tooltip("Enable or disable the use of input to toggle the UI.")]
+    public bool enableUIWithInput = true; // Default set to true
 
     [Header("Movement Settings")]
-    [Tooltip("Velocità con cui la UI segue il target.")]
+    [Tooltip("Speed at which the UI follows the target.")]
     public float followSpeed = 10f;
-    [Tooltip("Velocità di rotazione della UI verso il player.")]
+
+    [Tooltip("Rotation speed of the UI towards the player.")]
     public float rotationSpeed = 10f;
+
+    [Header("Raycaster Settings")]
+    [Tooltip("List of GameObjects to check if active for enabling the TrackedDeviceGraphicRaycaster.")]
+    public List<GameObject> raycasterActivationObjects;
+
+    [Tooltip("TrackedDeviceGraphicRaycaster to activate/deactivate.")]
+    public TrackedDeviceGraphicRaycaster raycaster;
+
+    [Header("Menu Restrictions")]
+    [Tooltip("Reference to the results menu GameObject.")]
+    public GameObject resultsMenu;
 
     private bool isUIActive = false;
     private Transform playerTransform;
 
     private void Start()
     {
-        // Trova il player tramite il tag "Player"
+        // Find the player via the "Player" tag
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -34,16 +54,16 @@ public class VRUIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Player non trovato! Assicurati che il player abbia il tag 'Player'.");
+            Debug.LogError("Player not found! Ensure the player has the tag 'Player'.");
         }
 
-        // Disattiva inizialmente la UI
-        if (uiCanvas != null)
+        // Deactivate the menu window initially
+        if (menuWindow != null)
         {
-            uiCanvas.SetActive(false);
+            menuWindow.SetActive(false);
         }
 
-        // Associa l'azione di input
+        // Associate the input action
         if (toggleUIInput != null)
         {
             toggleUIInput.action.performed += HandleToggleUIInput;
@@ -52,7 +72,7 @@ public class VRUIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Rimuovi il listener per l'input quando lo script viene distrutto
+        // Remove the listener for input when the script is destroyed
         if (toggleUIInput != null)
         {
             toggleUIInput.action.performed -= HandleToggleUIInput;
@@ -61,18 +81,35 @@ public class VRUIManager : MonoBehaviour
 
     private void Update()
     {
-        if (isUIActive && uiCanvas != null && uiTarget != null && playerTransform != null)
+        if (uiCanvas != null && uiTarget != null && playerTransform != null)
         {
-            // Posiziona la UI verso il target in modo fluido
+            // Smoothly position the UI towards the target
             Vector3 targetPosition = uiTarget.position;
             uiCanvas.transform.position = Vector3.Lerp(uiCanvas.transform.position, targetPosition, followSpeed * Time.deltaTime);
 
-            // Calcola la direzione verso il player
+            // Calculate the direction towards the player
             Vector3 directionToPlayer = (playerTransform.position - uiCanvas.transform.position).normalized;
 
-            // Ruota il canvas verso il player con un'inversione di 180 gradi
+            // Rotate the canvas towards the player with a 180-degree inversion
             Quaternion targetRotation = Quaternion.LookRotation(-directionToPlayer, Vector3.up);
             uiCanvas.transform.rotation = Quaternion.Slerp(uiCanvas.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+
+        // Check if any of the raycasterActivationObjects are active
+        bool anyActive = false;
+        foreach (var obj in raycasterActivationObjects)
+        {
+            if (obj != null && obj.activeInHierarchy)
+            {
+                anyActive = true;
+                break;
+            }
+        }
+
+        // Activate or deactivate the raycaster based on the active state of the objects
+        if (raycaster != null)
+        {
+            raycaster.enabled = anyActive;
         }
     }
 
@@ -80,33 +117,31 @@ public class VRUIManager : MonoBehaviour
     {
         if (enableUIWithInput)
         {
+            // Check if results menu is active; if so, don't allow toggling the menu
+            if (resultsMenu != null && resultsMenu.activeInHierarchy)
+            {
+                return;
+            }
+
             ToggleUI();
         }
     }
 
     private void ToggleUI()
     {
-        if (uiCanvas != null)
+        if (menuWindow != null)
         {
             isUIActive = !isUIActive;
 
             if (isUIActive)
             {
-                // Attiva la UI e posizionala immediatamente sul target
-                uiCanvas.SetActive(true);
-                uiCanvas.transform.position = uiTarget.position;
-
-                if (playerTransform != null)
-                {
-                    Vector3 directionToPlayer = (playerTransform.position - uiCanvas.transform.position).normalized;
-                    Quaternion lookRotation = Quaternion.LookRotation(-directionToPlayer, Vector3.up); // Inversione di 180 gradi
-                    uiCanvas.transform.rotation = lookRotation;
-                }
+                // Activate the menu window
+                menuWindow.SetActive(true);
             }
             else
             {
-                // Disattiva la UI
-                uiCanvas.SetActive(false);
+                // Deactivate the menu window
+                menuWindow.SetActive(false);
             }
         }
     }

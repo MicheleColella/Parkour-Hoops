@@ -206,6 +206,13 @@ MonoBehaviour:
   audioSource: {fileID: 1965170145715790006}
   whistleAudioSource: {fileID: 7663069441885122131}
   playWhistleOnStart: 1
+  firstIntervalScore: 5
+  firstIntervalTimeLimit: 5
+  secondIntervalScore: 3
+  secondIntervalTimeLimit: 15
+  thirdIntervalScore: 1
+  thirdIntervalTimeLimit: 30
+  activationTime: 0
 --- !u!82 &1965170145715790006
 AudioSource:
   m_ObjectHideFlags: 0

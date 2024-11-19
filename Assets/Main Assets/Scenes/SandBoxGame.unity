@@ -31090,10 +31090,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1361062379314165212, guid: f3efc81c666898b4bb60dc781d735048,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2914482986399118379, guid: f3efc81c666898b4bb60dc781d735048,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3751073272866403312, guid: f3efc81c666898b4bb60dc781d735048,
         type: 3}
       propertyPath: m_Name
       value: VRCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4719735725461745975, guid: f3efc81c666898b4bb60dc781d735048,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8536457902668546808, guid: f3efc81c666898b4bb60dc781d735048,
         type: 3}
@@ -31203,6 +31218,30 @@ PrefabInstance:
 --- !u!1 &959928330 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3751073272866403312, guid: f3efc81c666898b4bb60dc781d735048,
+    type: 3}
+  m_PrefabInstance: {fileID: 959928329}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &959928331 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1967623245827013843, guid: f3efc81c666898b4bb60dc781d735048,
+    type: 3}
+  m_PrefabInstance: {fileID: 959928329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959928330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7951c64acb0fa62458bf30a60089fe2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &959928332 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 375268335309140745, guid: f3efc81c666898b4bb60dc781d735048,
+    type: 3}
+  m_PrefabInstance: {fileID: 959928329}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &959928333 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1361062379314165212, guid: f3efc81c666898b4bb60dc781d735048,
     type: 3}
   m_PrefabInstance: {fileID: 959928329}
   m_PrefabAsset: {fileID: 0}
@@ -55387,6 +55426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiTarget: {fileID: 2069677112}
   uiCanvas: {fileID: 959928330}
+  menuWindow: {fileID: 959928332}
   toggleUIInput:
     m_UseReference: 1
     m_Action:
@@ -55403,6 +55443,10 @@ MonoBehaviour:
   enableUIWithInput: 1
   followSpeed: 5
   rotationSpeed: 15
+  raycasterActivationObjects:
+  - {fileID: 959928332}
+  raycaster: {fileID: 959928331}
+  resultsMenu: {fileID: 959928333}
 --- !u!1 &1780519756
 GameObject:
   m_ObjectHideFlags: 0
