@@ -13,6 +13,10 @@ public class PointManager : MonoBehaviour
     [ReadOnly]
     public int comboMultiplier = 1;
 
+    [Tooltip("Maximum combo achieved.")]
+    [ReadOnly]
+    public int maxComboAchieved = 1;
+
     [Tooltip("List of TextMeshProUGUI to display the score.")]
     public List<TextMeshProUGUI> pointTexts;  // List of TextMeshPro to display the score
 
@@ -34,6 +38,10 @@ public class PointManager : MonoBehaviour
     public void IncreaseCombo()
     {
         comboMultiplier++;
+        if (comboMultiplier > maxComboAchieved)
+        {
+            maxComboAchieved = comboMultiplier;
+        }
         UpdateComboDisplay();
     }
 

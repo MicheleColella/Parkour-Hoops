@@ -56,7 +56,7 @@ public class GrabPhysics : MonoBehaviour
                 // Check if grabbing is disabled
                 if (animateHandOnInput != null && animateHandOnInput.isGrabbingDisabled)
                 {
-                    Debug.Log("[GrabPhysics] Grabbing is disabled due to input values.");
+                    //Debug.Log("[GrabPhysics] Grabbing is disabled due to input values.");
                     return;
                 }
 

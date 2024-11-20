@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using MoreMountains.Feedbacks;
 
 public class BasketSectionManager : MonoBehaviour
 {
+    [Header("Summary Menu Feedbacks")]
+    public List<MMF_Player> menuFeedBacks;
+
     [Header("Basket Prefabs")]
     [Tooltip("List of basket prefabs present in the scene.")]
     public List<GameObject> basketsPrefabs; // List of prefabs present in the scene
@@ -52,10 +56,16 @@ public class BasketSectionManager : MonoBehaviour
     [Tooltip("Indicates whether the game is running.")]
     public bool isGameRunning = false; // Indicates if the game is running
 
+    [Header("Results Display Settings")]
+    [Tooltip("Duration over which the scores count up to their final value.")]
+    public float countingDuration = 2f; // Duration to count up the numbers
+
+    [Tooltip("Delay between displaying each score.")]
+    public float scoreDisplayDelay = 0.5f; // Delay before moving to the next text
+
     private float gameTimer; // Game timer in seconds
     private float currentBasketActivationTime; // Activation time of the current prefab
     private PointManager pointManager; // Reference to PointManager to manage the score
-    private int maxCombo = 0; // Maximum combo achieved
     private int totalBaskets = 0; // Total baskets made
 
     private void Start()
@@ -258,35 +268,61 @@ public class BasketSectionManager : MonoBehaviour
             resultsMenu.SetActive(true);
         }
 
+        // Use Feedbacks
+        foreach (var feed in menuFeedBacks)
+        {
+            feed.PlayFeedbacks();
+        }
+
         // Additional actions to perform at the end of the game can be added here
         Debug.Log("The game has ended!");
     }
 
     private void UpdateResultsMenu()
     {
+        // Start the coroutine to display the results with counting effect
+        StartCoroutine(DisplayResults());
+    }
+
+    private IEnumerator DisplayResults()
+    {
         if (finalScoreText != null && pointManager != null)
         {
-            finalScoreText.text = "Final Score: " + pointManager.score.ToString();
+            yield return StartCoroutine(CountToValue(finalScoreText, "", 0, pointManager.score, countingDuration));
+            yield return new WaitForSeconds(scoreDisplayDelay);
         }
 
-        if (maxComboText != null)
+        if (maxComboText != null && pointManager != null)
         {
-            maxComboText.text = "Max Combo: " + maxCombo.ToString();
+            yield return StartCoroutine(CountToValue(maxComboText, "", 0, pointManager.maxComboAchieved, countingDuration));
+            yield return new WaitForSeconds(scoreDisplayDelay);
         }
 
         if (totalBasketsText != null)
         {
-            totalBasketsText.text = "Total Baskets: " + totalBaskets.ToString();
+            yield return StartCoroutine(CountToValue(totalBasketsText, "", 0, totalBaskets, countingDuration));
+            yield return new WaitForSeconds(scoreDisplayDelay);
         }
     }
 
-    public void RegisterBasket(int combo)
+    private IEnumerator CountToValue(TextMeshProUGUI textComponent, string prefix, int startValue, int endValue, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            int currentValue = Mathf.RoundToInt(Mathf.Lerp(startValue, endValue, t));
+            textComponent.text = prefix + currentValue.ToString();
+            yield return null;
+        }
+        // Ensure the final value is set
+        textComponent.text = prefix + endValue.ToString();
+    }
+
+    public void RegisterBasket()
     {
         totalBaskets++;
-        if (combo > maxCombo)
-        {
-            maxCombo = combo;
-        }
     }
 
     public void OnPrefabTriggerActivated()
@@ -318,6 +354,11 @@ public class BasketSectionManager : MonoBehaviour
         // Choose a random prefab from the list
         int randomIndex = UnityEngine.Random.Range(0, basketsPrefabs.Count);
         currentActivePrefab = basketsPrefabs[randomIndex];
+
+        // Reset the prefab before activation
+        ResetBasketPrefab(currentActivePrefab);
+
+        // Activate the prefab
         currentActivePrefab.SetActive(true);
 
         // Record the activation time
@@ -325,6 +366,26 @@ public class BasketSectionManager : MonoBehaviour
 
         // Initialize the BasketScoreHandler for this prefab
         InitializeBasketScoreHandler(currentActivePrefab);
+    }
+
+    private void ResetBasketPrefab(GameObject prefab)
+    {
+        // Reset any necessary components or variables on the prefab
+        // For example, reset position, rotation, etc., if needed
+
+        // Ensure all child objects are enabled
+        foreach (Transform child in prefab.transform)
+        {
+            child.gameObject.SetActive(true);
+        }
+
+        // If the prefab has any scripts that need resetting, call their reset methods here
+        // For example, reset the BasketScoreHandler
+        BasketScoreHandler scoreHandler = prefab.GetComponentInChildren<BasketScoreHandler>();
+        if (scoreHandler != null)
+        {
+            scoreHandler.SetActivationTime(Time.time);
+        }
     }
 
     private void InitializeBasketScoreHandler(GameObject prefab)

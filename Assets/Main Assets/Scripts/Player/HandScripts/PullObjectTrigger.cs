@@ -92,7 +92,7 @@ public class PullObjectTrigger : MonoBehaviour
             // Check if pulling is disabled
             if (animateHandOnInput != null && animateHandOnInput.isGrabbingDisabled)
             {
-                Debug.Log("[PullObjectTrigger] Pulling is disabled due to input values.");
+                //Debug.Log("[PullObjectTrigger] Pulling is disabled due to input values.");
                 return;
             }
 

@@ -78,10 +78,32 @@ public class BasketScoreHandler : MonoBehaviour
 
     private void OnEnable()
     {
+        // Reset the trigger cooldown
+        isTriggerOnCooldown = false;
+
+        // Reset any other necessary variables here
+
+        // Enable colliders/triggers if they were disabled
+        Collider collider = GetComponent<Collider>();
+        if (collider != null)
+        {
+            collider.enabled = true;
+        }
+
         // Play the whistle if the bool is true and the audio source is assigned
         if (playWhistleOnStart && whistleAudioSource != null)
         {
             whistleAudioSource.Play();
+        }
+    }
+
+    private void OnDisable()
+    {
+        // Disable colliders/triggers to prevent unwanted interactions while inactive
+        Collider collider = GetComponent<Collider>();
+        if (collider != null)
+        {
+            collider.enabled = false;
         }
     }
 
@@ -121,6 +143,9 @@ public class BasketScoreHandler : MonoBehaviour
 
         // Update the score
         pointManager?.AddPoints(totalPoints);
+
+        // Notify the BasketSectionManager of the basket made
+        sectionManager?.RegisterBasket();
 
         // Play the sound from the AudioSource
         if (audioSource != null)
