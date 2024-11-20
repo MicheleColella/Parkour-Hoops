@@ -61,7 +61,7 @@ public class AnimateHandOnInput : MonoBehaviour
         bool thumbButtonPressed = primaryButtonValue > 0.5f || secondaryButtonValue > 0.5f || stickButtonValue > 0.5f;
         targetThumbValue = thumbButtonPressed ? 1f : 0f;
         
-        bool GrabthumbButtonPressed = primaryButtonValue > 0.5f || secondaryButtonValue > 0.5f;
+        bool GrabthumbButtonPressed = primaryButtonValue > 0.5f;
         GrabtargetThumbValue = GrabthumbButtonPressed ? 1f : 0f;
 
         // Check if there is an object in the pull trigger
@@ -71,8 +71,8 @@ public class AnimateHandOnInput : MonoBehaviour
         isGrabbingDisabled = (targetTriggerValue >= 0.99f) && (targetGripValue >= 0.99f) && (GrabtargetThumbValue >= 0.99f) && (grabPhysics != null && !grabPhysics.isGrabbing);
 
         // Debug logs
-        Debug.Log($"[AnimateHandOnInput] isGrabbingDisabled: {isGrabbingDisabled}");
-        Debug.Log($"[AnimateHandOnInput] primaryButtonValue: {primaryButtonValue}, secondaryButtonValue: {secondaryButtonValue}, stickButtonValue: {stickButtonValue}, targetThumbValue: {targetThumbValue}");
+        //Debug.Log($"[AnimateHandOnInput] isGrabbingDisabled: {isGrabbingDisabled}");
+        //Debug.Log($"[AnimateHandOnInput] primaryButtonValue: {primaryButtonValue}, secondaryButtonValue: {secondaryButtonValue}, stickButtonValue: {stickButtonValue}, targetThumbValue: {targetThumbValue}");
 
         if (grabPhysics != null && grabPhysics.isGrabbing)
         {
