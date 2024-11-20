@@ -256,17 +256,33 @@ public class BasketSectionManager : MonoBehaviour
             prefab.SetActive(false);
         }
 
-        // Hide the game timer text immediately
-        if (gameTimerText != null)
+        // Display "Finished" in the preGameCountdownText
+        if (preGameCountdownText != null)
         {
-            gameTimerText.text = "";
+            preGameCountdownText.text = "Finished";
+            preGameCountdownText.gameObject.SetActive(true);
         }
 
-        // Hide the pre-game countdown text immediately
+        // Play the "Finished" sound if available
+        if (preGameCountdownSounds != null && preGameCountdownSounds.Count >= 4)
+        {
+            preGameCountdownSounds[3].Play();
+        }
+
+        // Wait for 2 seconds while "Finished" is displayed
+        yield return new WaitForSeconds(2f);
+
+        // Clear the "Finished" text
         if (preGameCountdownText != null)
         {
             preGameCountdownText.text = "";
             preGameCountdownText.gameObject.SetActive(false);
+        }
+
+        // Hide the game timer text immediately
+        if (gameTimerText != null)
+        {
+            gameTimerText.text = "";
         }
 
         // Deactivate the menuWindow if it's active
@@ -294,7 +310,7 @@ public class BasketSectionManager : MonoBehaviour
         }
 
         // Wait for any additional effects or transitions
-        yield return new WaitForSeconds(1f);
+        // yield return new WaitForSeconds(1f); // Optional, if you need extra delay
 
         // Additional actions to perform at the end of the game can be added here
         Debug.Log("The game has ended!");
@@ -371,7 +387,6 @@ public class BasketSectionManager : MonoBehaviour
         }
     }
 
-
     private void ActivateRandomPrefab()
     {
         if (!isGameRunning)
@@ -420,7 +435,6 @@ public class BasketSectionManager : MonoBehaviour
         // Initialize the BasketScoreHandler for this prefab
         InitializeBasketScoreHandler(currentActivePrefab);
     }
-
 
     private void ResetBasketPrefab(GameObject prefab)
     {
