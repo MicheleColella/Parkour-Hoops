@@ -293,6 +293,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: VRCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4120235097743811037, guid: f3efc81c666898b4bb60dc781d735048,
+        type: 3}
+      propertyPath: raycastersToDisable.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4120235097743811037, guid: f3efc81c666898b4bb60dc781d735048,
+        type: 3}
+      propertyPath: raycastersToDisable.Array.data[0]
+      value: 
+      objectReference: {fileID: 40495338}
     - target: {fileID: 4719735725461745975, guid: f3efc81c666898b4bb60dc781d735048,
         type: 3}
       propertyPath: m_PresetInfoIsWorld

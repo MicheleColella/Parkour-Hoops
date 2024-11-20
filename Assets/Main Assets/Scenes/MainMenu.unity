@@ -272,6 +272,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: SandBoxGame
+  raycastersToDisable:
+  - {fileID: 1819715755}
+  - {fileID: 1415467536}
 --- !u!82 &57170845
 AudioSource:
   m_ObjectHideFlags: 0
@@ -695,6 +698,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: BasketGame
+  raycastersToDisable:
+  - {fileID: 1819715755}
+  - {fileID: 1415467536}
 --- !u!82 &147944416
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2382,6 +2388,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: BasketGame
+  raycastersToDisable: []
 --- !u!1 &718044299
 GameObject:
   m_ObjectHideFlags: 0
@@ -3748,6 +3755,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: TowerGame
+  raycastersToDisable: []
 --- !u!1 &1502890090
 GameObject:
   m_ObjectHideFlags: 0
@@ -4232,6 +4240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: SandBoxGame
+  raycastersToDisable: []
 --- !u!43 &1749126499
 Mesh:
   m_ObjectHideFlags: 0
@@ -5329,6 +5338,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: TowerGame
+  raycastersToDisable:
+  - {fileID: 1819715755}
+  - {fileID: 1415467536}
 --- !u!82 &67828992636618616
 AudioSource:
   m_ObjectHideFlags: 0

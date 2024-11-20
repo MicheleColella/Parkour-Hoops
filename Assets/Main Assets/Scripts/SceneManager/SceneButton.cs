@@ -1,11 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit.UI; // For TrackedDeviceGraphicRaycaster
+using System.Collections.Generic; // For List
 
 public class SceneButton : MonoBehaviour
 {
     [Tooltip("Nome della scena da caricare")]
     public string sceneName; // Nome della scena da caricare
     private Button button; // Riferimento al componente Button
+
+    [Tooltip("Lista dei TrackedDeviceGraphicRaycaster da disabilitare")]
+    public List<TrackedDeviceGraphicRaycaster> raycastersToDisable;
 
     private void Start()
     {
@@ -23,9 +28,21 @@ public class SceneButton : MonoBehaviour
             // Disabilita il pulsante per evitare clic multipli
             button.interactable = false;
 
+            // Disabilita i TrackedDeviceGraphicRaycaster nella lista
+            if (raycastersToDisable != null)
+            {
+                foreach (var raycaster in raycastersToDisable)
+                {
+                    if (raycaster != null)
+                    {
+                        raycaster.enabled = false;
+                    }
+                }
+            }
+
             // Usa SceneController per caricare la scena specificata
             SceneController.Instance.LoadScene(sceneName);
-            Debug.Log($"Button clicked! Loading scene: {sceneName}");
+            //Debug.Log($"Button clicked! Loading scene: {sceneName}");
         }
         else
         {
