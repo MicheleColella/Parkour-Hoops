@@ -24,7 +24,10 @@ public class BasketSectionManager : MonoBehaviour
     [Tooltip("Delay after which to deactivate the current basket prefab.")]
     public float deactivateDelay = 2f; // Time after which to deactivate the current prefab
 
-    [Header("Pre-Game Countdown")]
+    [Header("Pre-Game Settings")]
+    [Tooltip("Delay before starting the pre-game countdown.")]
+    public float preGameDelay = 2f; // Delay before the pre-game countdown starts
+
     [Tooltip("TextMeshProUGUI to display the pre-game countdown.")]
     public TextMeshProUGUI preGameCountdownText; // TextMeshProUGUI for pre-game countdown
 
@@ -95,8 +98,17 @@ public class BasketSectionManager : MonoBehaviour
             preGameCountdownText.gameObject.SetActive(false);
         }
 
+        // Start the pre-game countdown with delay
+        StartCoroutine(StartPreGameCountdownWithDelay());
+    }
+
+    private IEnumerator StartPreGameCountdownWithDelay()
+    {
+        // Wait for the specified pre-game delay
+        yield return new WaitForSeconds(preGameDelay);
+
         // Start the pre-game countdown
-        StartCoroutine(StartPreGameCountdown());
+        yield return StartCoroutine(StartPreGameCountdown());
     }
 
     private IEnumerator StartPreGameCountdown()
@@ -209,11 +221,24 @@ public class BasketSectionManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             gameTimer--;
 
-            // Force gameTimer to zero if it becomes negative
+            // Ensure gameTimer does not go below zero
             if (gameTimer < 0)
             {
                 gameTimer = 0;
             }
+        }
+
+        // Clear the game timer text immediately when the game ends
+        if (gameTimerText != null)
+        {
+            gameTimerText.text = "";
+        }
+
+        // Clear the preGameCountdownText immediately when the game ends
+        if (preGameCountdownText != null)
+        {
+            preGameCountdownText.text = "";
+            preGameCountdownText.gameObject.SetActive(false);
         }
 
         // Time's up, end the game
@@ -222,6 +247,7 @@ public class BasketSectionManager : MonoBehaviour
 
     private IEnumerator EndGame()
     {
+        // Indicate that the game has ended
         isGameRunning = false;
 
         // Deactivate all prefabs
@@ -230,23 +256,13 @@ public class BasketSectionManager : MonoBehaviour
             prefab.SetActive(false);
         }
 
-        // Display "Finished" in the preGameCountdownText
-        if (preGameCountdownText != null)
+        // Hide the game timer text immediately
+        if (gameTimerText != null)
         {
-            preGameCountdownText.text = "Finished";
-            preGameCountdownText.gameObject.SetActive(true);
+            gameTimerText.text = "";
         }
 
-        // Play the "Finished" sound if available
-        if (preGameCountdownSounds != null && preGameCountdownSounds.Count >= 4)
-        {
-            preGameCountdownSounds[3].Play();
-        }
-
-        // Wait for 2 seconds while "Finished" is displayed
-        yield return new WaitForSeconds(2f);
-
-        // Clear the "Finished" text
+        // Hide the pre-game countdown text immediately
         if (preGameCountdownText != null)
         {
             preGameCountdownText.text = "";
@@ -271,8 +287,14 @@ public class BasketSectionManager : MonoBehaviour
         // Use Feedbacks
         foreach (var feed in menuFeedBacks)
         {
-            feed.PlayFeedbacks();
+            if (feed != null)
+            {
+                feed.PlayFeedbacks();
+            }
         }
+
+        // Wait for any additional effects or transitions
+        yield return new WaitForSeconds(1f);
 
         // Additional actions to perform at the end of the game can be added here
         Debug.Log("The game has ended!");
@@ -330,15 +352,25 @@ public class BasketSectionManager : MonoBehaviour
         if (!isGameRunning)
             return;
 
-        if (currentActivePrefab != null)
-        {
-            // Deactivate the current prefab with a delay
-            StartCoroutine(DeactivateWithDelay(currentActivePrefab));
-        }
+        // Store a reference to the current active prefab before activating a new one
+        GameObject prefabToDeactivate = currentActivePrefab;
 
         // Activate a new random prefab
         ActivateRandomPrefab();
+
+        // If we have a new prefab activated, deactivate the old one after delay
+        if (prefabToDeactivate != null && prefabToDeactivate != currentActivePrefab)
+        {
+            // Deactivate the old prefab with a delay
+            StartCoroutine(DeactivateWithDelay(prefabToDeactivate));
+        }
+        else
+        {
+            // No need to deactivate
+            Debug.Log("Reusing the same prefab; not deactivating it.");
+        }
     }
+
 
     private void ActivateRandomPrefab()
     {
@@ -351,15 +383,36 @@ public class BasketSectionManager : MonoBehaviour
             return;
         }
 
-        // Choose a random prefab from the list
-        int randomIndex = UnityEngine.Random.Range(0, basketsPrefabs.Count);
-        currentActivePrefab = basketsPrefabs[randomIndex];
+        // Create a list of available prefabs excluding the current active prefab
+        List<GameObject> availablePrefabs = new List<GameObject>(basketsPrefabs);
+
+        // Remove the current active prefab from the list
+        if (currentActivePrefab != null)
+        {
+            availablePrefabs.Remove(currentActivePrefab);
+        }
+
+        if (availablePrefabs.Count == 0)
+        {
+            // Only the current prefab is available; reuse it
+            Debug.Log("Only one prefab available; reusing the current prefab.");
+            // No need to change currentActivePrefab
+        }
+        else
+        {
+            // Choose a random prefab from the available prefabs
+            int randomIndex = UnityEngine.Random.Range(0, availablePrefabs.Count);
+            currentActivePrefab = availablePrefabs[randomIndex];
+        }
 
         // Reset the prefab before activation
         ResetBasketPrefab(currentActivePrefab);
 
-        // Activate the prefab
-        currentActivePrefab.SetActive(true);
+        // Activate the prefab if it's not already active
+        if (!currentActivePrefab.activeSelf)
+        {
+            currentActivePrefab.SetActive(true);
+        }
 
         // Record the activation time
         currentBasketActivationTime = Time.time;
@@ -367,6 +420,7 @@ public class BasketSectionManager : MonoBehaviour
         // Initialize the BasketScoreHandler for this prefab
         InitializeBasketScoreHandler(currentActivePrefab);
     }
+
 
     private void ResetBasketPrefab(GameObject prefab)
     {

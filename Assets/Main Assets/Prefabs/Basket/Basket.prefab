@@ -134,6 +134,10 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1122480566732800013}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2a606673cf93bfc439f747bfbd77d391,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3955240260665722528}
     - targetCorrespondingSourceObject: {fileID: 8513859187771203891, guid: 2a606673cf93bfc439f747bfbd77d391,
         type: 3}
       insertIndex: -1
@@ -157,6 +161,33 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 223708317859861918}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1142696417032890575 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2a606673cf93bfc439f747bfbd77d391,
+    type: 3}
+  m_PrefabInstance: {fileID: 223708317859861918}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &3955240260665722528
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142696417032890575}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bc6071b069f165346b27e58a8bbb58d4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8448058374831617197 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8513859187771203891, guid: 2a606673cf93bfc439f747bfbd77d391,
@@ -206,6 +237,7 @@ MonoBehaviour:
   audioSource: {fileID: 1965170145715790006}
   whistleAudioSource: {fileID: 7663069441885122131}
   playWhistleOnStart: 1
+  animator: {fileID: 3955240260665722528}
   firstIntervalScore: 5
   firstIntervalTimeLimit: 5
   secondIntervalScore: 3

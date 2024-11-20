@@ -34,6 +34,16 @@ public class BasketScoreHandler : MonoBehaviour
     [Tooltip("If true, plays a whistle when the object is activated.")]
     public bool playWhistleOnStart = false;
 
+    [Header("Animation Settings")]
+    [Tooltip("Animator component for handling animations.")]
+    public Animator animator; // Reference to the Animator component
+
+    [Tooltip("Name of the default animation to play.")]
+    public string defaultAnimationName = "Float";
+
+    [Tooltip("Name of the goal animation to play when scoring.")]
+    public string goalAnimationName = "GoalAnim";
+
     [Header("References")]
     [Tooltip("Manages the score in the scene.")]
     private PointManager pointManager; // Reference to the PointManager that manages the score
@@ -74,6 +84,12 @@ public class BasketScoreHandler : MonoBehaviour
         {
             Debug.LogError("PointManager not found in the scene! Make sure there is an object with the PointManager script.");
         }
+
+        // Check if animator is assigned
+        if (animator == null)
+        {
+            Debug.LogError("Animator component not assigned! Please assign it in the Inspector.");
+        }
     }
 
     private void OnEnable()
@@ -81,7 +97,11 @@ public class BasketScoreHandler : MonoBehaviour
         // Reset the trigger cooldown
         isTriggerOnCooldown = false;
 
-        // Reset any other necessary variables here
+        // Play the default animation
+        if (animator != null)
+        {
+            animator.Play(defaultAnimationName);
+        }
 
         // Enable colliders/triggers if they were disabled
         Collider collider = GetComponent<Collider>();
@@ -153,6 +173,12 @@ public class BasketScoreHandler : MonoBehaviour
             audioSource.Play();
         }
 
+        // Play the goal animation
+        if (animator != null)
+        {
+            animator.Play(goalAnimationName);
+        }
+
         // Instantiate the prefab at the position, rotation, and scale of the spawnPoint
         if (VFXToInstantiate != null && vfxPosition != null)
         {
@@ -176,6 +202,12 @@ public class BasketScoreHandler : MonoBehaviour
 
         // Deactivate the cooldown
         isTriggerOnCooldown = false;
+
+        // After cooldown, resume the default animation
+        if (animator != null)
+        {
+            animator.Play(defaultAnimationName);
+        }
     }
 
     private int CalculateBaseScore(out bool increaseCombo)
