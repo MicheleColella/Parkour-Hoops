@@ -50,6 +50,11 @@ public class BasketSectionManager : MonoBehaviour
     [Tooltip("TextMeshProUGUI to display the total baskets made.")]
     public TextMeshProUGUI totalBasketsText;
 
+    [Header("Rotation Settings")]
+    [Tooltip("The GameObject to rotate towards the active basket prefab.")]
+    public GameObject objectToRotate; // The object that should rotate towards the active basket
+
+
     [Header("Debug")]
     [ReadOnly]
     [Tooltip("Currently active basket prefab.")]
@@ -100,6 +105,30 @@ public class BasketSectionManager : MonoBehaviour
 
         // Start the pre-game countdown with delay
         StartCoroutine(StartPreGameCountdownWithDelay());
+    }
+
+    private void Update()
+    {
+        // Verifica se c'è un canestro attivo
+        if (currentActivePrefab != null)
+        {
+            // Se c'è un canestro attivo, ruota l'oggetto verso di esso
+            RotateObjectTowardsBasket();
+
+            // Assicurati che l'oggetto sia attivo
+            if (!objectToRotate.activeSelf)
+            {
+                objectToRotate.SetActive(true);
+            }
+        }
+        else
+        {
+            // Se non c'è nessun canestro attivo, disattiva l'oggetto
+            if (objectToRotate.activeSelf)
+            {
+                objectToRotate.SetActive(false);
+            }
+        }
     }
 
     private IEnumerator StartPreGameCountdownWithDelay()
@@ -429,12 +458,31 @@ public class BasketSectionManager : MonoBehaviour
             currentActivePrefab.SetActive(true);
         }
 
+        // Rotate the assigned object towards the active basket
+        RotateObjectTowardsBasket();
+
         // Record the activation time
         currentBasketActivationTime = Time.time;
 
         // Initialize the BasketScoreHandler for this prefab
         InitializeBasketScoreHandler(currentActivePrefab);
     }
+
+    private void RotateObjectTowardsBasket()
+    {
+        if (objectToRotate != null && currentActivePrefab != null)
+        {
+            // Calcola la direzione tra l'oggetto da ruotare e il canestro attivo
+            Vector3 direction = currentActivePrefab.transform.position - objectToRotate.transform.position;
+
+            // Usa LookAt per ruotare l'oggetto verso la posizione del canestro
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+            // Applica la rotazione all'oggetto con una transizione fluida
+            objectToRotate.transform.rotation = Quaternion.Slerp(objectToRotate.transform.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+    }
+
 
     private void ResetBasketPrefab(GameObject prefab)
     {

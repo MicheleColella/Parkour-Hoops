@@ -97,11 +97,8 @@ public class BasketScoreHandler : MonoBehaviour
         // Reset the trigger cooldown
         isTriggerOnCooldown = false;
 
-        // Play the default animation
-        if (animator != null)
-        {
-            animator.Play(defaultAnimationName);
-        }
+        // Reset the activation time
+        activationTime = Time.time;
 
         // Enable colliders/triggers if they were disabled
         Collider collider = GetComponent<Collider>();
@@ -110,12 +107,20 @@ public class BasketScoreHandler : MonoBehaviour
             collider.enabled = true;
         }
 
-        // Play the whistle if the bool is true and the audio source is assigned
+        // Play the whistle if required
         if (playWhistleOnStart && whistleAudioSource != null)
         {
             whistleAudioSource.Play();
         }
+
+        // Reset animator state and play the default animation
+        if (animator != null)
+        {
+            animator.Rebind(); // Resets the animator to its default state
+            animator.Play(defaultAnimationName, 0, 0f); // Start default animation from the beginning
+        }
     }
+
 
     private void OnDisable()
     {
@@ -202,12 +207,6 @@ public class BasketScoreHandler : MonoBehaviour
 
         // Deactivate the cooldown
         isTriggerOnCooldown = false;
-
-        // After cooldown, resume the default animation
-        if (animator != null)
-        {
-            animator.Play(defaultAnimationName);
-        }
     }
 
     private int CalculateBaseScore(out bool increaseCombo)
