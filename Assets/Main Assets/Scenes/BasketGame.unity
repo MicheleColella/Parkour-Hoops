@@ -37967,7 +37967,7 @@ MonoBehaviour:
   - {fileID: 413040440}
   - {fileID: 1157778771}
   - {fileID: 2050272234}
-  gameDuration: 0:05
+  gameDuration: 5:00
   gameTimerText: {fileID: 3451214344324857162}
   deactivateDelay: 2
   preGameDelay: 2
