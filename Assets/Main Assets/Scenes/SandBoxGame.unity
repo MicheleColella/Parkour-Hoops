@@ -31338,6 +31338,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1760646786654254324, guid: f3efc81c666898b4bb60dc781d735048,
+        type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 2069677113}
     - target: {fileID: 2914482986399118379, guid: f3efc81c666898b4bb60dc781d735048,
         type: 3}
       propertyPath: m_IsActive
@@ -66164,6 +66169,12 @@ PrefabInstance:
 --- !u!4 &2069677112 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7048592242560956621, guid: 47e8b90832ef4774c9b37d0daa038089,
+    type: 3}
+  m_PrefabInstance: {fileID: 2069677111}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &2069677113 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 4841944998026303710, guid: 47e8b90832ef4774c9b37d0daa038089,
     type: 3}
   m_PrefabInstance: {fileID: 2069677111}
   m_PrefabAsset: {fileID: 0}

@@ -105292,6 +105292,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!82 &3451214344324857163 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 4841944998026303710, guid: 47e8b90832ef4774c9b37d0daa038089,
+    type: 3}
+  m_PrefabInstance: {fileID: 3451214344324857160}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8273375740735666210
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -106175,6 +106181,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1760646786654254324, guid: f3efc81c666898b4bb60dc781d735048,
+        type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 3451214344324857163}
     - target: {fileID: 1947388539063087608, guid: f3efc81c666898b4bb60dc781d735048,
         type: 3}
       propertyPath: m_AnchorMax.y
