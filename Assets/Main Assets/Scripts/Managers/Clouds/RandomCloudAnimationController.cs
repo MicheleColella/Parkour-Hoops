@@ -55,12 +55,12 @@ public class RandomCloudAnimationController : MonoBehaviour
         if (randomChoice == 0)
         {
             animator.Play(rotateRightAnimation);
-            Debug.Log($"Animazione: Rotazione a Destra con velocità {currentRotationSpeed}");
+            //Debug.Log($"Animazione: Rotazione a Destra con velocità {currentRotationSpeed}");
         }
         else
         {
             animator.Play(rotateLeftAnimation);
-            Debug.Log($"Animazione: Rotazione a Sinistra con velocità {currentRotationSpeed}");
+            //Debug.Log($"Animazione: Rotazione a Sinistra con velocità {currentRotationSpeed}");
         }
 
         // Imposta la velocità dell'animazione

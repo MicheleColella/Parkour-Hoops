@@ -12,6 +12,9 @@ public class SceneButton : MonoBehaviour
     [Tooltip("Lista dei TrackedDeviceGraphicRaycaster da disabilitare")]
     public List<TrackedDeviceGraphicRaycaster> raycastersToDisable;
 
+    [Tooltip("Lista di GameObject da disabilitare quando il pulsante è cliccato")]
+    public List<GameObject> objectsToDisable; // Lista di GameObject da disabilitare
+
     private void Start()
     {
         button = GetComponent<Button>();
@@ -28,6 +31,8 @@ public class SceneButton : MonoBehaviour
             // Disabilita il pulsante per evitare clic multipli
             button.interactable = false;
 
+            BlinkValueControl.ToggleBlink(false);
+
             // Disabilita i TrackedDeviceGraphicRaycaster nella lista
             if (raycastersToDisable != null)
             {
@@ -36,6 +41,18 @@ public class SceneButton : MonoBehaviour
                     if (raycaster != null)
                     {
                         raycaster.enabled = false;
+                    }
+                }
+            }
+
+            // Disabilita gli oggetti della lista objectsToDisable
+            if (objectsToDisable != null)
+            {
+                foreach (var obj in objectsToDisable)
+                {
+                    if (obj != null)
+                    {
+                        obj.SetActive(false); // Disabilita il GameObject
                     }
                 }
             }
@@ -56,6 +73,18 @@ public class SceneButton : MonoBehaviour
         if (button != null)
         {
             button.interactable = true;
+        }
+
+        // Riattiva gli oggetti disabilitati quando il GameObject viene attivato
+        if (objectsToDisable != null)
+        {
+            foreach (var obj in objectsToDisable)
+            {
+                if (obj != null)
+                {
+                    obj.SetActive(true); // Riattiva il GameObject
+                }
+            }
         }
     }
 }

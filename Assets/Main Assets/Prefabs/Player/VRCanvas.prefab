@@ -1822,6 +1822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: MainMenu
+  raycastersToDisable: []
 --- !u!1 &1875396433907897661
 GameObject:
   m_ObjectHideFlags: 0
@@ -5491,6 +5492,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: MainMenu
+  raycastersToDisable: []
 --- !u!1 &3751073272866403312
 GameObject:
   m_ObjectHideFlags: 0
